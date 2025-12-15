@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <header class="w-full bg-app-dark border-b border-app-border">
+    <header class="w-full bg-app-dark">
       <div class="flex items-center justify-between h-[94px] px-6 md:px-8">
         <!-- Logo Section -->
         <div class="flex items-center gap-2.5">
@@ -25,7 +25,7 @@ import { CommonModule } from '@angular/common';
         
         <!-- Promeni boju !!! -->
         <div class="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0"></div>
-          <span class="text-black text-sm md:text-base font-medium mr-1">John Doe</span>
+          <span class="text-black text-sm md:text-base font-medium mr-1">{{firstName}} {{lastName}}</span>
           <img 
             src="defaultprofile.png"
             alt="Profile"
@@ -37,4 +37,10 @@ import { CommonModule } from '@angular/common';
   `,
   styles: []
 })
-export class HeaderComponent {}
+export class HeaderComponent {
+  @Input()
+  firstName: string = '';
+
+  @Input()
+  lastName: string = '';
+}

@@ -8,131 +8,151 @@ import { HeaderComponent } from '../components/header.component';
   standalone: true,
   imports: [CommonModule, FormsModule, HeaderComponent],
   template: `
-    <div class="min-h-screen bg-app-bg">
-      <app-header></app-header>
-      
-      <div class="flex flex-col justify-center items-center flex-1 px-4 py-8 md:py-16">
-        <div class="w-full max-w-2xl rounded-[44px] bg-app-dark border border-app-border p-6 md:p-8">
-          <!-- Profile Image Section -->
-          <div class="flex flex-col items-center mb-8">
-            <div class="relative">
-              <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-app-accent flex items-center justify-center">
-                <img 
-                  src="https://api.builder.io/api/v1/image/assets/TEMP/7bb9d35edb1cdec2ff902574931097ba1a48e419?width=308"
-                  alt="Profile"
-                  class="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover"
-                />
+    <div class="min-h-screen bg-white">
+      <div class="flex flex-col min-h-screen">
+        <app-header [firstName]="firstName" [lastName]="lastName"></app-header>
+
+        <div class="flex flex-1">
+          <!-- Sidebar -->
+          <!-- <app-sidebar></app-sidebar> -->
+
+          <!-- Main Content -->
+          <main class="flex flex-1 p-8 lg:p-16 xl:pl-24 justify-center items-center">
+            <div class="flex flex-col gap-6 w-full">
+              <!-- Profile Header Card -->
+              <div class="border-[1.5px] border-gray-200 rounded-3xl shadow-lg p-8">
+                <div class="flex items-center gap-6">
+                  <!-- Profile Picture -->
+                  <div class="relative group w-[120px] h-[120px] cursor-pointer">
+                    <div class="w-full h-full rounded-full border-[3px] border-app-accent p-0.5">
+                      <img
+                        class="w-full h-full rounded-full object-cover group-hover:brightness-80"
+                        src="defaultprofile.png"
+                        alt="Profile"
+                      />
+                    </div>
+                    <button class="absolute bottom-0 right-0 w-9 h-9 bg-app-accent rounded-full shadow-lg flex items-center justify-center">
+                      <svg class="w-5 h-5" viewBox="0 0 20 20" fill="none">
+                        <path d="M11.6596 3.33203C11.9602 3.33203 12.2551 3.41332 12.5132 3.5673C12.7713 3.72128 12.9829 3.94222 13.1257 4.20669L13.5305 4.9564C13.6733 5.22087 13.8849 5.4418 14.143 5.59578C14.4011 5.74976 14.6961 5.83106 14.9966 5.83105H16.6602C17.102 5.83105 17.5258 6.00658 17.8382 6.31902C18.1506 6.63146 18.3262 7.05522 18.3262 7.49707V14.9941C18.3262 15.436 18.1506 15.8598 17.8382 16.1722C17.5258 16.4846 17.102 16.6602 16.6602 16.6602H3.33203C2.89018 16.6602 2.46642 16.4846 2.15398 16.1722C1.84154 15.8598 1.66602 15.436 1.66602 14.9941V7.49707C1.66602 7.05522 1.84154 6.63146 2.15398 6.31902C2.46642 6.00658 2.89018 5.83105 3.33203 5.83105H4.99555C5.29578 5.83107 5.59044 5.74996 5.84837 5.59629C6.10629 5.44261 6.3179 5.2221 6.46081 4.95806L6.86815 4.20502C7.01106 3.94098 7.22267 3.72047 7.48059 3.5668C7.73852 3.41313 8.03318 3.33201 8.33341 3.33203H11.6596Z" stroke="#1F1F1F" stroke-width="1.66602" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9.99609 13.3281C11.3763 13.3281 12.4951 12.2093 12.4951 10.8291C12.4951 9.44893 11.3763 8.33008 9.99609 8.33008C8.61592 8.33008 7.49707 9.44893 7.49707 10.8291C7.49707 12.2093 8.61592 13.3281 9.99609 13.3281Z" stroke="#1F1F1F" stroke-width="1.66602" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <!-- User Info -->
+                  <div class="flex flex-col gap-1">
+                    <h2 class="text-[28px] font-normal font-poppins text-black leading-[42px]">Andrew Wilson</h2>
+                    <p class="text-base font-normal font-poppins text-gray-600">andrewwilson&#64;email.com</p>
+                  </div>
+                </div>
               </div>
-              <!-- Edit Icon -->
-              <div class="absolute bottom-2 right-2 w-8 h-8 md:w-10 md:h-10 rounded-full bg-app-accent flex items-center justify-center cursor-pointer hover:opacity-80 transition">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <g clip-path="url(#clip0_98_186)">
-                    <path d="M11.3334 2.00004C11.5085 1.82494 11.7163 1.68605 11.9451 1.59129C12.1739 1.49653 12.4191 1.44775 12.6667 1.44775C12.9143 1.44775 13.1595 1.49653 13.3883 1.59129C13.6171 1.68605 13.8249 1.82494 14 2.00004C14.1751 2.17513 14.314 2.383 14.4088 2.61178C14.5036 2.84055 14.5523 3.08575 14.5523 3.33337C14.5523 3.58099 14.5036 3.82619 14.4088 4.05497C14.314 4.28374 14.1751 4.49161 14 4.66671L5.00004 13.6667L1.33337 14.6667L2.33337 11L11.3334 2.00004Z" stroke="#1E1E1E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_98_186">
-                      <rect width="16" height="16" fill="white"/>
-                    </clipPath>
-                  </defs>
-                </svg>
+
+              <!-- Info Card -->
+              <div class="border-[1.5px] border-gray-200 rounded-3xl shadow-lg p-8 flex flex-col gap-11">
+                <h3 class="text-[22px] font-normal font-poppins text-black leading-[33px]">Personal Information</h3>
+
+                <!-- Form Fields -->
+                <div class="flex flex-col gap-2.5">
+                  <!-- First Name & Last Name Row -->
+                  <div class="flex gap-2.5 flex-col sm:flex-row">
+                    <div class="flex-1 flex flex-col gap-2">
+                      <label class="text-sm font-normal font-poppins text-gray-700">First Name</label>
+                      <input
+                        type="text"
+                        [(ngModel)]="firstName"
+                        class="input-base"
+                        placeholder="First name"
+                      />
+                    </div>
+                    <div class="flex-1 flex flex-col gap-2">
+                      <label class="text-sm font-normal font-poppins text-gray-700">Last Name</label>
+                      <input
+                        type="text"
+                        [(ngModel)]="lastName"
+                        class="input-base"
+                        placeholder="Last name"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Email Field -->
+                  <div class="flex flex-col gap-2">
+                    <label class="text-sm font-normal font-poppins text-gray-700 flex items-center gap-2">
+                      <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                        <path d="M14.6523 4.66211L8.6642 8.47638C8.46099 8.59441 8.23018 8.65657 7.99518 8.65657C7.76019 8.65657 7.52938 8.59441 7.32617 8.47638L1.33203 4.66211" stroke="#364153" stroke-width="1.33203" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M13.3203 2.66406H2.66406C1.9284 2.66406 1.33203 3.26043 1.33203 3.99609V11.9883C1.33203 12.7239 1.9284 13.3203 2.66406 13.3203H13.3203C14.056 13.3203 14.6523 12.7239 14.6523 11.9883V3.99609C14.6523 3.26043 14.056 2.66406 13.3203 2.66406Z" stroke="#364153" stroke-width="1.33203" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      [(ngModel)]="email"
+                      class="input-base"
+                      placeholder="E-Mail"
+                    />
+                  </div>
+
+                  <!-- Address Field -->
+                  <div class="flex flex-col gap-2">
+                    <label class="text-sm font-normal font-poppins text-gray-700 flex items-center gap-2">
+                      <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                        <path d="M13.3203 6.66016C13.3203 9.98557 9.63125 13.4489 8.39246 14.5185C8.27706 14.6053 8.13658 14.6522 7.99219 14.6522C7.8478 14.6522 7.70732 14.6053 7.59191 14.5185C6.35312 13.4489 2.66406 9.98557 2.66406 6.66016C2.66406 5.24705 3.22542 3.89182 4.22463 2.8926C5.22385 1.89339 6.57908 1.33203 7.99219 1.33203C9.40529 1.33203 10.7605 1.89339 11.7597 2.8926C12.759 3.89182 13.3203 5.24705 13.3203 6.66016Z" stroke="#364153" stroke-width="1.33203" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M7.99219 8.6582C9.09568 8.6582 9.99023 7.76365 9.99023 6.66016C9.99023 5.55667 9.09568 4.66211 7.99219 4.66211C6.8887 4.66211 5.99414 5.55667 5.99414 6.66016C5.99414 7.76365 6.8887 8.6582 7.99219 8.6582Z" stroke="#364153" stroke-width="1.33203" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      Address
+                    </label>
+                    <input
+                      type="text"
+                      [(ngModel)]="address"
+                      class="input-base"
+                      placeholder="Address"
+                    />
+                  </div>
+
+                  <!-- Phone Number Field -->
+                  <div class="flex flex-col gap-2">
+                    <label class="text-sm font-normal font-poppins text-gray-700 flex items-center gap-2">
+                      <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                        <path d="M9.21233 11.0345C9.34988 11.0977 9.50484 11.1121 9.65169 11.0755C9.79854 11.0388 9.92852 10.9532 10.0202 10.8327L10.2566 10.523C10.3807 10.3576 10.5416 10.2233 10.7266 10.1309C10.9115 10.0384 11.1155 9.99023 11.3223 9.99023H13.3203C13.6736 9.99023 14.0124 10.1306 14.2622 10.3804C14.512 10.6302 14.6523 10.969 14.6523 11.3223V13.3203C14.6523 13.6736 14.512 14.0124 14.2622 14.2622C14.0124 14.512 13.6736 14.6523 13.3203 14.6523C10.1408 14.6523 7.09156 13.3893 4.84332 11.1411C2.59508 8.89282 1.33203 5.84355 1.33203 2.66406C1.33203 2.31079 1.47237 1.97198 1.72217 1.72217C1.97198 1.47237 2.31079 1.33203 2.66406 1.33203H4.66211C5.01539 1.33203 5.35419 1.47237 5.604 1.72217C5.8538 1.97198 5.99414 2.31079 5.99414 2.66406V4.66211C5.99414 4.8689 5.94599 5.07285 5.85351 5.25781C5.76103 5.44277 5.62676 5.60366 5.46133 5.72773L5.14963 5.96151C5.02736 6.05487 4.94118 6.18768 4.90573 6.33737C4.87028 6.48707 4.88774 6.64442 4.95516 6.7827C5.86539 8.63147 7.36242 10.1266 9.21233 11.0345Z" stroke="#364153" stroke-width="1.33203" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      [(ngModel)]="phoneNumber"
+                      class="input-base"
+                      placeholder="Phone number"
+                    />
+                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col gap-3">
+                  <button class="h-12 border-[1.5px] border-gray-300 rounded-full text-sm font-normal font-poppins text-gray-700 hover:bg-gray-50 transition-colors">
+                    Change Password
+                  </button>
+
+                  <div class="flex gap-4 flex-col sm:flex-row">
+                    <button class="flex-1 h-12 bg-lime-400 rounded-full text-sm font-normal font-poppins text-neutral-900 hover:bg-lime-500 transition-colors">
+                      Update Profile
+                    </button>
+                    <button class="flex-1 h-12 border-[1.5px] border-gray-300 rounded-full text-sm font-normal font-poppins text-gray-700 hover:bg-gray-50 transition-colors">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-
-          <!-- Form Fields -->
-          <div class="space-y-6">
-            <!-- Name and Surname Row -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Name Input -->
-              <div class="flex flex-col gap-2">
-                <label class="text-app-bg text-sm font-medium">Name</label>
-                <input
-                  type="text"
-                  placeholder="Value"
-                  class="w-full px-4 py-3 rounded-lg bg-white border border-app-border text-app-text-secondary placeholder-app-text-secondary focus:outline-none focus:ring-2 focus:ring-app-accent"
-                />
-              </div>
-
-              <!-- Surname Input -->
-              <div class="flex flex-col gap-2">
-                <label class="text-app-bg text-sm font-medium">Surname</label>
-                <input
-                  type="text"
-                  placeholder="Value"
-                  class="w-full px-4 py-3 rounded-lg bg-white border border-app-border text-app-text-secondary placeholder-app-text-secondary focus:outline-none focus:ring-2 focus:ring-app-accent"
-                />
-              </div>
-            </div>
-
-            <!-- Email Input -->
-            <div class="flex flex-col gap-2">
-              <div class="flex items-center gap-2">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18.3333 4.99992C18.3333 4.08325 17.5833 3.33325 16.6666 3.33325H3.33329C2.41663 3.33325 1.66663 4.08325 1.66663 4.99992M18.3333 4.99992V14.9999C18.3333 15.9166 17.5833 16.6666 16.6666 16.6666H3.33329C2.41663 16.6666 1.66663 15.9166 1.66663 14.9999V4.99992M18.3333 4.99992L9.99996 10.8333L1.66663 4.99992" stroke="#F7F7F5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <label class="text-app-bg text-sm font-medium">Email</label>
-              </div>
-              <input
-                type="email"
-                placeholder="Value"
-                class="w-full px-4 py-3 rounded-lg bg-white border border-app-border text-app-text-secondary placeholder-app-text-secondary focus:outline-none focus:ring-2 focus:ring-app-accent"
-              />
-            </div>
-
-            <!-- Address Input -->
-            <div class="flex flex-col gap-2">
-              <div class="flex items-center gap-2">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 10.0001C10.4584 10.0001 10.8507 9.83689 11.1771 9.5105C11.5035 9.18411 11.6667 8.79175 11.6667 8.33341C11.6667 7.87508 11.5035 7.48272 11.1771 7.15633C10.8507 6.82994 10.4584 6.66675 10 6.66675C9.54171 6.66675 9.14935 6.82994 8.82296 7.15633C8.49657 7.48272 8.33337 7.87508 8.33337 8.33341C8.33337 8.79175 8.49657 9.18411 8.82296 9.5105C9.14935 9.83689 9.54171 10.0001 10 10.0001ZM10 16.1251C11.6945 14.5695 12.9514 13.1563 13.7709 11.8855C14.5903 10.6147 15 9.48619 15 8.50008C15 6.98619 14.5174 5.74661 13.5521 4.78133C12.5868 3.81605 11.4028 3.33341 10 3.33341C8.59726 3.33341 7.41324 3.81605 6.44796 4.78133C5.48268 5.74661 5.00004 6.98619 5.00004 8.50008C5.00004 9.48619 5.40976 10.6147 6.22921 11.8855C7.04865 13.1563 8.3056 14.5695 10 16.1251ZM10 18.3334C7.76393 16.4306 6.09379 14.6633 4.98962 13.0313C3.88546 11.3994 3.33337 9.88897 3.33337 8.50008C3.33337 6.41675 4.00351 4.75703 5.34379 3.52091C6.68407 2.2848 8.23615 1.66675 10 1.66675C11.7639 1.66675 13.316 2.2848 14.6563 3.52091C15.9966 4.75703 16.6667 6.41675 16.6667 8.50008C16.6667 9.88897 16.1146 11.3994 15.0105 13.0313C13.9063 14.6633 12.2362 16.4306 10 18.3334Z" fill="#F7F7F5"/>
-                </svg>
-                <label class="text-app-bg text-sm font-medium">Address</label>
-              </div>
-              <input
-                type="text"
-                placeholder="Value"
-                class="w-full px-4 py-3 rounded-lg bg-white border border-app-border text-app-text-secondary placeholder-app-text-secondary focus:outline-none focus:ring-2 focus:ring-app-accent"
-              />
-            </div>
-
-            <!-- Phone Number Input -->
-            <div class="flex flex-col gap-2">
-              <div class="flex items-center gap-2">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <g clip-path="url(#clip0_98_158)">
-                    <path d="M18.3333 14.0999V16.5999C18.3343 16.832 18.2867 17.0617 18.1937 17.2744C18.1008 17.487 17.9644 17.6779 17.7934 17.8348C17.6224 17.9917 17.4205 18.1112 17.2006 18.1855C16.9808 18.2599 16.7478 18.2875 16.5167 18.2666C13.9523 17.988 11.4892 17.1117 9.32498 15.7083C7.31151 14.4288 5.60443 12.7217 4.32499 10.7083C2.91663 8.53426 2.04019 6.05908 1.76665 3.48325C1.74583 3.25281 1.77321 3.02055 1.84707 2.80127C1.92092 2.58199 2.03963 2.38049 2.19562 2.2096C2.35162 2.03871 2.54149 1.90218 2.75314 1.80869C2.9648 1.7152 3.1936 1.6668 3.42499 1.66658H5.92498C6.32941 1.6626 6.72148 1.80582 7.02812 2.06953C7.33476 2.33324 7.53505 2.69946 7.59165 3.09992C7.69717 3.89997 7.89286 4.68552 8.17499 5.44158C8.2871 5.73985 8.31137 6.06401 8.24491 6.37565C8.17844 6.68729 8.02404 6.97334 7.79998 7.19992L6.74165 8.25825C7.92795 10.3445 9.65536 12.072 11.7417 13.2583L12.8 12.1999C13.0266 11.9759 13.3126 11.8215 13.6243 11.755C13.9359 11.6885 14.26 11.7128 14.5583 11.8249C15.3144 12.107 16.0999 12.3027 16.9 12.4083C17.3048 12.4654 17.6745 12.6693 17.9388 12.9812C18.203 13.2931 18.3435 13.6912 18.3333 14.0999Z" stroke="#F7F7F5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_98_158">
-                      <rect width="20" height="20" fill="white"/>
-                    </clipPath>
-                  </defs>
-                </svg>
-                <label class="text-app-bg text-sm font-medium">Phone Number</label>
-              </div>
-              <input
-                type="tel"
-                placeholder="Value"
-                class="w-full px-4 py-3 rounded-lg bg-white border border-app-border text-app-text-secondary placeholder-app-text-secondary focus:outline-none focus:ring-2 focus:ring-app-accent"
-              />
-            </div>
-          </div>
-
-          <!-- Buttons -->
-          <div class="mt-8 space-y-4">
-            <!-- Change Password Button -->
-            <button class="w-full py-3 px-4 rounded-full border-4 border-app-accent bg-app-dark text-app-accent font-medium hover:bg-opacity-80 transition">
-              Change Password
-            </button>
-
-            <!-- Update Profile Button -->
-            <button class="w-full py-3 px-4 rounded-full bg-app-accent text-app-dark font-medium hover:opacity-90 transition">
-              Update Profile
-            </button>
-          </div>
+          </main>
         </div>
       </div>
     </div>
   `,
-  styles: []
 })
-export class ProfileComponent {}
+export class ProfileComponent {
+  firstName: string = 'Andrew';
+  lastName: string = 'Wilson';
+  email: string = 'andrewwilson@email.com';
+  address: string = 'Novi Sad';
+  phoneNumber: string = '+381 65 123 1233';
+}

@@ -23,7 +23,7 @@ import { HeaderComponent } from '../../shared/components/header.component';
               <div class="border-[1.5px] border-gray-200 rounded-3xl shadow-lg p-8">
                 <div class="flex items-center gap-6">
                   <!-- Profile Picture -->
-                  <div class="relative group w-[120px] h-[120px] cursor-pointer">
+                  <div class="relative group w-30 h-30 cursor-pointer">
                     <div class="w-full h-full rounded-full border-[3px] border-app-accent p-0.5">
                       <img
                         class="w-full h-full rounded-full object-cover group-hover:brightness-80"
@@ -41,15 +41,15 @@ import { HeaderComponent } from '../../shared/components/header.component';
 
                   <!-- User Info -->
                   <div class="flex flex-col gap-1">
-                    <h2 class="text-[28px] font-normal font-poppins text-black leading-[42px]">Andrew Wilson</h2>
+                    <h2 class="text-[28px] font-normal font-poppins text-black leading-10.5">Andrew Wilson</h2>
                     <p class="text-base font-normal font-poppins text-gray-600">andrewwilson&#64;email.com</p>
                   </div>
                 </div>
               </div>
 
               <!-- Info Card -->
-              <div class="border-[1.5px] border-gray-200 rounded-3xl shadow-lg p-8 flex flex-col gap-11">
-                <h3 class="text-[22px] font-normal font-poppins text-black leading-[33px]">Personal Information</h3>
+              <div class="border-[1.5px] border-gray-200 rounded-3xl shadow-lg p-8 flex flex-col gap-11 bg-white">
+                <h3 class="text-[22px] font-normal font-poppins text-black leading-8.25">Personal Information</h3>
 
                 <!-- Form Fields -->
                 <div class="flex flex-col gap-2.5">

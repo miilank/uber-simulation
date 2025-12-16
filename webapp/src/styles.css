@@ -34,3 +34,23 @@
   box-shadow: 0 0 0 2px rgb(163 230 53);
   border-color: transparent;
 }
+
+@keyframes scale-out {
+  from { transform: scale(1); opacity: 1; }
+  to   { transform: scale(0.5); opacity: 0; }
+}
+
+@keyframes scale-in {
+  from { transform: scale(1.5); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+::view-transition-old(root) {
+  animation-name: scale-out;
+  animation-duration: 500ms;
+}
+
+::view-transition-new(root) {
+  animation-name: scale-in;
+  animation-duration: 500ms;
+}

@@ -1,10 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <header class="w-full bg-app-dark">
       <div class="flex items-center justify-between h-23.5 px-6 md:px-8">
@@ -34,10 +35,10 @@ import { CommonModule } from '@angular/common';
         }
         @else {
           <div class="flex items-center gap-2 md:gap-3">
-            <button class="px-8 md:px-6 py-8 md:py-2.5 rounded-full border-2 md:border-3 bg-app-dark border-app-accent text-app-accent text-sm md:text-base font-normal hover:bg-app-accent hover:text-app-dark transition-colors">
+            <button class="px-8 md:px-6 py-8 md:py-2.5 rounded-full border-2 md:border-3 bg-app-dark border-app-accent text-app-accent text-sm md:text-base font-normal hover:bg-app-accent hover:text-app-dark transition-colors" routerLink="/signIn">
               Sign In
             </button>
-            <button class="px-8 md:px-6 py-8 md:py-2.5 rounded-full border-2 md:border-3 bg-app-accent border-app-dark text-app-dark text-sm md:text-base font-normal hover:bg-app-accent-dark hover:text-white transition-colors">
+            <button class="px-8 md:px-6 py-8 md:py-2.5 rounded-full border-2 md:border-3 bg-app-accent border-app-dark text-app-dark text-sm md:text-base font-normal hover:bg-app-accent-dark hover:text-white transition-colors" routerLink="/registerUser">
               Register
             </button>
           </div>

@@ -32,6 +32,16 @@ import { CommonModule } from '@angular/common';
             />
           </div>
         }
+        @else {
+          <div class="flex items-center gap-2 md:gap-3">
+            <button class="px-8 md:px-6 py-8 md:py-2.5 rounded-full border-2 md:border-3 bg-app-dark border-app-accent text-app-accent text-sm md:text-base font-normal hover:bg-app-accent hover:text-app-dark transition-colors">
+              Sign In
+            </button>
+            <button class="px-8 md:px-6 py-8 md:py-2.5 rounded-full border-2 md:border-3 bg-app-accent border-app-dark text-app-dark text-sm md:text-base font-normal hover:bg-app-accent-dark hover:text-white transition-colors">
+              Register
+            </button>
+          </div>
+        }
       </div>      
     </header>
   `,

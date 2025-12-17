@@ -34,7 +34,8 @@
                 android:text="Profile"
                 android:textSize="20sp"
                 android:textColor="@color/app_dark"
-                android:fontFamily="sans-serif-medium" />
+                android:fontFamily="@font/poppins"
+                />
 
             <!-- space filler -->
             <View
@@ -49,7 +50,9 @@
                 android:layout_height="wrap_content"
                 android:text="Andrew Wilson"
                 android:textSize="14sp"
-                android:textColor="@color/app_text_secondary"/>
+                android:textColor="@color/app_text_secondary"
+                android:fontFamily="@font/poppins"
+                />
         </LinearLayout>
 
         <!-- Profile Header Card -->
@@ -119,8 +122,8 @@
                         android:layout_height="wrap_content"
                         android:text="Andrew Wilson"
                         android:textSize="22sp"
-                        android:textColor="@color/app_dark"
-                        android:fontFamily="sans-serif-medium"
+                        android:textColor="#364153"
+                        android:fontFamily="@font/poppins_medium"
                         android:lineHeight="34sp"/>
 
                     <TextView
@@ -130,7 +133,9 @@
                         android:text="andrewwilson@email.com"
                         android:textSize="14sp"
                         android:textColor="@color/app_text_secondary"
-                        android:layout_marginTop="4dp"/>
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/poppins"
+                        />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -152,6 +157,7 @@
                 android:gap="12dp">
 
                 <TextView
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Personal Information"
@@ -159,7 +165,7 @@
                     android:textColor="@color/app_dark"
                     android:fontFamily="sans-serif-medium"/>
 
-                <!-- First & Last name horizontal on wide screens, stacked on small -->
+                <!-- First and Last name-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -174,12 +180,25 @@
                         android:orientation="vertical"
                         android:layout_marginEnd="8dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
                             android:layout_height="wrap_content"
-                            android:text="First Name"
-                            android:textSize="12sp"
-                            android:textColor="@color/app_text_secondary"/>
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_marginEnd="8dp">
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_marginEnd="8dp"
+                                android:src="@drawable/vec_profile"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="First Name"
+                                android:fontFamily="@font/poppins"
+                                android:textSize="12sp"
+                                android:textColor="#364153"/>
+                        </LinearLayout>
 
                         <EditText
                             android:id="@+id/et_first_name"
@@ -199,12 +218,24 @@
                         android:orientation="vertical"
                         android:layout_marginStart="8dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
                             android:layout_height="wrap_content"
-                            android:text="Last Name"
-                            android:textSize="12sp"
-                            android:textColor="@color/app_text_secondary"/>
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_marginEnd="8dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_marginEnd="8dp"
+                                android:src="@drawable/vec_profile"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Last Name"
+                                android:fontFamily="@font/poppins"
+                                android:textSize="12sp"
+                                android:textColor="#364153"/>
+                        </LinearLayout>
 
                         <EditText
                             android:id="@+id/et_last_name"
@@ -219,13 +250,27 @@
                 </LinearLayout>
 
                 <!-- Email -->
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_marginTop="5dp"
                     android:layout_height="wrap_content"
-                    android:text="Email"
-                    android:textSize="12sp"
-                    android:textColor="@color/app_text_secondary"
-                    android:layout_marginTop="12dp"/>
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginEnd="8dp">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginEnd="8dp"
+                        app:srcCompat="@drawable/vec_mail"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Email"
+                        android:fontFamily="@font/poppins"
+                        android:textSize="12sp"
+                        android:textColor="#364153"/>
+                </LinearLayout>
+
                 <EditText
                     android:id="@+id/et_email"
                     android:layout_width="match_parent"
@@ -237,13 +282,26 @@
                     android:textColor="@color/app_dark"/>
 
                 <!-- Address -->
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_marginTop="5dp"
                     android:layout_height="wrap_content"
-                    android:text="Address"
-                    android:textSize="12sp"
-                    android:textColor="@color/app_text_secondary"
-                    android:layout_marginTop="12dp"/>
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginEnd="8dp">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginEnd="8dp"
+                        app:srcCompat="@drawable/vec_location"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Address"
+                        android:fontFamily="@font/poppins"
+                        android:textSize="12sp"
+                        android:textColor="#364153"/>
+                </LinearLayout>
+
                 <EditText
                     android:id="@+id/et_address"
                     android:layout_width="match_parent"
@@ -255,13 +313,25 @@
                     android:textColor="@color/app_dark"/>
 
                 <!-- Phone -->
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_marginTop="5dp"
                     android:layout_height="wrap_content"
-                    android:text="Phone Number"
-                    android:textSize="12sp"
-                    android:textColor="@color/app_text_secondary"
-                    android:layout_marginTop="12dp"/>
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginEnd="8dp">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginEnd="8dp"
+                        app:srcCompat="@drawable/vec_phone"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Phone Number"
+                        android:fontFamily="@font/poppins"
+                        android:textSize="12sp"
+                        android:textColor="#364153"/>
+                </LinearLayout>
                 <EditText
                     android:id="@+id/et_phone"
                     android:layout_width="match_parent"
@@ -282,7 +352,8 @@
                     android:text="Change Password"
                     android:textColor="#4B5563"
                     android:textAllCaps="false"
-                    android:fontFamily="sans-serif-medium" />
+                    android:fontFamily="@font/poppins"
+                    />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -302,7 +373,8 @@
                         android:textColor="@color/app_dark"
                         android:textAllCaps="false"
                         android:layout_marginEnd="8dp"
-                        android:fontFamily="sans-serif-medium"/>
+                        android:fontFamily="@font/poppins"
+                        />
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btn_cancel"
@@ -314,7 +386,8 @@
                         android:textColor="#4B5563"
                         android:textAllCaps="false"
                         android:layout_marginStart="8dp"
-                        android:fontFamily="sans-serif-medium"/>
+                        android:fontFamily="@font/poppins"
+                        />
                 </LinearLayout>
 
             </LinearLayout>

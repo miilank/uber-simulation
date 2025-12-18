@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- outer accent ring -->
+    <item>
+        <shape android:shape="oval">
+            <size android:width="128dp" android:height="128dp"/>
+            <solid android:color="@color/app_accent"/>
+        </shape>
+    </item>
+
+    <!-- inner white ring -->
+    <item android:top="4dp" android:left="4dp" android:right="4dp" android:bottom="4dp">
+        <shape android:shape="oval">
+            <size android:width="120dp" android:height="120dp"/>
+            <solid android:color="@color/white"/>
+        </shape>
+    </item>
+
+    <!-- actual profile image should be placed above this background -->
+</layer-list>

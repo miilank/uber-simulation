@@ -1,18 +1,20 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, NgOptimizedImage],
   template: `
     <header class="w-full bg-app-dark">
       <div class="flex items-center justify-between h-23.5 px-6 md:px-8">
         <!-- Logo Section -->
         <div class="flex items-center gap-2.5">
           <img
-            src="https://api.builder.io/api/v1/image/assets/TEMP/880510fa722bf78df9fb6fda1ee63b8ba1554443?width=112"
+            ngSrc="https://api.builder.io/api/v1/image/assets/TEMP/880510fa722bf78df9fb6fda1ee63b8ba1554443?width=112"
+            width="56"
+            height="56"
             alt="UberPLUS"
             class="w-14 h-14 object-contain"
           />
@@ -27,7 +29,9 @@ import { RouterLink } from '@angular/router';
             <div class="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center shrink-0 ml-2"></div>
             <span class="text-black text-base md:text-[18px] font-normal mr-1">{{firstName}} {{lastName}}</span>
             <img
-              src="defaultprofile.png"
+              ngSrc="/defaultprofile.png"
+              width="40"
+              height="40"
               alt="Profile"
               class="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
             />

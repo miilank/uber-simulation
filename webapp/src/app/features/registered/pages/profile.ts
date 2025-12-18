@@ -1,23 +1,20 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HeaderComponent } from '../../shared/components/header.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderComponent],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="min-h-screen bg-white">
       <div class="flex flex-col min-h-screen">
-        <app-header [firstName]="firstName" [lastName]="lastName"></app-header>
-
         <div class="flex flex-1">
           <!-- Sidebar -->
           <!-- <app-sidebar></app-sidebar> -->
 
           <!-- Main Content -->
-          <main class="flex flex-1 p-8 lg:p-16 xl:pl-24 justify-center items-center">
+          <main class="flex flex-1 p-8 justify-center items-center">
             <div class="flex flex-col gap-6 w-full">
               <!-- Profile Header Card -->
               <div class="border-[1.5px] border-gray-200 rounded-3xl shadow-lg p-8">

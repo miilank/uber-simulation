@@ -8,4 +8,15 @@
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="dark_grey">#232323</color>
+
+    <!-- Ride Status -->
+    <color name="completed_ride_bckg">#D4F5E3</color>
+    <color name="completed_ride">#03A421</color>
+    <color name="panic_ride_bckg">#FFEDD4</color>
+    <color name="panic_ride">#F54900</color>
+    <color name="neutral_bckg">#F3F4F6</color>
+    <color name="neutral">#4A5565</color>
+    <color name="cancel_ride_bckg">#FFE2E2</color>
+    <color name="cancel_ride">#E7000B</color>
 </resources>

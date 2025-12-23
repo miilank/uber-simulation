@@ -1,4 +1,4 @@
-package com.example.mobileapp;
+package com.example.mobileapp.ui;
 
 import android.os.Bundle;
 import android.widget.EditText;
@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.example.mobileapp.R;
 
 public class ProfileActivity extends AppCompatActivity {
 

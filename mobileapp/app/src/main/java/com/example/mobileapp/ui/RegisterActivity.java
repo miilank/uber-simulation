@@ -1,9 +1,8 @@
-package com.example.mobileapp;
+package com.example.mobileapp.ui;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -11,6 +10,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.mobileapp.R;
 
 public class RegisterActivity extends AppCompatActivity {
     private EditText etName, etSurname, etEmail, etPhone, etAddress, etPassword, etConfirmPassword;

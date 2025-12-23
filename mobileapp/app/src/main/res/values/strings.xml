@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">mobileapp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Driver Ride History -->
+    <string name="details">Details</string>
+    <string name="ride_status_completed">Completed</string>
+    <string name="ride_status_cancelled">Cancelled</string>
+    <string name="ride_status_no_panic">No panic</string>
+    <string name="ride_status_panic">Panic</string>
+    <string name="ride_status_scheduled">Scheduled</string>
+
+    <string name="ride_cancelled_by">Cancelled by: %1$s</string>
+    <string name="filters">Filters</string>
+    <string name="ride_history">Ride history:</string>
+    <string name="cd_open_menu">Open menu</string>
+    <string name="cd_open_profile">Open profile</string>
+    <string name="cd_app_logo">App logo</string>
 </resources>

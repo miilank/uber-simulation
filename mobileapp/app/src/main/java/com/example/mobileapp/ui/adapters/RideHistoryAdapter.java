@@ -1,5 +1,6 @@
 package com.example.mobileapp.ui.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +39,7 @@ public class RideHistoryAdapter extends RecyclerView.Adapter<RideHistoryAdapter.
         return new RideViewHolder(v);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull RideViewHolder h, int position) {
         Ride r = rides.get(position);

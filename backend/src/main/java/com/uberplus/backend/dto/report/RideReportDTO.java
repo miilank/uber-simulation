@@ -10,7 +10,7 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RideReportDTO {
+public class    RideReportDTO {
     private String period;
     private int totalRides;
     private int completedRides;

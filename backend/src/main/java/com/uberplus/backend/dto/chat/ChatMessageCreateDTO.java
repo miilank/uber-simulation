@@ -1,0 +1,13 @@
+package com.uberplus.backend.dto.chat;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ChatMessageCreateDTO {
+    private Integer recipientId;
+    private String message;
+}

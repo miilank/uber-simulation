@@ -22,7 +22,7 @@ public class AdminController {
 
     // POST /api/admin/drivers
     @PostMapping("/drivers")
-    public ResponseEntity<DriverProfileDTO> createAdminDriver(@Valid @RequestBody DriverCreationDTO request) {
+    public ResponseEntity<DriverProfileDTO> createDriver(@Valid @RequestBody DriverCreationDTO request) {
         return ResponseEntity.ok(new DriverProfileDTO());
     }
 

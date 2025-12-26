@@ -3,11 +3,13 @@ package com.example.mobileapp.ui;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -30,14 +32,28 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setStatusBarColor(0xFF232323);
-        getWindow().setNavigationBarColor(0xFF232323);
+        Window window = getWindow();
+        window.setStatusBarColor(
+                ContextCompat.getColor(this, R.color.dark_grey)
+        );
 
         setContentView(R.layout.activity_main);
 
         // Root view is the DrawerLayout with id "main"
         drawerLayout = findViewById(R.id.main);
         navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // Get header view from NavigationView
+        View headerView = navigationView.getHeaderView(0);
+
+        // Find close button inside header layout
+        View closeDrawerBtn = headerView.findViewById(R.id.close_drawer_btn);
+
+        // Set click listener to close the drawer
+        closeDrawerBtn.setOnClickListener(v ->
+                drawerLayout.closeDrawer(GravityCompat.START)
+        );
 
         // Toolbar that holds the custom header (toolbar_header)
         Toolbar toolbar = findViewById(R.id.toolbar);

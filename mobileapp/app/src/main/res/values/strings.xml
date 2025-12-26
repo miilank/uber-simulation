@@ -59,4 +59,5 @@
     <string name="rideHistory">Ride History</string>
     <string name="booked_rides">Booked Rides</string>
     <string name="book_a_ride">Book a ride</string>
+    <string name="cd_close_drawer">Close drawer</string>
 </resources>

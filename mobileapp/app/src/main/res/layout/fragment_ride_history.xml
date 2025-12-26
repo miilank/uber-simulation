@@ -214,11 +214,11 @@
                         android:layout_height="30dp"
                         android:layout_weight="1"
                         tools:ignore="TouchTargetSizeCheck"
-                        android:background="@drawable/filters_neutral"
+                        android:background="@drawable/bg_dark_grey"
                         android:text="@string/last_7_days"
                         android:textAllCaps="false"
                         android:backgroundTint="@null"
-                        android:textColor="@color/dark_grey"
+                        android:textColor="@color/white"
                         android:elevation="0dp"
                         android:stateListAnimator="@null"/>
 
@@ -231,13 +231,13 @@
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_weight="1"
-                        android:background="@drawable/filters_neutral"
+                        android:background="@drawable/bg_dark_grey"
                         android:backgroundTint="@null"
                         android:elevation="0dp"
                         android:stateListAnimator="@null"
                         android:text="@string/last_30_days"
                         android:textAllCaps="false"
-                        android:textColor="@color/dark_grey"
+                        android:textColor="@color/white"
                         tools:ignore="TouchTargetSizeCheck" />
                 </LinearLayout>
 

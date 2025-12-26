@@ -1,12 +1,33 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Base.Theme.Mobileapp" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:statusBarColor">@color/dark_grey</item>
+        <item name="android:windowTranslucentStatus">false</item>
     </style>
 
     <style name="AppNavigationViewStyle" parent="Widget.MaterialComponents.NavigationView">
+        <item name="itemBackground">@drawable/nav_item_background</item>
+        <item name="itemTextColor">@color/nav_item_text_color</item>
+        <item name="itemIconTint">@color/nav_item_icon_tint</item>
+
+        <item name="itemTextColor">@color/white</item>
+
+        <item name="itemIconTint">@color/white</item>
+
+        <item name="itemHorizontalPadding">16dp</item>
+        <item name="itemIconPadding">10dp</item>
+        <item name="itemIconSize">20dp</item>
+
         <item name="shapeAppearanceOverlay">@style/NoRoundedCorners</item>
+        <item name="itemTextAppearance">@style/TextAppearance.NavItem</item>
+    </style>
+
+    <style name="TextAppearance.NavItem" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/poppins</item>
     </style>
 
     <style name="NoRoundedCorners">

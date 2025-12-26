@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".ui.MainActivity">
 
     <!-- Main screen content (toolbar + fragment area) -->
@@ -37,11 +38,15 @@
     <!-- Navigation drawer on the left side -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
+        android:fitsSystemWindows="true"
+        android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/app_dark"
         app:headerLayout="@layout/drawer_header"
+        style="@style/AppNavigationViewStyle"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
         app:menu="@menu/menu_driver" />   <!-- for now use driver menu only -->
 
 </androidx.drawerlayout.widget.DrawerLayout>

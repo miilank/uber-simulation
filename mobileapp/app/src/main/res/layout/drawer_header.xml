@@ -1,35 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/app_dark"
->
+    android:background="@color/app_dark">
 
+    <!-- Top drawer header bar -->
+    <!-- Contains only the close/back button aligned vertically -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <!-- Logo -->
-        <LinearLayout
-            android:layout_width="59dp"
-            android:layout_height="59dp"
-            android:paddingStart="16dp"
-            >
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/close_drawer_btn"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/vec_arrow_left"
-                android:layout_gravity="center_vertical"
-                android:background="@color/app_dark"/>
-        </LinearLayout>
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-        <!-- Separator -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/app_text_secondary" />
+        <!-- Close drawer button (arrow icon) -->
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/close_drawer_btn"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/cd_close_drawer"
+            android:src="@drawable/vec_arrow_left"
+            tools:ignore="ImageContrastCheck,TouchTargetSizeCheck" />
     </LinearLayout>
+
+    <!-- Divider line under the header -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/app_text_secondary" />
 
 </LinearLayout>

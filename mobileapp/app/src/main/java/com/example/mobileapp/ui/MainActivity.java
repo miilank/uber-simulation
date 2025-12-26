@@ -1,5 +1,6 @@
 package com.example.mobileapp.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -101,13 +102,15 @@ public class MainActivity extends AppCompatActivity
             // TODO: open SupportFragment
 
         } else if (id == R.id.nav_profile) {
-            // TODO: open ProfileFragment
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            startActivity(intent);
+            finish();
 
         } else if (id == R.id.nav_sign_out) {
-            // Open LoginFragment
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new LoginFragment())
-                    .commit();
+            Intent intent = new Intent(MainActivity.this, AuthActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         }
 
         // Always close the drawer after handling a click

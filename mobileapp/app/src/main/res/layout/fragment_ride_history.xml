@@ -182,7 +182,7 @@
                         android:stateListAnimator="@null"
                         android:text="@string/apply"
                         android:textAllCaps="false"
-                        android:textColor="@color/white"
+                        android:textColor="@color/dark_grey"
                         tools:ignore="TextContrastCheck,TouchTargetSizeCheck" />
 
                     <View
@@ -200,7 +200,7 @@
                         android:stateListAnimator="@null"
                         android:text="@string/reset"
                         android:textAllCaps="false"
-                        android:textColor="@color/white"
+                        android:textColor="@color/dark_grey"
                         tools:ignore="TextContrastCheck,TouchTargetSizeCheck" />
                 </LinearLayout>
 
@@ -217,11 +217,11 @@
                         android:layout_height="30dp"
                         android:layout_weight="1"
                         tools:ignore="TouchTargetSizeCheck"
-                        android:background="@drawable/bg_dark_grey"
+                        android:background="@drawable/bg_neutral"
                         android:text="@string/last_7_days"
                         android:textAllCaps="false"
                         android:backgroundTint="@null"
-                        android:textColor="@color/white"
+                        android:textColor="@color/dark_grey"
                         android:elevation="0dp"
                         android:stateListAnimator="@null"/>
 
@@ -234,13 +234,13 @@
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_dark_grey"
+                        android:background="@drawable/bg_neutral"
                         android:backgroundTint="@null"
                         android:elevation="0dp"
                         android:stateListAnimator="@null"
                         android:text="@string/last_30_days"
                         android:textAllCaps="false"
-                        android:textColor="@color/white"
+                        android:textColor="@color/dark_grey"
                         tools:ignore="TouchTargetSizeCheck" />
                 </LinearLayout>
 

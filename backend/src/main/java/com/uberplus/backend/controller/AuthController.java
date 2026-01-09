@@ -3,7 +3,7 @@ package com.uberplus.backend.controller;
 import com.uberplus.backend.dto.auth.*;
 import com.uberplus.backend.dto.common.MessageDTO;
 import com.uberplus.backend.dto.user.UserProfileDTO;
-import com.uberplus.backend.repository.UserRepository;
+import com.uberplus.backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserRepository userRepository;
+    private final AuthService authService;
 
     // POST /api/auth/login
     @PostMapping("/login")
@@ -27,7 +27,10 @@ public class AuthController {
     // POST /api/auth/register
     @PostMapping("/register")
     public ResponseEntity<UserProfileDTO> register(@RequestBody RegisterRequestDTO request) {
-        return ResponseEntity.ok(new UserProfileDTO());
+
+        UserProfileDTO createdUser = authService.register(request);
+
+        return ResponseEntity.ok(createdUser);
     }
 
     // POST /api/auth/activate

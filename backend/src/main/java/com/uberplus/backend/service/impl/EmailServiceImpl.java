@@ -31,14 +31,15 @@ public class EmailServiceImpl implements EmailService {
         String activationLink = activationUrl + token;
         Email from = new Email(fromEmail);
         Email to = new Email(user.getEmail());
-        Mail mail = new Mail(from, "UberPlus - Activate your account", to, new Content());
-        mail.setTemplateId("d-90f8f23a45a04421b0afd9c4eff195e6");
+        Content content = new Content("text/plain", " ");
+        Mail mail = new Mail(from, "UberPlus - Activate your account", to, content);
+        mail.setTemplateId("d-cfc193aca9e34d6998b0fff380c38d92");
         Request request = new Request();
         try {
             request.setMethod(Method.POST);
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
-            sg.api(request);
+
         } catch (IOException e) {
             throw new RuntimeException("Failed to send activation email", e);
         }

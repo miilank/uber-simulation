@@ -6,6 +6,7 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
+import com.sendgrid.helpers.mail.objects.Personalization;
 import com.uberplus.backend.model.Passenger;
 import com.uberplus.backend.service.EmailService;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,17 +30,22 @@ public class EmailServiceImpl implements EmailService {
     public void sendActivationEmail(Passenger user){
         String token = user.getActivationToken();
         String activationLink = activationUrl + token;
-        Email from = new Email(fromEmail);
+        Email from = new Email(fromEmail, "UberPLUS");
         Email to = new Email(user.getEmail());
-        Content content = new Content("text/plain", " ");
+        Content content = new Content("text/html", " ");
+        Personalization  personalization = new Personalization ();
+        personalization.addDynamicTemplateData("firstName", user.getFirstName());
+        personalization.addDynamicTemplateData("activationLink", activationLink);
+        personalization.addTo(to);
+
         Mail mail = new Mail(from, "UberPlus - Activate your account", to, content);
+        mail.addPersonalization(personalization);
         mail.setTemplateId("d-cfc193aca9e34d6998b0fff380c38d92");
         Request request = new Request();
         try {
             request.setMethod(Method.POST);
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
-
         } catch (IOException e) {
             throw new RuntimeException("Failed to send activation email", e);
         }

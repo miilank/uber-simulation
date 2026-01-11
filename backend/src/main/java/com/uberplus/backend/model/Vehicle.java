@@ -3,15 +3,12 @@ package com.uberplus.backend.model;
 import com.uberplus.backend.model.enums.VehicleStatus;
 import com.uberplus.backend.model.enums.VehicleType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "vehicles")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class Vehicle {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,9 +37,13 @@ public class Vehicle {
     @Column(nullable = false)
     private VehicleStatus status = VehicleStatus.INACTIVE;
 
+    // current location for the map
+    // cascade = so that the Location is automatically recorded when we record the Vehicle (without a special repository call)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "current_location_id")
+    private Location currentLocation;
+
     @OneToOne
     @JoinColumn(name = "driver_id", nullable = false)
     private Driver driver;
-
 }
-

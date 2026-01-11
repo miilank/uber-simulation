@@ -1,17 +1,14 @@
 package com.uberplus.backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "locations")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class Location {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,5 +25,9 @@ public class Location {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
-}
 
+    @PrePersist
+    void onCreate() {
+        if (createdAt == null) createdAt = LocalDateTime.now();
+    }
+}

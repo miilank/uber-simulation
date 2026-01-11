@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -10,7 +10,8 @@ import { RouterLink } from '@angular/router';
     <header class="w-full bg-app-dark">
       <div class="flex items-center justify-between h-23.5 px-6 md:px-8">
         <!-- Logo Section -->
-        <div class="flex items-center gap-2.5">
+        <div class="flex items-center gap-2.5 cursor-pointer"
+             (click)="onLogoClick()">
           <img
             ngSrc="https://api.builder.io/api/v1/image/assets/TEMP/880510fa722bf78df9fb6fda1ee63b8ba1554443?width=112"
             width="56"
@@ -53,12 +54,12 @@ import { RouterLink } from '@angular/router';
   styles: []
 })
 export class HeaderComponent {
-  @Input()
-  firstName: string = '';
+  @Input() firstName: string = '';
+  @Input() lastName: string = '';
+  @Input() showUserProfile: boolean = true;
 
-  @Input()
-  lastName: string = '';
-
-  @Input()
-  showUserProfile: boolean = true;
+  constructor(private router: Router) {}
+  onLogoClick(): void {
+    this.router.navigateByUrl('/').catch(console.error);
+  }
 }

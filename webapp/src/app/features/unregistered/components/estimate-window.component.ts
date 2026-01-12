@@ -1,7 +1,8 @@
-import { Component, ViewChild ,ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { EstimateResultsComponent } from './estimate-results.component';
+import { delay } from 'rxjs';
 
 @Component({
   selector: 'app-estimate-panel',
@@ -41,9 +42,16 @@ import { EstimateResultsComponent } from './estimate-results.component';
 }
 `,
 styles: [`
+    @keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
   @keyframes slideDown {
     from { transform: translateY(0); opacity: 1; }
     to { transform: translateY(150%); opacity: 0; }
+  }
+  .animate-slideUp {
+    animation: slideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   .animate-slideDown {
     animation: slideDown 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
@@ -53,19 +61,16 @@ styles: [`
 export class EstimatePanelComponent {
   showResults = false;
   isClosing = false;
-  constructor(private cdr: ChangeDetectorRef) {}
   @ViewChild('f') estimateForm!: NgForm;
   onSubmit(form: NgForm) {
-    if (form.valid) {
+ if (form.valid) {
       this.isClosing = true;
-      setTimeout(() => {
-        this.showResults = true;
-        this.isClosing = false;
-        this.cdr.detectChanges();
-      }, 600);
+      this.showResults = true;
     }
   }
+
   onClose() {
     this.showResults = false;
+    this.isClosing = false;
   }
 }

@@ -125,7 +125,7 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="6dp"
             app:cardElevation="6dp"
             app:cardUseCompatPadding="true"
             app:cardCornerRadius="24dp"
@@ -210,7 +210,7 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="6dp"
             app:cardElevation="6dp"
             app:cardCornerRadius="24dp"
             app:cardUseCompatPadding="true">
@@ -407,12 +407,22 @@
                     android:padding="12dp"
                     android:textColor="@color/app_dark"/>
 
+                <TextView
+                    android:id="@+id/tv_error_message"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="12dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/design_default_color_error"
+                    android:fontFamily="@font/poppins"/>
+
                 <!-- Action Buttons -->
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_change_password"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="6dp"
                     android:background="@drawable/btn_transparent"
                     android:text="Change Password"
                     android:textColor="#4B5563"

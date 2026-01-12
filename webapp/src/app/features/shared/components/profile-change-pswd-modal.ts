@@ -38,9 +38,6 @@ import { FormsModule } from '@angular/forms';
               <label class="text-sm text-gray-700">Old Password</label>
               <input
                 type="password"
-                name="oldPassword"
-                required
-                minlength="1"
                 [(ngModel)]="oldPassword"
                 class="input-base"
                 placeholder="Enter old password"
@@ -51,9 +48,6 @@ import { FormsModule } from '@angular/forms';
               <label class="text-sm text-gray-700">New Password</label>
               <input
                 type="password"
-                name="newPassword"
-                required
-                minlength="8"
                 [(ngModel)]="newPassword"
                 class="input-base"
                 placeholder="Enter new password (min 8 chars)"
@@ -64,9 +58,6 @@ import { FormsModule } from '@angular/forms';
               <label class="text-sm text-gray-700">Confirm Password</label>
               <input
                 type="password"
-                name="confirmPassword"
-                required
-                minlength="8"
                 [(ngModel)]="confirmPassword"
                 class="input-base"
                 placeholder="Confirm new password"
@@ -89,7 +80,7 @@ import { FormsModule } from '@angular/forms';
 
               <button
                 type="submit"
-                class="h-10 px-4 rounded-full bg-lime-400 text-sm text-neutral-900 hover:bg-lime-500 cursor-pointer"
+                class="h-10 px-4 rounded-full bg-app-accent text-sm text-neutral-900 hover:bg-lime-500 cursor-pointer"
                 (click)="onConfirm()"
               >
                 Confirm
@@ -136,13 +127,16 @@ export class ChangePasswordModal {
       return { valid: false, message: 'Please enter your old password.' };
     }
     if (!this.newPassword) {
-      return { valid: false, message: 'Please enter a new password.' };
+      return { valid: false, message: 'Please enter your new password.' };
     }
     if (!this.confirmPassword) {
       return { valid: false, message: 'Please confirm your new password.' };
     }
     if (!(this.newPassword === this.confirmPassword)) {
       return { valid: false, message: 'The passwords do not match.' };
+    }
+    if (this.newPassword.length < 8) {
+      return { valid: false, message: 'Password must be at least 8 characters.'}
     }
 
     return { valid: true, message: null };

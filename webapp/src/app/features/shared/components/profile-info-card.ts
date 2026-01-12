@@ -124,7 +124,7 @@ import { log } from 'console';
                   </button>
 
                   <div class="flex gap-4 flex-col sm:flex-row">
-                    <button (click)="onSave()" class="cursor-pointer flex-1 h-12 bg-lime-400 rounded-full text-sm font-normal font-poppins text-neutral-900 hover:bg-lime-500 transition-colors">
+                    <button (click)="onSave()" class="cursor-pointer flex-1 h-12 bg-app-accent rounded-full text-sm font-normal font-poppins text-neutral-900 hover:bg-lime-500 transition-colors">
                       Update Profile
                     </button>
                     <button (click)="onCancel()" class="cursor-pointer flex-1 h-12 border-[1.5px] border-gray-300 rounded-full text-sm font-normal font-poppins text-gray-700 hover:bg-gray-50 transition-colors">
@@ -197,7 +197,7 @@ export class ProfileInfoCard {
       return { valid: false, message: 'Please enter a phone number.' };
     }
     if (!this.isPhoneValid(phone)) {
-      return { valid: false, message: 'Phone number must contain only digits, +, spaces or dashes.' };
+      return { valid: false, message: 'Invalid phone number.' };
     }
 
     return { valid: true, message: null };

@@ -24,7 +24,7 @@
             android:exported="false">
         </activity>
         <activity
-            android:name=".ui.ProfileActivity"
+            android:name=".ui.ProfileFragment"
             android:exported="false">
         </activity>
     </application>

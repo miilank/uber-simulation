@@ -102,10 +102,9 @@ public class MainActivity extends AppCompatActivity
             // TODO: open SupportFragment
 
         } else if (id == R.id.nav_profile) {
-            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new ProfileFragment())
+                    .commit();
 
         } else if (id == R.id.nav_sign_out) {
             Intent intent = new Intent(MainActivity.this, AuthActivity.class);

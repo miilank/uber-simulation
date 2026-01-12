@@ -60,4 +60,8 @@
     <string name="booked_rides">Booked Rides</string>
     <string name="book_a_ride">Book a ride</string>
     <string name="cd_close_drawer">Close drawer</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="uber">Uber</string>
+    <string name="plus">PLUS</string>
 </resources>

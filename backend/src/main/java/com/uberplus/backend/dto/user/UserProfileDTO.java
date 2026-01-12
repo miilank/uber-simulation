@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data @NoArgsConstructor @AllArgsConstructor
 public class UserProfileDTO {
-    private Long id;
+    private Integer id;
     private String email;
     private String firstName;
     private String lastName;
@@ -17,4 +17,6 @@ public class UserProfileDTO {
     private UserRole role;
     private boolean blocked;
     private String blockReason;
+    private boolean activated;
+
 }

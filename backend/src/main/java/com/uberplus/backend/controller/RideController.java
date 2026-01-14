@@ -7,6 +7,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.uberplus.backend.dto.report.RideHistoryFilterDTO;
+import com.uberplus.backend.dto.report.RideHistoryResponseDTO;
+import com.uberplus.backend.service.RideHistoryService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -16,6 +20,7 @@ import java.util.List;
 public class RideController {
 
     private final RideRepository rideRepository;
+    private final RideHistoryService rideHistoryService;
 
     // POST /api/rides/estimate
     @PostMapping("/estimate")
@@ -40,10 +45,13 @@ public class RideController {
         return ResponseEntity.ok(List.of(new RideDTO()));
     }
 
-    // GET /api/rides/history
+    // GET /api/rides/history?driverId=1&startDate=2026-01-01&endDate=2026-01-31&page=0&size=20
     @GetMapping("/history")
-    public ResponseEntity<List<RideDTO>> getRideHistory() {
-        return ResponseEntity.ok(List.of(new RideDTO(), new RideDTO()));
+    public ResponseEntity<RideHistoryResponseDTO> getRideHistory(
+            @RequestParam Integer driverId,
+            @Valid RideHistoryFilterDTO filter
+    ) {
+        return ResponseEntity.ok(rideHistoryService.getDriverHistory(driverId, filter));
     }
 
     // POST /api/rides/{rideId}/cancel

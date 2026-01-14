@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProfileInfoCard } from '../../shared/components/profile-info-card';
-import { User } from '../../shared/models/user';
-import { Vehicle } from '../../shared/models/vehicle';
+import { User } from '../../../core/models/user';
+import { Vehicle } from '../../../core/models/vehicle';
 import { ChangePasswordModal } from "../../shared/components/profile-change-pswd-modal";
 
 @Component({
@@ -153,7 +153,8 @@ export class DriverProfileComponent {
     lastName: 'Wilson',
     email: 'andrewwilson@email.com',
     address: 'Novi Sad',
-    phoneNumber: '+381 65 123 1233'
+    phoneNumber: '+381 65 123 1233',
+    role: "ADMIN"
   }
 
   vehicle: Vehicle = {

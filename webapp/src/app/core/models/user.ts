@@ -7,4 +7,5 @@ export interface User {
   address: string;
   phoneNumber: string;
   avatarUrl?: string;
+  role: "ADMIN" | "DRIVER" | "PASSENGER"
 }

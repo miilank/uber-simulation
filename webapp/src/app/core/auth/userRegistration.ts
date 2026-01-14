@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../../features/shared/components/header.component';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { RegisterRequestDto } from './register-request.dto';
+import { first } from 'rxjs';
 
 @Component({
   selector: 'user-registration',
@@ -208,7 +211,31 @@ export class UserRegistrationComponent {
 
   private router = inject(Router);
 
+  constructor(public authService : AuthService) {
+  }
+
   onSubmit() {
-    this.router.navigate(['/user/profile']);
+    console.log("Submitted");
+    
+
+    let req: RegisterRequestDto = {
+      email: this.email,
+      password: this.password,
+      confirmPassword: this.confirmPassword,
+      firstName: this.firstName,
+      lastName: this.lastName,
+      address: this.address,
+      phoneNumber: this.phone
+    }
+    
+    this.authService.register(req).subscribe({
+  next: () => {
+    console.log('Signup request sent successfully!');
+  },
+  error: (err) => {
+    console.error('Signup failed', err);
+  }}
+  )
+    // this.router.navigate(['/login']);
   }
 }

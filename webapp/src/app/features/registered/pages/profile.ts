@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProfileInfoCard } from "../../shared/components/profile-info-card";
 import { ChangePasswordModal } from "../../shared/components/profile-change-pswd-modal";
-import { User } from '../../shared/models/user';
+import { User } from '../../../core/models/user';
 
 @Component({
   selector: 'registered-profile',
@@ -44,7 +44,8 @@ export class RegisteredProfileComponent {
     lastName: 'Wilson',
     email: 'andrewwilson@email.com',
     address: 'Novi Sad',
-    phoneNumber: '+381 65 123 1233'
+    phoneNumber: '+381 65 123 1233',
+    role:"PASSENGER"
   }
 
   isChangePasswordOpen: boolean = false;

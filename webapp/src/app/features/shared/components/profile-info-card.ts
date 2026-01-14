@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, SimpleChange, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { User } from '../models/user';
+import { User } from '../../../core/models/user';
 import { log } from 'console';
 
 @Component({

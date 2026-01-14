@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../../features/shared/components/header.component';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-signin',
@@ -76,6 +77,12 @@ import { Router } from '@angular/router';
                 }
               </p>
             }
+          
+            <!-- Ne ponasa se dobro. -->
+              <div *ngIf="errorMessage" class="text-red-400 text-xs">
+                  {{ errorMessage }}
+              </div>
+
           </div>
         </div>
 
@@ -216,22 +223,25 @@ import { Router } from '@angular/router';
                   }
                 </p>
               }
+
+              
               <div class="flex justify-end gap-2">
                 <button
-                  type="button"
-                  class="px-4 py-2 rounded-full text-sm border border-gray-300 text-gray-700 hover:bg-gray-100"
-                  (click)="closeForgot()"
+                type="button"
+                class="px-4 py-2 rounded-full text-sm border border-gray-300 text-gray-700 hover:bg-gray-100"
+                (click)="closeForgot()"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  [disabled]="newPasswordForm.invalid || !newPassword || !confirmPassword || newPassword !== confirmPassword"
-                  class="px-4 py-2 rounded-full text-sm bg-app-accent text-app-dark hover:bg-app-accent-dark disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Save password
-                </button>
-              </div>
+                Cancel
+              </button>
+              <button
+              type="submit"
+              [disabled]="newPasswordForm.invalid || !newPassword || !confirmPassword || newPassword !== confirmPassword"
+              class="px-4 py-2 rounded-full text-sm bg-app-accent text-app-dark hover:bg-app-accent-dark disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+              Save password
+            </button>
+
+            </div>
             </form>
           }
         </div>
@@ -251,10 +261,33 @@ export class SignInComponent {
   newPassword = '';
   confirmPassword = '';
 
+  errorMessage: string | null = null;
+
   private router = inject(Router);
 
+  constructor(public authService : AuthService) {
+  }
+
   onSubmit() {
-    this.router.navigate(['/user/profile']);
+    this.authService.login(this.email, this.password).subscribe({
+      next: user => {
+        switch (user.role) {
+          case 'ADMIN':
+            this.router.navigate(['/admin/profile']);
+            break;
+          case 'DRIVER':
+            this.router.navigate(['/driver/profile']);
+            break;
+          default:
+            this.router.navigate(['/user/profile']);
+        }
+      },
+      error: err => {
+        this.errorMessage = err["message"];
+        console.log(this.errorMessage);
+        
+      }
+    });
   }
 
   openForgot() {

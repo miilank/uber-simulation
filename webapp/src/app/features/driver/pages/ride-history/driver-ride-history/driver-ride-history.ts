@@ -1,19 +1,28 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RideDetailsDrawer } from '../components/ride-details-drawer/ride-details-drawer';
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {RideDetailsDrawer} from '../components/ride-details-drawer/ride-details-drawer';
 
 type RideStatus = 'COMPLETED' | 'CANCELLED';
 
 export type Ride = {
+  id?: number;
   date: string;
   time: string;
   from: string;
   to: string;
   status: RideStatus;
-  cancelledBy?: 'User' | 'Driver';
+  cancelledBy?: 'User' | 'Driver' | null;
   panic: boolean;
   price: string;
+};
+
+type RideHistoryResponse = {
+  rides: Ride[];
+  total: number;
+  page: number;
+  size: number;
 };
 
 @Component({
@@ -22,25 +31,43 @@ export type Ride = {
   imports: [CommonModule, FormsModule, RideDetailsDrawer],
   templateUrl: './driver-ride-history.html',
 })
-export class DriverRideHistory {
+export class DriverRideHistory implements OnInit {
+  private http = inject(HttpClient);
+
   fromDate = '';
   toDate = '';
+
+  // hardcode driver id (JWT should be implemented)
+  driverId = 1;
 
   isDetailsOpen = false;
   selectedRide: Ride | null = null;
 
-  rides: Ride[] = [
-    { date: '05.12.', time: '22:15 - 22:32', from: 'Bulevar oslobođenja 76', to: 'Naučno tehnološki park', status: 'COMPLETED', panic: false, price: '€12.50' },
-    { date: '20.11.', time: '14:20 - 14:45', from: 'Bulevar oslobođenja 76', to: 'Naučno tehnološki park', status: 'CANCELLED', cancelledBy: 'User', panic: false, price: '€15.00' },
-    { date: '20.10.', time: '09:10 - 09:28', from: 'Bulevar oslobođenja 76', to: 'Naučno tehnološki park', status: 'COMPLETED', panic: true, price: '€11.00' },
-    { date: '22.09.', time: '18:45 - 19:05', from: 'Bulevar oslobođenja 76', to: 'Naučno tehnološki park', status: 'COMPLETED', panic: false, price: '€13.50' },
-    { date: '20.09.', time: '16:30 - 16:50', from: 'Bulevar oslobođenja 76', to: 'Naučno tehnološki park', status: 'COMPLETED', panic: false, price: '€10.50' },
-    { date: '12.09.', time: '11:30 - 11:50', from: 'Bulevar oslobođenja 76', to: 'Naučno tehnološki park', status: 'CANCELLED', cancelledBy: 'Driver', panic: true, price: '€14.00' },
-  ];
+  rides: Ride[] = [];
+
+  ngOnInit() {
+    this.load();
+  }
+
+  load() {
+    let params = new HttpParams().set('driverId', this.driverId);
+
+    if (this.fromDate) params = params.set('startDate', this.fromDate);
+    if (this.toDate) params = params.set('endDate', this.toDate);
+
+    this.http
+      .get<RideHistoryResponse>('http://localhost:8080/api/rides/history', { params })
+      .subscribe(res => (this.rides = res.rides));
+  }
 
   reset() {
     this.fromDate = '';
     this.toDate = '';
+    this.load();
+  }
+
+  apply() {
+    this.load();
   }
 
   openDetails(ride: Ride) {
@@ -51,5 +78,17 @@ export class DriverRideHistory {
   closeDetails() {
     this.isDetailsOpen = false;
     this.selectedRide = null;
+  }
+
+  lastDays(days: number) {
+    const today = new Date();
+    const from = new Date();
+    from.setDate(today.getDate() - days);
+
+    const toIso = today.toISOString().slice(0, 10);
+    this.fromDate = from.toISOString().slice(0, 10);
+    this.toDate = toIso;
+
+    this.apply();
   }
 }

@@ -45,7 +45,7 @@
   to   { transform: scale(1); opacity: 1; }
 }
 
-::view-transition-old(root) {
+/* ::view-transition-old(root) {
   animation-name: scale-out;
   animation-duration: 500ms;
 }
@@ -53,4 +53,4 @@
 ::view-transition-new(root) {
   animation-name: scale-in;
   animation-duration: 500ms;
-}
+} */

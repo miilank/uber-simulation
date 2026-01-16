@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {map, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import { User } from '../models/user';
 import { ConfigService } from './config.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -29,5 +29,20 @@ export class UserService {
     clearCurrentUser() : void {
         this.currentUserSubject.next(null);
     };
+
+    updateUser(updated: User) : Observable<User> {
+        return this.http.put<User>(this.config.profile_url, updated).pipe(
+            tap((user) => this.currentUserSubject.next(user))
+        );
+    }
+
+    changePassword(oldPassword: string, newPassword: string): Observable<void> {
+        let body = {oldPassword, newPassword }
+        return this.http.put(this.config.change_password_url, body).pipe(
+              map(() => {
+                console.log('Password change request sent.');
+              }),
+            );
+    }
 
 }

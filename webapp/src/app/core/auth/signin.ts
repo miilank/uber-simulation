@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../../features/shared/components/header.component';
@@ -265,7 +265,7 @@ export class SignInComponent {
 
   private router = inject(Router);
 
-  constructor(public authService : AuthService) {
+  constructor(public authService : AuthService, private cdr: ChangeDetectorRef) {
   }
 
   onSubmit() {
@@ -284,7 +284,7 @@ export class SignInComponent {
       },
       error: err => {
         this.errorMessage = err["message"];
-        console.log(this.errorMessage);        
+        this.cdr.markForCheck();
       }
     });
   }

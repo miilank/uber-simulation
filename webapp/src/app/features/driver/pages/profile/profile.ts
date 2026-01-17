@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ProfileInfoCard } from '../../shared/components/profile-info-card';
-import { User } from '../../../core/models/user';
-import { Vehicle } from '../../../core/models/vehicle';
-import { ChangePasswordModal } from "../../shared/components/profile-change-pswd-modal";
+import { ProfileInfoCard } from '../../../shared/components/profile-info-card';
+import { User } from '../../../../core/models/user';
+import { Vehicle } from '../../../../core/models/vehicle';
+import { ChangePasswordModal } from "../../../shared/components/profile-change-pswd-modal";
 
 @Component({
   selector: 'driver-profile',
@@ -18,7 +18,7 @@ import { ChangePasswordModal } from "../../shared/components/profile-change-pswd
           <main class="flex flex-1 p-8">
             <div class="flex flex-col gap-6 w-full">
 
-            <!-- Work Time Progress Card -->
+              <!-- Work Time Progress Card -->
               <div class="border-[1.5px] border-gray-200 rounded-3xl shadow-lg p-8 flex flex-col gap-6">
                 <h3 class="text-[22px] font-normal font-poppins text-black leading-8.25"> Driver Activity</h3>
 
@@ -43,7 +43,7 @@ import { ChangePasswordModal } from "../../shared/components/profile-change-pswd
                     ></div>
                   </div>
 
-                    <div class="flex justify-between text-xs text-gray-500 mt-2">
+                  <div class="flex justify-between text-xs text-gray-500 mt-2">
                     <span>0h</span>
                     <span>8h</span>
                   </div>
@@ -68,18 +68,18 @@ import { ChangePasswordModal } from "../../shared/components/profile-change-pswd
                       <label class="text-sm font-normal font-poppins flex items-center text-gray-700">
                         Vehicle Model</label>
 
-                        <p class="text-[20px] font-normal font-poppins text-black leading-8.25">
-                          {{ vehicleModel }}
-                        </p>
+                      <p class="text-[20px] font-normal font-poppins text-black leading-8.25">
+                        {{ vehicleModel }}
+                      </p>
                     </div>
 
                     <div class="flex-1 flex flex-col">
                       <label class="text-sm font-normal font-poppins flex items-center text-gray-700">
                         Vehicle Type</label>
 
-                        <p class="text-[20px] font-normal font-poppins text-black leading-8.25">
-                          {{ vehicle.type }}
-                        </p>
+                      <p class="text-[20px] font-normal font-poppins text-black leading-8.25">
+                        {{ vehicle.type }}
+                      </p>
                     </div>
 
                   </div>
@@ -90,18 +90,18 @@ import { ChangePasswordModal } from "../../shared/components/profile-change-pswd
                       <label class="text-sm font-normal font-poppins flex items-center text-gray-700">
                         License Plate</label>
 
-                        <p class="text-[20px] font-normal font-poppins text-black leading-8.25">
-                          {{ vehicle.licensePlate }}
-                        </p>
+                      <p class="text-[20px] font-normal font-poppins text-black leading-8.25">
+                        {{ vehicle.licensePlate }}
+                      </p>
                     </div>
 
                     <div class="flex-1 flex flex-col">
                       <label class="text-sm font-normal font-poppins flex items-center text-gray-700">
                         Seats</label>
 
-                        <p class="text-[20px] font-normal font-poppins text-black leading-8.25">
-                          {{ vehicle.seatCount }}
-                        </p>
+                      <p class="text-[20px] font-normal font-poppins text-black leading-8.25">
+                        {{ vehicle.seatCount }}
+                      </p>
                     </div>
 
                   </div>
@@ -112,18 +112,18 @@ import { ChangePasswordModal } from "../../shared/components/profile-change-pswd
                       <label class="text-sm font-normal font-poppins flex items-center text-gray-700">
                         Infant Support</label>
 
-                        <p class="text-[20px] font-normal font-poppins text-black leading-8.25">
-                          {{ vehicle.babyFriendly ? 'True' : 'False' }}
-                        </p>
+                      <p class="text-[20px] font-normal font-poppins text-black leading-8.25">
+                        {{ vehicle.babyFriendly ? 'True' : 'False' }}
+                      </p>
                     </div>
 
                     <div class="flex-1 flex flex-col">
                       <label class="text-sm font-normal font-poppins flex items-center text-gray-700">
                         Pet Support</label>
 
-                        <p class="text-[20px] font-normal font-poppins text-black leading-8.25">
-                          {{ vehicle.petsFriendly ? 'True' : 'False' }}
-                        </p>
+                      <p class="text-[20px] font-normal font-poppins text-black leading-8.25">
+                        {{ vehicle.petsFriendly ? 'True' : 'False' }}
+                      </p>
                     </div>
 
                   </div>
@@ -184,7 +184,7 @@ export class DriverProfileComponent {
   get timeWorkedMinutesRemainder(): number {
     return Math.floor(Math.min(this.timeWorkedMinutes, this.MAX_WORK_MINUTES) % 60);
   }
-  
+
   closePswdChange(): void {
     this.isChangePasswordOpen = false;
   }

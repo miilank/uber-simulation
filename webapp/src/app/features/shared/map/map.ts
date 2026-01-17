@@ -31,7 +31,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
     this.L = (await import('leaflet')) as unknown as typeof Leaflet;
 
     this.map = this.L.map('map', {
-      center: [45.2671, 19.8335],
+      center: [45.2499, 19.8399],
       zoom: 13,
     });
 

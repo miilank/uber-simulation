@@ -2,7 +2,7 @@ import {Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {RideDetailsDrawer} from '../components/ride-details-drawer/ride-details-drawer';
+import {RideDetailsDrawer} from '../common/ride-details-drawer/ride-details-drawer';
 
 type RideStatus = 'COMPLETED' | 'CANCELLED';
 

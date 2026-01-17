@@ -70,11 +70,11 @@ public class MainActivity extends AppCompatActivity
         // Initial fragment when opening MainActivity
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new RideHistoryFragment())
+                    .replace(R.id.fragment_container, new DriverDashboardFragment())
                     .commit();
 
             // Mark ride history as selected in the drawer
-            navigationView.setCheckedItem(R.id.nav_ride_history);
+            navigationView.setCheckedItem(R.id.nav_dashboard);
         }
     }
 
@@ -84,12 +84,18 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_dashboard) {
-            // TODO: open DriverDashboardFragment when you create it
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new DriverDashboardFragment())
+                    .addToBackStack(null)
+                    .commit();
+
 
         } else if (id == R.id.nav_ride_history) {
-            // Open RideHistoryFragment
-            getSupportFragmentManager().beginTransaction()
+            getSupportFragmentManager()
+                    .beginTransaction()
                     .replace(R.id.fragment_container, new RideHistoryFragment())
+                    .addToBackStack(null)
                     .commit();
 
         } else if (id == R.id.nav_booked_rides) {
@@ -102,8 +108,10 @@ public class MainActivity extends AppCompatActivity
             // TODO: open SupportFragment
 
         } else if (id == R.id.nav_profile) {
-            getSupportFragmentManager().beginTransaction()
+            getSupportFragmentManager()
+                    .beginTransaction()
                     .replace(R.id.fragment_container, new ProfileFragment())
+                    .addToBackStack(null)
                     .commit();
 
         } else if (id == R.id.nav_sign_out) {

@@ -46,6 +46,7 @@
     <string name="time">Timestamp:</string>
     <string name="reason">Reason:</string>
     <string name="passengers">Passengers</string>
+    <string name="passengers_dots">Passengers:</string>
     <string name="duration">Duration:</string>
     <string name="app_name">UberPLUS</string>
 
@@ -64,4 +65,25 @@
     <string name="register">Register</string>
     <string name="uber">Uber</string>
     <string name="plus">PLUS</string>
+    <string name="current_status">Current status:</string>
+    <string name="active">Active</string>
+    <string name="working_hours">Working hours:</string>
+    <string name="go_offline">Go offline</string>
+    <string name="active_last_24h">Active last 24h:</string>
+    <string name="_4h_25min">4h 25min</string>
+    <string name="limit">Limit:</string>
+    <string name="_4h_25min_8h_00min">4h 25min / 8h 00min</string>
+    <string name="current_ride">Current ride:</string>
+    <string name="assigned">Assigned</string>
+    <string name="bulevar_oslobo_enja_46_ulica_narodnih_heroja_14">Bulevar oslobođenja 46 → Ulica Narodnih heroja 14</string>
+    <string name="start_ride">Start ride</string>
+    <string name="cancel_ride">Cancel ride</string>
+    <string name="panic">PANIC</string>
+    <string name="name">Name</string>
+    <string name="_381">+381...</string>
+    <string name="_18_08">18.08.</string>
+    <string name="_22_30">22:30</string>
+    <string name="_2">2</string>
+    <string name="pickup_destination">Pickup → Destination</string>
+    <string name="req">Req</string>
 </resources>

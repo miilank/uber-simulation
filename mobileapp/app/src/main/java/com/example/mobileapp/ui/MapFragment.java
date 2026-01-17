@@ -40,7 +40,7 @@ public class MapFragment extends Fragment {
         }
     };
 
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint({"SetJavaScriptEnabled", "ClickableViewAccessibility"})
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -59,6 +59,19 @@ public class MapFragment extends Fragment {
         webView.loadUrl("file:///android_asset/map/index.html");
 
         vehiclesApi = ApiClient.get().create(VehiclesApi.class);
+
+        webView.setOnTouchListener((view, event) -> {
+            if (event.getActionMasked() == android.view.MotionEvent.ACTION_DOWN ||
+                    event.getActionMasked() == android.view.MotionEvent.ACTION_MOVE) {
+                view.getParent().requestDisallowInterceptTouchEvent(true);
+            } else if (event.getActionMasked() == android.view.MotionEvent.ACTION_UP ||
+                    event.getActionMasked() == android.view.MotionEvent.ACTION_CANCEL) {
+                view.getParent().requestDisallowInterceptTouchEvent(false);
+                view.performClick();
+            }
+            return false;
+        });
+
         return v;
     }
 

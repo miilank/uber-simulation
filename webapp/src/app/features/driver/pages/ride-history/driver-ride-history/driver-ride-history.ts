@@ -2,19 +2,20 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RideDetailsDrawer } from '../components/ride-details-drawer/ride-details-drawer';
+import { Ride } from '../../../../shared/models/ride';
 
-type RideStatus = 'COMPLETED' | 'CANCELLED';
+// type RideStatus = 'COMPLETED' | 'CANCELLED';
 
-export type Ride = {
-  date: string;
-  time: string;
-  from: string;
-  to: string;
-  status: RideStatus;
-  cancelledBy?: 'User' | 'Driver';
-  panic: boolean;
-  price: string;
-};
+// export type Ride = {
+//   date: string;
+//   time: string;
+//   from: string;
+//   to: string;
+//   status: RideStatus;
+//   cancelledBy?: 'User' | 'Driver';
+//   panic: boolean;
+//   price: string;
+// };
 
 @Component({
   selector: 'app-driver-ride-history',

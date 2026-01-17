@@ -3,7 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import { User } from '../models/user';
 import { ConfigService } from './config.service';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { Driver } from '../../features/shared/models/driver';
+import { Vehicle } from '../../features/shared/models/vehicle';
+
+export interface DriverDTO {
+    vehicle: Vehicle;
+    available: boolean;
+    active: boolean;
+    workedMinutesLast24h: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +20,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 export class UserService {
     
 
-    private currentUserSubject = new BehaviorSubject<User | null>(null);
+    private currentUserSubject = new BehaviorSubject<User | Driver | null>(null);
     currentUser$ = this.currentUserSubject.asObservable();
     
     constructor(
@@ -22,7 +31,21 @@ export class UserService {
     
     fetchMe(): Observable<User> {
         return this.http.get<User>(this.config.profile_url).pipe(
-            tap(user => this.currentUserSubject.next(user))
+            switchMap(user => {
+                if(user.role == 'DRIVER'){
+                    return this.http.get<DriverDTO>(this.config.driver_profile_url).pipe(
+                        map(dto => {
+                            let driver: Driver = { ...(user as Driver), ...dto };
+
+                            this.currentUserSubject.next(driver as Driver);
+                            return driver as Driver;
+                        }))
+
+                } else {
+                    this.currentUserSubject.next(user);
+                    return of(user);
+                }
+            })
         )
     }
 

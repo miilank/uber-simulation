@@ -4,9 +4,12 @@ import com.uberplus.backend.dto.driver.DriverCreationDTO;
 import com.uberplus.backend.dto.driver.DriverProfileDTO;
 import com.uberplus.backend.dto.driver.DriverStatusUpdateDTO;
 import com.uberplus.backend.repository.DriverRepository;
+import com.uberplus.backend.service.DriverService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class DriverController {
 
-    private final DriverRepository driverRepository;
+    private final DriverService driverService;
 
     // POST /api/drivers
     @PostMapping
@@ -22,10 +25,10 @@ public class DriverController {
         return ResponseEntity.ok(new DriverProfileDTO());
     }
 
-    // GET /api/drivers/{driverId}/profile
-    @GetMapping("/{driverId}/profile")
-    public ResponseEntity<DriverProfileDTO> getProfile(@PathVariable Long driverId) {
-        return ResponseEntity.ok(new DriverProfileDTO());
+    // GET /api/drivers/profile
+    @GetMapping("/profile")
+    public ResponseEntity<DriverProfileDTO> getProfile(Authentication authentication) {
+        return ResponseEntity.ok(driverService.getProfile(authentication.getName()));
     }
 
     // PUT /api/drivers/{driverId}/status

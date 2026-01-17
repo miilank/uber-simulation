@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final MessageSource messageSource;
 
     @Override
     @Transactional()

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import type { Ride } from '../../driver-ride-history/driver-ride-history';
+import { Ride } from '../../../../../shared/models/ride';
 
 type Passenger = { name: string; phone: string };
 

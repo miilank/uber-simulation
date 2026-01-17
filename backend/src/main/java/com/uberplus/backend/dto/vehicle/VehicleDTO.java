@@ -1,5 +1,6 @@
 package com.uberplus.backend.dto.vehicle;
 
+import com.uberplus.backend.model.Vehicle;
 import com.uberplus.backend.model.enums.VehicleStatus;
 import com.uberplus.backend.model.enums.VehicleType;
 import lombok.AllArgsConstructor;
@@ -18,4 +19,15 @@ public class VehicleDTO {
     private boolean babyFriendly;
     private boolean petsFriendly;
     private VehicleStatus status;
+
+    public VehicleDTO(Vehicle vehicle) {
+        this.id = vehicle.getId();
+        this.model = vehicle.getModel();
+        this.type = vehicle.getType();
+        this.licensePlate = vehicle.getLicensePlate();
+        this.seatCount = vehicle.getSeatCount();
+        this.babyFriendly = vehicle.isBabyFriendly();
+        this.petsFriendly = vehicle.isPetsFriendly();
+        this.status = vehicle.getStatus();
+    }
 }

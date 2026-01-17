@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProfileInfoCard } from '../../shared/components/profile-info-card';
 import { User } from '../../../core/models/user';
-import { Vehicle } from '../../../core/models/vehicle';
+import { Vehicle } from '../../shared/models/vehicle';
 import { ChangePasswordModal } from "../../shared/components/profile-change-pswd-modal";
+import { Subscription } from 'rxjs';
+import { UserService } from '../../../core/services/user.service';
 
 @Component({
   selector: 'driver-profile',
@@ -133,7 +135,7 @@ import { ChangePasswordModal } from "../../shared/components/profile-change-pswd
 
               <change-password-modal
                 [isChangePasswordOpen]="isChangePasswordOpen"
-                (close)="closePswdChange()"> </change-password-modal>
+                (close)="closePswdChange($event)"> </change-password-modal>
             </div>
 
           </main>
@@ -147,31 +149,52 @@ import { ChangePasswordModal } from "../../shared/components/profile-change-pswd
 export class DriverProfileComponent {
   vehicleModel: string = "Model"
 
-  user: User = {
-    id: '1',
-    firstName: 'Andrew',
-    lastName: 'Wilson',
-    email: 'andrewwilson@email.com',
-    address: 'Novi Sad',
-    phoneNumber: '+381 65 123 1233',
-    role: "ADMIN"
-  }
-
   vehicle: Vehicle = {
     id: 0,
-    model: 'Model',
-    type: 'Type',
-    licensePlate: 'DSDSDS-111',
-    seatCount: 10,
-    babyFriendly: true,
+    model: '',
+    type: '',
+    licensePlate: '',
+    seatCount: 0,
+    babyFriendly: false,
     petsFriendly: false
   }
 
+  user: User = {
+    id: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    address: '',
+    phoneNumber: '',
+    role: 'PASSENGER'
+  };
+
+  private sub?: Subscription;
   isChangePasswordOpen: boolean = false;
+  isSuccessOpen: boolean = false;
+  successTitle: string = "Success";
+  successMessage: string = "Profile successfully updated!";
+
+  constructor(private userService: UserService, private cdr: ChangeDetectorRef) {}
 
   timeWorkedMinutes: number = 150;
 
   readonly MAX_WORK_MINUTES = 8 * 60;
+
+  ngOnInit(): void {
+    this.sub = this.userService.currentUser$.subscribe(current => {
+      if (current) {
+        this.user = { ...current };
+        this.cdr.detectChanges();
+      }
+    });
+
+    this.userService.fetchMe().subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
 
   get progressPercent(): number {
     const pct = (this.timeWorkedMinutes / this.MAX_WORK_MINUTES) * 100;
@@ -185,8 +208,16 @@ export class DriverProfileComponent {
     return Math.floor(Math.min(this.timeWorkedMinutes, this.MAX_WORK_MINUTES) % 60);
   }
   
-  closePswdChange(): void {
+  closePswdChange(updated: boolean): void {
+    if (updated) {
+      this.successMessage = "Password successfully updated."
+      this.isSuccessOpen = true;
+    }
     this.isChangePasswordOpen = false;
+  }
+
+  closeSuccessModal(): void {
+    this.isSuccessOpen = false;
   }
 
   openPswdChange(): void {

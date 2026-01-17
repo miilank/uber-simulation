@@ -2,6 +2,7 @@ package com.uberplus.backend.dto.driver;
 
 import com.uberplus.backend.dto.user.UserProfileDTO;
 import com.uberplus.backend.dto.vehicle.VehicleDTO;
+import com.uberplus.backend.model.Driver;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,4 +18,12 @@ public class DriverProfileDTO extends UserProfileDTO {
     private double workedMinutesLast24h;
     private Double averageRating;
     private VehicleDTO vehicle;
+
+    public DriverProfileDTO(Driver driver) {
+        this.available = driver.isAvailable();
+        this.active = driver.isActive();
+        this.workedMinutesLast24h = driver.getWorkedMinutesLast24h();
+        this. averageRating = driver.getAverageRating();
+        this.vehicle = new VehicleDTO(driver.getVehicle());
+    }
 }

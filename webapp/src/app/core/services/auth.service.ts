@@ -19,6 +19,19 @@ export interface AuthResponse {
   role: 'PASSENGER' | 'DRIVER' | 'ADMIN';
 }
 
+export interface ActivationResponse {
+  message: string;
+}
+
+export interface ForgotPasswordResponse {
+  message: string;
+  token: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -78,15 +91,15 @@ export class AuthService {
 
     return this.accessToken
   }
-  public activateAccount(token: string): Observable<any> {
-    return this.http.get(`http://localhost:8080/api/auth/activate?token=${token}`);
+  public activateAccount(token: string): Observable<ActivationResponse> {
+    return this.http.get<ActivationResponse>(`${this.config.activate_url}?token=${token}`);
   }
-  forgotPassword(email: string): Observable<any> {
-  return this.http.post(`http://localhost:8080/api/auth/forgot-password`, { email });
+  forgotPassword(email: string): Observable<ForgotPasswordResponse> {
+  return this.http.post<ForgotPasswordResponse>(`${this.config.forgot_pass_url}`, { email });
 }
 
-resetPassword(token: string, newPassword: string, confirmPassword: string): Observable<any> {
-  return this.http.post(`http://localhost:8080/api/auth/reset-password`, { 
+resetPassword(token: string, newPassword: string, confirmPassword: string): Observable<ResetPasswordResponse> {
+  return this.http.post<ResetPasswordResponse>(`${this.config.reset_pass_url}`, { 
     token, 
     newPassword,
     confirmPassword

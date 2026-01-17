@@ -16,7 +16,7 @@ import { RegisteredSidebar } from '../components/registered-sidebar';
             <app-registered-sidebar></app-registered-sidebar>
             </aside>
 
-            <main class="flex-1 bg-white p-4 md:p-6 overflow-auto">
+            <main class="flex-1 bg-white overflow-auto">
             <router-outlet></router-outlet>
             </main>
         </div>

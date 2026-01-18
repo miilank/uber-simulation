@@ -20,6 +20,17 @@ public class DriverProfileDTO extends UserProfileDTO {
     private VehicleDTO vehicle;
 
     public DriverProfileDTO(Driver driver) {
+        this.id = driver.getId();
+        this.email = driver.getEmail();
+        this.firstName = driver.getFirstName();
+        this.lastName = driver.getLastName();
+        this.phoneNumber = driver.getPhoneNumber();
+        this.address = driver.getAddress();
+        this.profilePicture = driver.getProfilePicture();
+        this.role = driver.getRole();
+        this.blocked = driver.isBlocked();
+        this.blockReason = driver.getBlockReason();
+        this.activated = driver.isActivated();
         this.available = driver.isAvailable();
         this.active = driver.isActive();
         this.workedMinutesLast24h = driver.getWorkedMinutesLast24h();

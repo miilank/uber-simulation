@@ -18,25 +18,25 @@ export interface DriverDTO {
   providedIn: 'root'
 })
 export class UserService {
-    
-
     private currentUserSubject = new BehaviorSubject<User | Driver | null>(null);
     currentUser$ = this.currentUserSubject.asObservable();
     
     constructor(
         private http: HttpClient,
         private config: ConfigService
-    ) {
-    }
+    ) {}
     
     fetchMe(): Observable<User> {
         return this.http.get<User>(this.config.profile_url).pipe(
             switchMap(user => {
                 if(user.role == 'DRIVER'){
-                    return this.http.get<DriverDTO>(this.config.driver_profile_url).pipe(
+                    return this.http.get<Driver>(this.config.driver_profile_url).pipe(
                         map(dto => {
-                            let driver: Driver = { ...(user as Driver), ...dto };
+                            console.log(dto);
+                            let driver: Driver = { ...dto };
 
+                            console.log(driver);
+                            
                             this.currentUserSubject.next(driver as Driver);
                             return driver as Driver;
                         }))

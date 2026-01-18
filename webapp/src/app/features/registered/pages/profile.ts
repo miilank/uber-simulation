@@ -108,7 +108,6 @@ export class RegisteredProfileComponent {
           console.log(err["message"])
         }
       }
-
     )
   }
   

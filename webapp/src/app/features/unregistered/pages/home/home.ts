@@ -3,11 +3,12 @@ import { HeaderComponent } from '../../../shared/components/header.component';
 import { MapComponent } from '../../../shared/map/map';
 import { VehicleMarker } from '../../../shared/map/vehicle-marker';
 import { VehiclesApiService } from '../../../shared/api/vehicles-api.service';
+import { EstimatePanelComponent } from '../../components/estimate-window.component';
 
 @Component({
   selector: 'app-unregistered-home',
   standalone: true,
-  imports: [HeaderComponent, MapComponent],
+  imports: [HeaderComponent, MapComponent, EstimatePanelComponent],
   templateUrl: './home.html',
 })
 export class UnregisteredHomeComponent implements OnInit {

@@ -2,6 +2,8 @@
   <app-header [showUserProfile]="false"></app-header>
 
   <div class="flex-1 relative">
-    <app-map class="absolute inset-0 block" [vehicles]="vehicles"></app-map>
+    <app-map class="absolute inset-0 block" [vehicles]="vehicles">
+      <app-estimate-panel></app-estimate-panel>
+    </app-map>
   </div>
 </div>

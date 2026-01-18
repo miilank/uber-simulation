@@ -10,11 +10,13 @@ import { isPlatformBrowser } from '@angular/common';
 import type * as Leaflet from 'leaflet';
 import type {Map as LeafletMap, LayerGroup as LeafletLayerGroup} from 'leaflet';
 import { VehicleMarker } from './vehicle-marker';
+import { EstimatePanelComponent } from '../../unregistered/components/estimate-window.component';
 
 @Component({
   selector: 'app-map',
   standalone: true,
   templateUrl: './map.html',
+  imports: [EstimatePanelComponent],
 })
 export class MapComponent implements AfterViewInit, OnChanges {
   @Input() vehicles: VehicleMarker[] = [];

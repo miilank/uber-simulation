@@ -86,7 +86,7 @@ export class EstimatePanelComponent {
       const routeInfo = this.bookingState.routeInfo();
       if (routeInfo) {
         this.distance = `${(routeInfo.totalDistance / 1000).toFixed(1)} km`;
-        this.arrivalTime = `${Math.ceil(routeInfo.totalDuration / 60)} min`;
+        this.arrivalTime = this.calculateArrivalTime(routeInfo.totalDuration);
       }
     });}
 
@@ -118,7 +118,7 @@ export class EstimatePanelComponent {
     this.isClosing = false;
     this.estimateForm?.resetForm();
   }
-    onBookRide() {
+  onBookRide() {
     console.log('Booking ride from', this.pickupLocation, 'to', this.dropoffLocation);
     // TODO: Implement ride booking logic
   }
@@ -127,5 +127,17 @@ export class EstimatePanelComponent {
   console.log('Vehicle type changed to:', vehicleType);
   // TODO: Recalculate price based on vehicle type
 }
+  calculateArrivalTime(durationSeconds: number): string {
+    if (durationSeconds < 60) {
+      return '<1 min';
+    }
+    if (durationSeconds >= 3600) {
+      const durationHours = Math.floor(durationSeconds / 3600);
+      const durationMinutes = Math.ceil((durationSeconds % 3600) / 60);
+      return `${durationHours} hr ${durationMinutes} min`;
+    }
+    const durationMinutes = Math.ceil(durationSeconds / 60);
+    return `${durationMinutes} min`;
+  }
 
 }

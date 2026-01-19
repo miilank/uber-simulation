@@ -24,7 +24,6 @@ public class RideHistoryDevSeeder implements CommandLineRunner {
 
     private final DriverRepository driverRepository;
     private final PassengerRepository passengerRepository;
-    private final LocationRepository locationRepository;
     private final RideRepository rideRepository;
 
     @Override
@@ -59,21 +58,21 @@ public class RideHistoryDevSeeder implements CommandLineRunner {
 
                 Passenger creator = passengers.get(rnd.nextInt(passengers.size()));
 
-                Location start = locationRepository.save(new Location(
+                Location start = new Location(
                         null,
                         45.2671 + (rnd.nextDouble() - 0.5) * 0.06,
                         19.8335 + (rnd.nextDouble() - 0.5) * 0.06,
                         "Bulevar oslobođenja " + (10 + rnd.nextInt(200)),
                         LocalDateTime.now()
-                ));
+                );
 
-                Location end = locationRepository.save(new Location(
+                Location end = new Location(
                         null,
                         45.2671 + (rnd.nextDouble() - 0.5) * 0.06,
                         19.8335 + (rnd.nextDouble() - 0.5) * 0.06,
                         "Naučno tehnološki park",
                         LocalDateTime.now()
-                ));
+                );
 
                 Ride r = new Ride();
                 r.setCreator(creator);

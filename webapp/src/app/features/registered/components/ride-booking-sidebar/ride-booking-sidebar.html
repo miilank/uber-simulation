@@ -5,13 +5,14 @@
             <h1 class="text-[28px] font-bold text-[#111111] leading-tight tracking-tight self-stretch">
                 Book a ride
             </h1>
-
+        <div class="w-full">
           <location-search-input
             hintMessage="Pickup spot"
-            class="w-full"
+            [inputClass]="'input-base'"
+            [containerClass]="'w-full'"
             (selected)="onPickupSelected($event)"
           ></location-search-input>
-
+        </div>
           <button
             type="button"
             class="flex items-center justify-center gap-1 self-stretch py-2 hover:opacity-80 transition-opacity"
@@ -20,14 +21,16 @@
             <span class="text-[11px] text-black leading-none">Add a stop</span>
           </button>
 
-          @for (_ of bookingState.stops(); track $index) {
-            <div class="w-full flex items-center gap-2">
+        @for (_ of bookingState.stops(); track $index) {
+          <div class="w-full flex items-center gap-2">
+            <div class="w-full">
               <location-search-input
                 hintMessage="Stop"
-                class="w-full"
+                [inputClass]="'input-base'"
+                [containerClass]="'w-full'"
                 (selected)="onStopSelected($index, $event)"
               ></location-search-input>
-
+            </div>
               <button
                 type="button"
                 aria-label="Remove stop"
@@ -44,13 +47,14 @@
               </button>
             </div>
           }
-
+        <div class="w-full">
           <location-search-input
             hintMessage="Where are you going?"
-            class="w-full"
+            [inputClass]="'input-base'"
+            [containerClass]="'w-full'"
             (selected)="onDropoffSelected($event)"
           ></location-search-input>
-
+        </div>
           <div class="mt-2 self-stretch">
                 <label class="text-xs text-gray-500">Do you want to schedule ahead?</label>
                 <input

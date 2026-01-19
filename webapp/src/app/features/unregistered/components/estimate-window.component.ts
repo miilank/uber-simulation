@@ -2,40 +2,39 @@ import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { EstimateResultsComponent } from './estimate-results.component';
-import { delay } from 'rxjs';
+import { Router } from '@angular/router';
+import { LocationSearchInput } from '../../shared/components/location-search-input/location-search-input';
+import { NominatimResult } from '../../shared/services/nominatim.service';
 
 @Component({
   selector: 'app-estimate-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, EstimateResultsComponent],
+  imports: [CommonModule, FormsModule, EstimateResultsComponent, LocationSearchInput],
   template: `
-  @if(!showResults){
-  <!-- <div class="font-sans fixed bottom-6 left-6 z-[1000] w-80 bg-white rounded-3xl shadow-[0px_13px_27px_0px_rgba(0,0,0,0.25)] items-center gap-4 p-6 max-w-sm md:bottom-8 md:left-8 md:w-96 animate-slideUp"[class.animate-slideDown]="isClosing">
-        <h3 class="text-3xl text-center font-semibold text-black md:text-3xl lg:text-3xl font-semibold mb-4 md:mb-4">Go anywhere</h3>
+  @if(isRoot && !showResults){
+  <div class="font-sans fixed bottom-6 left-6 z-1000 w-80 bg-white rounded-3xl shadow-[0px_13px_27px_0px_rgba(0,0,0,0.25)] items-center gap-4 p-6 max-w-sm md:bottom-8 md:left-8 md:w-96 animate-slideUp"[class.animate-slideDown]="isClosing">
+        <h3 class="text-3xl text-center font-semibold text-black md:text-3xl lg:text-3xl mb-4 md:mb-4">Go anywhere</h3>
         <form #f = "ngForm" (ngSubmit)="onSubmit(f)" novalidate class="space-y-3">
-            <input
-            #pickup="ngModel"
-            name="pickup"
-            ngModel
-            required
-            placeholder="Pickup location" 
-            type="text" class="input-estimate w-full"
-            [class.!border-red-500]="f.submitted && pickup.invalid">
-            <input #dropoff="ngModel"
-            name="dropoff"
-            ngModel 
-            required
-            placeholder="Dropoff route"
-            type="text"
-            class="input-estimate w-full"
-            [class.!border-red-500]="f.submitted && dropoff.invalid">
+            <location-search-input
+              [hintMessage]="'Pickup location'"
+              [inputClass]="'input-estimate w-full'"
+              [containerClass]="'my-3'"
+              (selected)="onPickupSelected($event)">
+            </location-search-input>
+
+            <location-search-input
+              [hintMessage]="'Dropoff location'"
+              [inputClass]="'input-estimate w-full'"
+              [containerClass]="'my-3'"
+              (selected)="onDropoffSelected($event)">
+            </location-search-input>
             <button 
             type = "submit"
-            class="w-full bg-[var(--color-app-accent)] hover:bg-[#A9D53A] text-app-dark px-6 py-3 rounded-3xl font-semibold transition-colors shadow-[0px_7px_27px_0px_rgba(0,0,0,0.25)] font-[Poppins] text-base">
+            class="w-full bg-app-accent hover:bg-app-accent-dark text-app-dark px-6 py-3 rounded-3xl font-semibold transition-colors shadow-[0px_7px_27px_0px_rgba(0,0,0,0.25)] font-[Poppins] text-base">
             Get estimate
             </button>
 </form>
-</div> -->
+</div>
 }
 @if (showResults){
 <app-estimate-results
@@ -72,16 +71,33 @@ export class EstimatePanelComponent {
   dropoffLocation = '';
   estimateRange = '€10-€13';
   distance = '3.1 km';
+
+  pickupResult?: NominatimResult;
+  dropoffResult?: NominatimResult;
+  
   @ViewChild('f') estimateForm!: NgForm;
-  onSubmit(form: NgForm) {
- if (form.valid) {
-      this.pickupLocation = form.value.pickup;
-      this.dropoffLocation = form.value.dropoff;
-      this.isClosing = true;
-      this.showResults = true;
-    }
+  constructor(private router: Router) {}
+  onPickupSelected(res: NominatimResult) {
+    this.pickupResult = res;
+    this.pickupLocation = res.formattedText;
   }
 
+  onDropoffSelected(res: NominatimResult) {
+    this.dropoffResult = res;
+    this.dropoffLocation = res.formattedText;
+  }
+  onSubmit(form: NgForm) {
+  if (!this.pickupResult || !this.dropoffResult) {
+      return;
+    }
+
+    this.isClosing = true;
+    this.showResults = true;
+  }
+  get isRoot(): boolean {
+    const url = this.router.url.split('?')[0].split('#')[0];
+    return url === '/' || url === '';
+  }
   onClose() {
     this.showResults = false;
     this.isClosing = false;

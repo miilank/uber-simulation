@@ -11,7 +11,9 @@ import { NominatimResult, NominatimService } from '../../services/nominatim.serv
 })
 export class LocationSearchInput {
   @Input() hintMessage: string = 'Look up an address';
-  
+  @Input() inputClass: string = '';    
+  @Input() containerClass: string = '';
+
   selected = output<NominatimResult>();
 
   addressControl = new FormControl('');

@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="fixed inset-0 z-[1001] bg-black/50 flex items-center justify-center p-4">
+    <div class="fixed inset-0 z-1001 bg-black/50 flex items-center justify-center p-4">
       <div class="bg-white rounded-3xl shadow-[0px_13px_27px_0px_rgba(0,0,0,0.25)] inline-flex flex-col justify-end items-center gap-4 w-1/3 h-fit animate-slideUp">
         <p class="self-stretch text-center justify-start text-black-900 text-3xl font-semibold font-['Poppins'] leading-9 pt-5">Go anywhere</p>
         
@@ -14,12 +14,12 @@ import { CommonModule } from '@angular/common';
           <input type="text" 
                 [value]="pickup" 
                 readonly 
-                class="flex-1 h-12 min-w-32 px-4 py-3 bg-neutral-100 rounded-3xl outline outline-1 outline-offset-[-0.52px] outline-stone-300 text-neutral-900 text-base font-normal font-['Poppins'] leading-4 cursor-not-allowed focus:outline-none">
+                class="flex-1 h-12 min-w-32 px-4 py-3 bg-neutral-100 rounded-3xl outline outline-offset-[-0.52px] outline-stone-300 text-neutral-900 text-base font-normal font-['Poppins'] leading-4 cursor-not-allowed focus:outline-none">
           
           <input type="text" 
                 [value]="dropoff" 
                 readonly 
-                class="flex-1 h-12 min-w-32 px-4 py-3 bg-neutral-100 rounded-3xl outline outline-1 outline-offset-[-0.52px] outline-stone-300 text-neutral-900 text-base font-normal font-['Poppins'] leading-4 cursor-not-allowed focus:outline-none">
+                class="flex-1 h-12 min-w-32 px-4 py-3 bg-neutral-100 rounded-3xl outline outline-offset-[-0.52px] outline-stone-300 text-neutral-900 text-base font-normal font-['Poppins'] leading-4 cursor-not-allowed focus:outline-none">
         </div>
 
         
@@ -61,9 +61,9 @@ import { CommonModule } from '@angular/common';
           </button>
         </div>
         
-        <div class="self-stretch h-32 bg-[radial-gradient(ellipse_100.12%_81.15%_at_50.02%_100.18%,_rgba(255,_255,_255,_0)_0%,_var(--Primary-Accent,_rgba(192,_236,_78,_0.50))_100%)] rounded-3xl shadow-[0px_5px_27px_0px_rgba(0,0,0,0.25)] flex flex-col justify-center items-center gap-4 px-5 mx-5">
+        <div class="self-stretch h-32 bg-[radial-gradient(ellipse_100.12%_81.15%_at_50.02%_100.18%,rgba(255,255,255,0)_0%,var(--Primary-Accent,rgba(192,236,78,0.50))_100%)] rounded-3xl shadow-[0px_5px_27px_0px_rgba(0,0,0,0.25)] flex flex-col justify-center items-center gap-4 px-5 mx-5">
           <div data-layer="Estimate price" class="EstimatePrice text-center justify-start text-black text-base font-normal font-['Poppins'] leading-5">Estimate price</div>
-          <div data-layer="€10 - €13" class="1013 self-stretch text-center justify-start text-neutral-900 text-4xl font-semibold font-['Poppins'] leading-[48px]">{{estimateRange}}</div>
+          <div data-layer="€10 - €13" class="1013 self-stretch text-center justify-start text-neutral-900 text-4xl font-semibold font-['Poppins'] leading-12">{{estimateRange}}</div>
           <div data-layer="Frame 19" class="Frame19 inline-flex justify-center items-start gap-4">
             <div data-layer="7 min pickup" class="MinPickup text-center justify-start text-black text-base font-normal font-['Poppins'] leading-5">7 min pickup</div>
             <div data-layer="ETA 12:54" class="Eta1254 text-center justify-start text-black text-base font-normal font-['Poppins'] leading-5">ETA 12:54</div>
@@ -74,7 +74,7 @@ import { CommonModule } from '@angular/common';
         <div data-layer="Frame 16" class="Frame16 self-stretch inline-flex justify-start items-start gap-4 mx-5 my-5">
           <button (click)="onMapView()" 
                   data-layer="Button" 
-                  class="Button flex-1 h-12 p-3 bg-Background rounded-3xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-1px] outline-black flex justify-center items-center gap-2 overflow-hidden hover:bg-neutral-50 transition-colors cursor-pointer">
+                  class="Button flex-1 h-12 p-3 bg-Background rounded-3xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] outline -outline-offset-1 outline-black flex justify-center items-center gap-2 overflow-hidden hover:bg-neutral-50 transition-colors cursor-pointer">
             <div data-layer="Calculate" class="Calculate justify-start text-stone-900 text-base font-normal font-['Poppins'] leading-4">Back to Map</div>
           </button>
           <button (click)="onBookRide()" 

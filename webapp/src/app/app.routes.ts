@@ -14,6 +14,7 @@ import { AccountActivationComponent } from './core/auth/account-activation';
 import { RideBooking } from './features/registered/pages/ride-booking/ride-booking';
 import { RideBookingSidebar } from './features/registered/components/ride-booking-sidebar/ride-booking-sidebar';
 import { RegisteredSidebar } from './features/registered/components/registered-sidebar';
+import {CurrentRideComponent} from './features/registered/pages/current-ride/current-ride';
 
 export const routes: Routes = [
   { path: '', component: UnregisteredHomeComponent },
@@ -22,14 +23,13 @@ export const routes: Routes = [
   { path: 'activate', component: AccountActivationComponent},
   { path: 'map', component: MapComponent },
   { path: 'user', component: RegisteredLayout, children: [
-    { path: 'profile', component: RegisteredProfileComponent },
-    { path: 'dashboard', component: RegisteredDashboard },
-    { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
-
-    { path: 'booking', component: RideBooking },
-
-    { path: 'booking', outlet: 'aside', component: RideBookingSidebar },
-    { path: '', outlet: 'aside', component: RegisteredSidebar },
+      { path: 'profile', component: RegisteredProfileComponent },
+      { path: 'dashboard', component: RegisteredDashboard },
+      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+      { path: 'booking', component: RideBooking },
+      { path: 'current-ride', component: CurrentRideComponent },
+      { path: 'booking', outlet: 'aside', component: RideBookingSidebar },
+      { path: '', outlet: 'aside', component: RegisteredSidebar },
   ] },
   { path: 'registerUser', component: UserRegistrationComponent },
   { path: 'signIn', component: SignInComponent },

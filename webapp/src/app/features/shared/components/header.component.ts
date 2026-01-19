@@ -56,7 +56,7 @@ import { UserService } from '../../../core/services/user.service';
   styles: []
 })
 export class HeaderComponent {
-  firstName: string = 'Empty';
+  firstName: string = '';
   lastName: string = '';
   @Input() showUserProfile: boolean = true;
 

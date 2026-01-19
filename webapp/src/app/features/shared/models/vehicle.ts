@@ -1,3 +1,9 @@
+export enum VehicleType {
+  STANDARD = 'Standard',
+  LUXURY = 'Luxury',
+  VAN = 'Van'
+}
+
 export interface Vehicle {
   id: number;
   model: string;

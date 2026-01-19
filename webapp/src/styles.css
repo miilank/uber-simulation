@@ -14,6 +14,11 @@
 }
 
 .input-base {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: none;
+
   background-color: var(--color-app-bg-darker);
   height: 3rem;
   padding-left: 0.75rem;

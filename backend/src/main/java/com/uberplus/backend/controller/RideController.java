@@ -3,9 +3,11 @@ package com.uberplus.backend.controller;
 import com.uberplus.backend.dto.common.MessageDTO;
 import com.uberplus.backend.dto.ride.*;
 import com.uberplus.backend.repository.RideRepository;
+import com.uberplus.backend.service.RideService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.uberplus.backend.dto.report.RideHistoryFilterDTO;
 import com.uberplus.backend.dto.report.RideHistoryResponseDTO;
@@ -19,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RideController {
 
-    private final RideRepository rideRepository;
+    private final RideService rideService;
     private final RideHistoryService rideHistoryService;
 
     // POST /api/rides/estimate
@@ -29,8 +31,8 @@ public class RideController {
     }
     // POST /api/rides
     @PostMapping
-    public ResponseEntity<RideDTO> createRide(@Valid @RequestBody CreateRideRequestDTO request) {
-        return ResponseEntity.ok(new RideDTO());
+    public ResponseEntity<RideDTO> createRide(Authentication auth, @Valid @RequestBody CreateRideRequestDTO request) {
+        return ResponseEntity.ok(rideService.reqestRide(auth.getName(), request));
     }
 
     // GET /api/rides/{rideId}

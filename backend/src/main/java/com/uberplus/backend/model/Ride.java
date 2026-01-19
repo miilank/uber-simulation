@@ -33,15 +33,15 @@ public class Ride {
     @Column(nullable = false)
     private RideStatus status = RideStatus.PENDING;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "start_location_id", nullable = false)
     private Location startLocation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "end_location_id", nullable = false)
     private Location endLocation;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "ride_waypoints",
             joinColumns = @JoinColumn(name = "ride_id"),

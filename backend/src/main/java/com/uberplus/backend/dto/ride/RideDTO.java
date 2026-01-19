@@ -1,5 +1,7 @@
 package com.uberplus.backend.dto.ride;
 
+import com.uberplus.backend.model.Passenger;
+import com.uberplus.backend.model.Ride;
 import com.uberplus.backend.model.enums.RideStatus;
 import com.uberplus.backend.model.enums.VehicleType;
 import lombok.AllArgsConstructor;
@@ -15,9 +17,9 @@ import java.util.List;
 public class RideDTO {
     private Integer id;
     private Integer creatorId;
-    private String creatorName;
+    private String creatorEmail;
     private Integer driverId;
-    private String driverName;
+    private String driverEmail;
     private RideStatus status;
     private LocationDTO startLocation;
     private LocationDTO endLocation;
@@ -26,4 +28,35 @@ public class RideDTO {
     private VehicleType vehicleType;
     private double totalPrice;
     private LocalDateTime createdAt;
+
+    public RideDTO(Ride ride) {
+        this.id = ride.getId();
+
+        this.creatorId = ride.getCreator().getId();
+        this.creatorEmail = ride.getCreator().getEmail();
+
+
+        this.driverId = ride.getDriver().getId();
+        this.driverEmail = ride.getDriver().getEmail();
+
+
+        this.status = ride.getStatus();
+
+        this.startLocation = new LocationDTO(ride.getStartLocation());
+        this.endLocation = new LocationDTO(ride.getEndLocation());
+
+        this.waypoints = ride.getWaypoints()
+                .stream()
+                .map(LocationDTO::new)
+                .toList();
+
+        this.passengerIds = ride.getPassengers()
+                .stream()
+                .map(Passenger::getId)
+                .toList();
+
+        this.vehicleType = ride.getVehicleType();
+        this.totalPrice = ride.getTotalPrice() != null ? ride.getTotalPrice() : 0.0;
+        this.createdAt = ride.getCreatedAt();
+    }
 }

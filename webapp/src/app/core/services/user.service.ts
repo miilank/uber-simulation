@@ -30,7 +30,7 @@ export class UserService {
         return this.http.get<User>(this.config.profile_url).pipe(
             switchMap(user => {
                 if(user.role == 'DRIVER'){
-                    return this.http.get<Driver>(this.config.driver_profile_url).pipe(
+                    return this.http.get<Driver>(this.config.driverProfileUrl).pipe(
                         map(dto => {
                             console.log(dto);
                             let driver: Driver = { ...dto };
@@ -61,7 +61,7 @@ export class UserService {
 
     changePassword(oldPassword: string, newPassword: string): Observable<void> {
         let body = {oldPassword, newPassword }
-        return this.http.put(this.config.change_password_url, body).pipe(
+        return this.http.put(this.config.changePasswordUrl, body).pipe(
               map(() => {
                 console.log('Password change request sent.');
               }),

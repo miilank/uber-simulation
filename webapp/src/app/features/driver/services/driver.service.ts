@@ -14,6 +14,6 @@ export class DriverService {
     ) {}
 
     updateDriver(updated: User) : Observable<User> {
-        return this.http.put<User>(this.config.driver_profile_url, updated);
+        return this.http.put<User>(this.config.driverProfileUrl, updated);
     }
 }

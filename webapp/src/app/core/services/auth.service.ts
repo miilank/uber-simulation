@@ -80,9 +80,7 @@ export class AuthService {
     this.accessToken = null;
   }
 
-  public tokenIsPresent() : boolean {
-    console.log(`Auth token present: ${this.accessToken != undefined && this.accessToken != null}`);
-    
+  public tokenIsPresent() : boolean {    
     return this.accessToken != undefined && this.accessToken != null;
   }
 
@@ -92,14 +90,14 @@ export class AuthService {
     return this.accessToken
   }
   public activateAccount(token: string): Observable<ActivationResponse> {
-    return this.http.get<ActivationResponse>(`${this.config.activate_url}?token=${token}`);
+    return this.http.get<ActivationResponse>(`${this.config.activateUrl}?token=${token}`);
   }
   forgotPassword(email: string): Observable<ForgotPasswordResponse> {
-  return this.http.post<ForgotPasswordResponse>(`${this.config.forgot_pass_url}`, { email });
+  return this.http.post<ForgotPasswordResponse>(`${this.config.forgotPassUrl}`, { email });
 }
 
 resetPassword(token: string, newPassword: string, confirmPassword: string): Observable<ResetPasswordResponse> {
-  return this.http.post<ResetPasswordResponse>(`${this.config.reset_pass_url}`, { 
+  return this.http.post<ResetPasswordResponse>(`${this.config.resetPassUrl}`, { 
     token, 
     newPassword,
     confirmPassword

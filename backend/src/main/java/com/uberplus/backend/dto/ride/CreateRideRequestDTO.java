@@ -17,7 +17,7 @@ public class CreateRideRequestDTO {
     private List<LocationDTO> waypoints;
     private VehicleType vehicleType;
     private boolean babyFriendly;
-    private boolean petsFriendly;
+    private boolean petFriendly;
     private List<String> linkedPassengerEmails;
     private LocalDateTime scheduledTime;
     private Long favoriteRouteId;

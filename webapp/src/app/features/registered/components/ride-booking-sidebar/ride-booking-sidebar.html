@@ -1,0 +1,75 @@
+<div class="h-full flex items-center justify-center bg-white">
+    <div class="w-full max-w-md">
+    <div class="flex flex-col items-center gap-4 p-6 md:p-7 bg-white">
+        <h1 class="text-[28px] font-bold text-[#111111] leading-tight tracking-tight self-stretch">
+            Book a ride
+        </h1>
+
+        <location-search-input hintMessage="Pickup spot" class="w-full"></location-search-input>
+
+        <button class="flex items-center justify-center gap-1 self-stretch py-2 hover:opacity-80 transition-opacity">
+            <svg
+                width="23"
+                height="23"
+                viewBox="0 0 23 23"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                d="M11.5001 7.66675V15.3334M7.66675 11.5001H15.3334M21.0834 11.5001C21.0834 16.7928 16.7928 21.0834 11.5001 21.0834C6.20735 21.0834 1.91675 16.7928 1.91675 11.5001C1.91675 6.20735 6.20735 1.91675 11.5001 1.91675C16.7928 1.91675 21.0834 6.20735 21.0834 11.5001Z"
+                stroke="#1E1E1E"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                />
+            </svg>
+            <span class="text-[11px] text-black leading-none">
+                Add a stop
+            </span>
+        </button>
+
+        <location-search-input hintMessage="Where are you going?" class="w-full"></location-search-input>
+
+        <div class="mt-2 self-stretch">
+            <label class="text-xs text-gray-500">Do you want to schedule ahead?</label>
+            <input
+                type="datetime-local"
+                class="input-base w-full"
+                name="scheduledAt"
+            />
+            <p class="text-xs mt-1">You can schedule up to 5 hours from now.</p>
+        </div>
+
+        <button
+            class="w-full h-12 flex items-center bg-app-accent hover:bg-[#d4f76a] text-ride-dark font-medium text-sm rounded-full transition-colors px-4"
+            >
+            <span class="tracking-wide text-black flex-1 text-center">
+                Next
+            </span>
+
+            <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <g clipPath="url(#clip0_66_547)">
+                <path
+                    d="M10.0001 13.3334L13.3334 10.0001M13.3334 10.0001L10.0001 6.66675M13.3334 10.0001L6.66675 10.0001M18.3334 10.0001C18.3334 14.6025 14.6025 18.3334 10.0001 18.3334C5.39771 18.3334 1.66675 14.6025 1.66675 10.0001C1.66675 5.39771 5.39771 1.66675 10.0001 1.66675C14.6025 1.66675 18.3334 5.39771 18.3334 10.0001Z"
+                    stroke="#1E1E1E"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                />
+                </g>
+                <defs>
+                <clipPath id="clip0_66_547">
+                    <rect width="20" height="20" fill="white" />
+                </clipPath>
+                </defs>
+            </svg>
+        </button>
+    </div>
+    </div>
+</div>

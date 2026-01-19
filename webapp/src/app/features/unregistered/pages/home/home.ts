@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../../../shared/components/header.component';
 import { MapComponent } from '../../../shared/map/map';
 import { VehicleMarker } from '../../../shared/map/vehicle-marker';
@@ -14,11 +14,14 @@ import { EstimatePanelComponent } from '../../components/estimate-window.compone
 export class UnregisteredHomeComponent implements OnInit {
   vehicles: VehicleMarker[] = [];
 
-  constructor(private vehiclesApi: VehiclesApiService) {}
+  constructor(private vehiclesApi: VehiclesApiService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.vehiclesApi.getMapVehicles().subscribe({
-      next: (data) => (this.vehicles = data),
+      next: (data) => {
+        this.vehicles = data;
+        this.cdr.detectChanges();
+      },
       error: (err) => console.error('Failed to load vehicles', err),
     });
   }

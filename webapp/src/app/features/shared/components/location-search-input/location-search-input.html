@@ -1,0 +1,42 @@
+<div class="relative w-full">
+    <input
+        type="text"
+        placeholder={{hintMessage}}
+        [formControl]="addressControl"
+        class="input-base w-full"
+    />
+    <svg
+        class="absolute right-4 top-1/2 -translate-y-1/2 flex-shrink-0 pointer-events-none"
+        width="15"
+        height="15"
+        viewBox="0 0 15 15"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+
+        <path
+        d="M13.0186 13.0186L10.3219 10.3219M11.7787 6.81928C11.7787 9.5583 9.5583 11.7787 6.81928 11.7787C4.08027 11.7787 1.85986 9.5583 1.85986 6.81928C1.85986 4.08027 4.08027 1.85986 6.81928 1.85986C9.5583 1.85986 11.7787 4.08027 11.7787 6.81928Z"
+        stroke="#1E1E1E"
+        strokeWidth="1.48783"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        />
+    </svg>
+    @if (autocompleteOpen()) {
+        <ul
+            id="pickup-list"
+            role="listbox"
+            aria-label="Pickup suggestions"
+            class="absolute left-0 right-0 top-full z-50 bg-white shadow-lg rounded-md max-h-56 overflow-auto ring-1 ring-black/5 text-black"
+            style="display: block;"
+        >
+        @for (result of searchResults(); track $index) {
+            <li role="option" class="px-4 py-2 hover:bg-gray-100 cursor-pointer" (click)="OnSelect(result)">{{result.formattedText}}</li>
+        }
+            <!-- <li role="option" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Central Station, City</li>
+            <li role="option" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Main Street 123</li>
+            <li role="option" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Riverside Park</li>
+            <li role="option" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Airport Terminal 1</li>
+            <li role="option" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Warehouse District</li> -->
+        </ul>    
+    }
+</div>

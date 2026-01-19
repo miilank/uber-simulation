@@ -10,7 +10,7 @@ import { delay } from 'rxjs';
   imports: [CommonModule, FormsModule, EstimateResultsComponent],
   template: `
   @if(!showResults){
-  <div class="font-sans fixed bottom-6 left-6 z-[1000] w-80 bg-white rounded-3xl shadow-[0px_13px_27px_0px_rgba(0,0,0,0.25)] items-center gap-4 p-6 max-w-sm md:bottom-8 md:left-8 md:w-96 animate-slideUp"[class.animate-slideDown]="isClosing">
+  <!-- <div class="font-sans fixed bottom-6 left-6 z-[1000] w-80 bg-white rounded-3xl shadow-[0px_13px_27px_0px_rgba(0,0,0,0.25)] items-center gap-4 p-6 max-w-sm md:bottom-8 md:left-8 md:w-96 animate-slideUp"[class.animate-slideDown]="isClosing">
         <h3 class="text-3xl text-center font-semibold text-black md:text-3xl lg:text-3xl font-semibold mb-4 md:mb-4">Go anywhere</h3>
         <form #f = "ngForm" (ngSubmit)="onSubmit(f)" novalidate class="space-y-3">
             <input
@@ -35,7 +35,7 @@ import { delay } from 'rxjs';
             Get estimate
             </button>
 </form>
-</div>
+</div> -->
 }
 @if (showResults){
 <app-estimate-results

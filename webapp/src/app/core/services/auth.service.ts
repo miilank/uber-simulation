@@ -1,15 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from './user.service'
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { Router } from '@angular/router';
-import { of } from 'rxjs/internal/observable/of';
 import { Observable, throwError } from 'rxjs';
 import { ConfigService } from './config.service';
 import { User } from '../models/user';
 import { RegisterRequestDto } from '../auth/register-request.dto';
-import { register } from 'module';
 
 export interface AuthResponse {
   token: string;

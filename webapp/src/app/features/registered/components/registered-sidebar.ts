@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, UrlTree } from '@angular/router';
 
-type Item = { label: string; route: string; icon: string };
+type Item = { label: string; route: string | UrlTree; icon: string };
 
 @Component({
   selector: 'app-registered-sidebar',
   standalone: true,
   imports: [CommonModule, RouterLink, NgOptimizedImage],
   template: `
-    <nav class="mt-24 flex flex-col gap-3 font-poppins">
+    <nav class="mt-24 flex flex-col gap-3 font-poppins px-10">
     @for (it of items; track it.route) {
         <a
         [routerLink]="it.route"
@@ -38,22 +38,35 @@ type Item = { label: string; route: string; icon: string };
 })
 export class RegisteredSidebar {
   constructor(private router: Router) {}
+  items: Item[] = [];
 
-  items: Item[] = [
-    { label: 'Dashboard', route: '/user/dashboard', icon: 'dashboard' },
-    { label: 'Book a ride', route: '/user/book-ride', icon: 'car' },
-    { label: 'Ride history', route: '/user/ride-history', icon: 'history' },
-    { label: 'Booked rides', route: '/user/booked-rides', icon: 'bookedrides' },
-    { label: 'Reports', route: '/user/reports', icon: 'reports' },
-    { label: 'Profile', route: '/user/profile', icon: 'user' },
-    { label: 'Support', route: '/user/support', icon: 'support' },
-  ];
+  ngOnInit() {
+    const bookingUrl = this.router.createUrlTree(
+      ['/user', { outlets: { primary: ['booking'], aside: ['booking'] } }]
+    );
 
-  isActive(route: string) {
-    return this.router.url === route;
+    this.items = [
+      { label: 'Dashboard', route: '/user/dashboard', icon: 'dashboard' },
+      { label: 'Book a ride', route: bookingUrl, icon: 'car' },
+      { label: 'Ride history', route: '/user/ride-history', icon: 'history' },
+      { label: 'Booked rides', route: '/user/booked-rides', icon: 'bookedrides' },
+      { label: 'Reports', route: '/user/reports', icon: 'reports' },
+      { label: 'Profile', route: '/user/profile', icon: 'user' },
+      { label: 'Support', route: '/user/support', icon: 'support' },
+    ];
   }
 
-  iconSrc(icon: string, route: string) {
+  isActive(route: string | UrlTree) {
+    const currentUrl = this.router.url;
+
+    if (route instanceof UrlTree) {
+      return this.router.serializeUrl(route) === currentUrl;
+    }
+
+    return route === currentUrl;
+  }
+
+  iconSrc(icon: string, route: string | UrlTree) {
     const variant = this.isActive(route) ? 'black' : 'white';
     return `/icons/${icon}-${variant}.png`;
   }

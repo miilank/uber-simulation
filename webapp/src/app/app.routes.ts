@@ -11,6 +11,9 @@ import {UnregisteredHomeComponent} from './features/unregistered/pages/home/home
 import {DriverDashboard} from './features/driver/pages/dashboard/driver-dashboard/driver-dashboard';
 import { RegisteredDashboard } from './features/registered/pages/dashboard/registered-dashboard/registered-dashboard';
 import { AccountActivationComponent } from './core/auth/account-activation';
+import { RideBooking } from './features/registered/pages/ride-booking/ride-booking';
+import { RideBookingSidebar } from './features/registered/components/ride-booking-sidebar/ride-booking-sidebar';
+import { RegisteredSidebar } from './features/registered/components/registered-sidebar';
 
 export const routes: Routes = [
   { path: '', component: UnregisteredHomeComponent },
@@ -22,6 +25,11 @@ export const routes: Routes = [
     { path: 'profile', component: RegisteredProfileComponent },
     { path: 'dashboard', component: RegisteredDashboard },
     { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+
+    { path: 'booking', component: RideBooking },
+
+    { path: 'booking', outlet: 'aside', component: RideBookingSidebar },
+    { path: '', outlet: 'aside', component: RegisteredSidebar },
   ] },
   { path: 'registerUser', component: UserRegistrationComponent },
   { path: 'signIn', component: SignInComponent },

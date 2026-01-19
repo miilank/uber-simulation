@@ -48,7 +48,7 @@ export class RegisteredSidebar {
     this.items = [
       { label: 'Dashboard', route: '/user/dashboard', icon: 'dashboard' },
       { label: 'Book a ride', route: bookingUrl, icon: 'car' },
-      { label: 'Current ride', route: '/user/current-ride', icon: 'car' },
+      { label: 'Current ride', route: '/user/current-ride', icon: 'current_ride' },
       { label: 'Ride history', route: '/user/ride-history', icon: 'history' },
       { label: 'Booked rides', route: '/user/booked-rides', icon: 'bookedrides' },
       { label: 'Reports', route: '/user/reports', icon: 'reports' },

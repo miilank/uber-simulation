@@ -104,6 +104,13 @@ public class UserMainActivity extends AppCompatActivity
         } else if (id == R.id.nav_book_ride) {
             // TODO: open BookARideFragment
 
+        } else if (id == R.id.nav_current_ride) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new CurrentRideFragment())
+                    .addToBackStack(null)
+                    .commit();
+
         } else if (id == R.id.nav_reports) {
             // TODO: open ReportsFragment
 

@@ -86,4 +86,16 @@
     <string name="_2">2</string>
     <string name="pickup_destination">Pickup → Destination</string>
     <string name="req">Req</string>
+    <string name="_current_ride">Current ride</string>
+    <string name="started">Started</string>
+    <string name="eta_7_min">ETA: 7 min</string>
+    <string name="vehicle_skoda_octavia_ns_123_ab">Vehicle: Skoda Octavia • NS-123-AB</string>
+    <string name="report_driver_inconsistency">Report driver inconsistency</string>
+    <string name="if_the_route_looks_unexpected_or_inadequate_leave_a_short_note">If the route looks unexpected or inadequate, leave a short note.</string>
+    <string name="write_a_short_note">Write a short note...</string>
+    <string name="_0_300">0/300</string>
+    <string name="submit">Submit</string>
+    <string name="tracking_and_reporting_are_available_only_during_an_active_ride">Tracking and reporting are available only during an active ride.</string>
+    <string name="passenger_name">Passenger Name</string>
+    <string name="passenger">Passenger</string>
 </resources>

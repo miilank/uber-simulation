@@ -16,30 +16,29 @@ import java.util.List;
 @AllArgsConstructor
 public class RideDTO {
     private Integer id;
-    private Integer creatorId;
     private String creatorEmail;
-    private Integer driverId;
     private String driverEmail;
     private RideStatus status;
     private LocationDTO startLocation;
     private LocationDTO endLocation;
     private List<LocationDTO> waypoints;
-    private List<Integer> passengerIds;
+    private List<String> passengerEmails;
     private VehicleType vehicleType;
     private double totalPrice;
-    private LocalDateTime createdAt;
+    private boolean panicActivated;
+    private String cancelledBy;
+    private LocalDateTime scheduledTime;
+
+    private boolean babyFriendly;
+    private boolean petsFriendly;
 
     public RideDTO(Ride ride) {
         this.id = ride.getId();
-
-        this.creatorId = ride.getCreator().getId();
+//        this.creatorId = ride.getCreator().getId();
         this.creatorEmail = ride.getCreator().getEmail();
 
-
-        this.driverId = ride.getDriver().getId();
+//        this.driverId = ride.getDriver().getId();
         this.driverEmail = ride.getDriver().getEmail();
-
-
         this.status = ride.getStatus();
 
         this.startLocation = new LocationDTO(ride.getStartLocation());
@@ -50,13 +49,18 @@ public class RideDTO {
                 .map(LocationDTO::new)
                 .toList();
 
-        this.passengerIds = ride.getPassengers()
+        this.passengerEmails = ride.getPassengers()
                 .stream()
-                .map(Passenger::getId)
+                .map(Passenger::getEmail)
                 .toList();
 
         this.vehicleType = ride.getVehicleType();
         this.totalPrice = ride.getTotalPrice() != null ? ride.getTotalPrice() : 0.0;
-        this.createdAt = ride.getCreatedAt();
+        this.panicActivated = ride.isPanicActivated();
+        this.cancelledBy = ride.getCancelledBy();
+        this.scheduledTime = ride.getScheduledTime();
+
+        this.petsFriendly = ride.isPetsFriendly();
+        this.babyFriendly = ride.isBabyFriendly();
     }
 }

@@ -5,19 +5,6 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {RideDetailsDrawer} from '../common/ride-details-drawer/ride-details-drawer';
 import { Ride } from '../../../../shared/models/ride';
 
-// type RideStatus = 'COMPLETED' | 'CANCELLED';
-
-// export type Ride = {
-//   date: string;
-//   time: string;
-//   from: string;
-//   to: string;
-//   status: RideStatus;
-//   cancelledBy?: 'User' | 'Driver';
-//   panic: boolean;
-//   price: string;
-// };
-
 type RideHistoryResponse = {
   rides: Ride[];
   total: number;

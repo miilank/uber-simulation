@@ -1,4 +1,7 @@
-type RideStatus = 'COMPLETED' | 'CANCELLED';
+import { LocationDTO } from "./location";
+import { VehicleType } from "./vehicle";
+
+export type RideStatus = 'PENDING' | 'ACCEPTED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
 export interface Ride {
     date: string;
@@ -9,4 +12,22 @@ export interface Ride {
     cancelledBy?: 'User' | 'Driver';
     panic: boolean;
     price: string;
+}
+
+export interface RideDTO {
+  id: number;
+  creatorEmail: string;
+  driverEmail: string | null;
+  status: RideStatus;
+  startLocation: LocationDTO;
+  endLocation: LocationDTO;
+  waypoints: LocationDTO[];
+  passengerEmails: string[];
+  vehicleType: VehicleType;
+  totalPrice: number;
+  panicActivated: boolean;
+  cancelledBy: string | null;
+  scheduledTime: Date;
+  isBabyFriendly: boolean;
+  isPetsFriendly: boolean;
 }

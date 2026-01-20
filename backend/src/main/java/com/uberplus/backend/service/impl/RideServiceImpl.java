@@ -11,6 +11,7 @@ import com.uberplus.backend.repository.UserRepository;
 import com.uberplus.backend.service.RideService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -64,6 +65,32 @@ public class RideServiceImpl implements RideService {
         ride.setCreatedAt(LocalDateTime.now());
         rideRepository.save(ride);
 
+        return new RideDTO(ride);
+    }
+
+    @Override
+    public List<RideDTO> getRides(String email) {
+        Driver user = driverRepository.findByEmail(email).orElseThrow(
+                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.")
+        );
+
+        return rideRepository.findByDriver((Driver) user)
+                .stream()
+                .map(RideDTO::new)
+                .filter(rideDTO -> (rideDTO.getStatus() != RideStatus.CANCELLED && rideDTO.getStatus() != RideStatus.COMPLETED))
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public RideDTO startRide(Integer rideId) {
+        Ride ride = rideRepository.findById(rideId).orElseThrow(
+                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found.")
+        );
+
+        ride.setStatus(RideStatus.IN_PROGRESS);
+        ride.setActualStartTime(LocalDateTime.now());
+        rideRepository.save(ride);
         return new RideDTO(ride);
     }
 }

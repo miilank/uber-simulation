@@ -18,9 +18,11 @@ type PassengerItem = { id: number; name: string; role: 'You' | 'Passenger' };
   templateUrl: './current-ride.html',
 })
 export class CurrentRideComponent implements OnInit {
+  constructor(private rideState: CurrentRideStateService, private vehiclesApi: VehiclesApiService, private cdr: ChangeDetectorRef) {}
+  private notificationService = inject(NotificationService);
+  private userService = inject(UserService);
+  panicSent = signal(false);
   vehicles: VehicleMarker[] = [];
-  constructor(private vehiclesApi: VehiclesApiService, private cdr: ChangeDetectorRef) {}
-
   ngOnInit(): void {
     this.vehiclesApi.getMapVehicles().subscribe({
       next: (data) => {
@@ -31,10 +33,6 @@ export class CurrentRideComponent implements OnInit {
     });
   }
   // page state (mock for now)
-  private notificationService = inject(NotificationService);
-  private userService = inject(UserService);
-  constructor(private rideState: CurrentRideStateService) {}
-  panicSent = signal(false);
 
   onPanic(): void {
     if (this.panicSent()) return; 

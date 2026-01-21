@@ -1,5 +1,6 @@
 package com.uberplus.backend.service.impl;
 
+import com.uberplus.backend.dto.common.MessageDTO;
 import com.uberplus.backend.dto.ride.CreateRideRequestDTO;
 import com.uberplus.backend.dto.ride.LocationDTO;
 import com.uberplus.backend.dto.ride.RideDTO;
@@ -92,5 +93,19 @@ public class RideServiceImpl implements RideService {
         ride.setActualStartTime(LocalDateTime.now());
         rideRepository.save(ride);
         return new RideDTO(ride);
+    }
+
+    @Override
+    public void setPanic(Integer rideId, Integer userId){
+        Ride ride = rideRepository.findById(rideId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found.")
+        );
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.")
+        );
+        ride.setPanicActivatedAt(LocalDateTime.now());
+        ride.setPanicActivatedBy(user.getEmail());
+        ride.setPanicActivated(true);
+        rideRepository.save(ride);
     }
 }

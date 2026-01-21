@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RidePanicDTO {
-    private Integer rideId;
+    private Integer userId;
 }

@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {MapComponent} from '../../../shared/map/map';
+import { CurrentRideStateService } from '../../services/current-ride-state.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { UserService } from '../../../../core/services/user.service';
 
 type RideStatus = 'Assigned' | 'Started' | 'Finished' | 'Cancelled';
 type PassengerItem = { id: number; name: string; role: 'You' | 'Passenger' };
@@ -14,6 +17,19 @@ type PassengerItem = { id: number; name: string; role: 'You' | 'Passenger' };
 })
 export class CurrentRideComponent {
   // page state (mock for now)
+  private notificationService = inject(NotificationService);
+  private userService = inject(UserService);
+  constructor(private rideState: CurrentRideStateService) {}
+  panicSent = signal(false);
+
+  onPanic(): void {
+    if (this.panicSent()) return; 
+
+    const userId = this.userService.getCurrentUserId();
+    this.rideState.panicSignal.set({pressed: true, rideId: 1, userId: userId ? userId : 0});
+    this.panicSent.set(true);
+  }
+
   currentRideStatus: RideStatus = 'Started';
 
   fromAddress = 'Bulevar oslobođenja 46';

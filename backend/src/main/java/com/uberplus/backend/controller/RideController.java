@@ -1,6 +1,5 @@
 package com.uberplus.backend.controller;
 
-import com.sendgrid.Response;
 import com.uberplus.backend.dto.common.MessageDTO;
 import com.uberplus.backend.dto.pricing.PriceEstimateResponseDTO;
 import com.uberplus.backend.dto.ride.*;
@@ -90,8 +89,9 @@ public class RideController {
 
     // POST /api/rides/{rideId}/panic
     @PostMapping("/{rideId}/panic")
-    public ResponseEntity<MessageDTO> panic(@PathVariable Integer rideId,  @Valid @RequestBody RidePanicDTO request) {
-        return ResponseEntity.ok(new MessageDTO());
+    public ResponseEntity<Void> panic(@PathVariable Integer rideId, @RequestBody RidePanicDTO panicDto) {
+        rideService.setPanic(rideId, panicDto.getUserId());
+        return ResponseEntity.ok().build();
     }
 
     // POST /api/rides/{rideId}/stop-early

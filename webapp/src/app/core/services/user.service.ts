@@ -68,4 +68,10 @@ export class UserService {
             );
     }
 
+    getCurrentUserId(): number | null {
+        const user = this.currentUserSubject.getValue();
+        const id = user?.id;
+        return id ? parseInt(id as any, 10) : null;
+    }
+
 }

@@ -80,9 +80,11 @@
                 Stop ride here  
               </button>
 
-              <button class="h-10 px-8 rounded-full bg-red-600 text-white text-sm font-semibold flex items-center"
+              <button class="h-10 px-8 rounded-full bg-red-600 text-white text-sm font-semibold flex items-center
+              disabled:bg-red-300 disabled:text-white disabled:opacity-75 disabled:cursor-not-allowed"
+                [disabled]="panicSent()"
                 (click)="onPanic()">
-                PANIC
+                {{ panicSent() ? 'PANIC sent' : 'PANIC' }}
               </button>
         </div>
         <!-- Guard: available only during active ride -->

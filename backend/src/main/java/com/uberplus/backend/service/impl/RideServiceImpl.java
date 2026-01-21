@@ -103,7 +103,9 @@ public class RideServiceImpl implements RideService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.")
         );
+        ride.setPanicActivatedAt(LocalDateTime.now());
         ride.setPanicActivatedBy(user.getEmail());
         ride.setPanicActivated(true);
+        rideRepository.save(ride);
     }
 }

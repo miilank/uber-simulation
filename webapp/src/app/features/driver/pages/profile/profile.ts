@@ -7,7 +7,7 @@ import { ChangePasswordModal } from "../../../shared/components/profile-change-p
 import { Subscription } from 'rxjs';
 import { UserService } from '../../../../core/services/user.service';
 import { Driver } from '../../../shared/models/driver';
-import { DriverService } from '../../services/driver.service';
+import { DriverService } from '../../../shared/services/driver.service';
 import { SuccessAlert } from "../../../shared/components/success-alert";
 import { User } from '../../../../core/models/user';
 

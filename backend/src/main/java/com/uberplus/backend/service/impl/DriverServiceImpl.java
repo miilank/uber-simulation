@@ -1,27 +1,26 @@
 package com.uberplus.backend.service.impl;
 
-import com.uberplus.backend.dto.driver.DriverProfileDTO;
-import com.uberplus.backend.dto.user.UserProfileDTO;
+import com.uberplus.backend.dto.driver.DriverActivationDTO;
+import com.uberplus.backend.dto.driver.DriverCreationDTO;
+import com.uberplus.backend.dto.driver.DriverDTO;
 import com.uberplus.backend.dto.user.UserUpdateDTO;
-import com.uberplus.backend.model.Driver;
-import com.uberplus.backend.model.ProfileChangeRequest;
-import com.uberplus.backend.model.User;
+import com.uberplus.backend.model.*;
 import com.uberplus.backend.model.enums.ProfileUpdateStatus;
+import com.uberplus.backend.model.enums.UserRole;
 import com.uberplus.backend.repository.DriverRepository;
 import com.uberplus.backend.repository.ProfileChangeRequestRepository;
 import com.uberplus.backend.repository.UserRepository;
 import com.uberplus.backend.service.DriverService;
-import com.uberplus.backend.service.UserService;
+import com.uberplus.backend.service.EmailService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,15 +28,19 @@ public class DriverServiceImpl implements DriverService {
 
 
     private final DriverRepository driverRepository;
+    private final UserRepository userRepository;
     private final ProfileChangeRequestRepository changeRequestRepository;
+    private final EmailService emailService;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional()
     @Override
-    public DriverProfileDTO getProfile(String email) {
+    public DriverDTO getProfile(String email) {
         Driver driver = driverRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
 
-        return new DriverProfileDTO(driver);
+        return new DriverDTO(driver);
     }
 
     @Override
@@ -92,6 +95,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    @Transactional()
     public void rejectProfileUpdate(Integer driverId) {
         ProfileChangeRequest changeRequest = changeRequestRepository
                 .findFirstByDriver_IdAndStatusOrderByCreatedAtDesc(driverId, ProfileUpdateStatus.PENDING)
@@ -105,5 +109,81 @@ public class DriverServiceImpl implements DriverService {
         changeRequest.setUpdatedAt(LocalDateTime.now());
 
         changeRequestRepository.save(changeRequest);
+    }
+
+    @Override
+    @Transactional()
+    public Integer createDriver(DriverCreationDTO request) {
+        String email = request.getEmail().trim().toLowerCase();
+
+        if (userRepository.existsByEmail(email)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT ,"User with this email already exists.");
+        }
+
+        Driver driver = new Driver();
+        driver.setEmail(email);
+        driver.setFirstName(request.getFirstName());
+        driver.setLastName(request.getLastName());
+        driver.setAddress(request.getAddress());
+        driver.setPhoneNumber(request.getPhoneNumber());
+        driver.setProfilePicture("default-profile.png");
+        driver.setRole(UserRole.PASSENGER);
+        driver.setBlocked(false);
+        driver.setBlockReason(null);
+        driver.setActivated(false);
+
+        Vehicle vehicle = new Vehicle();
+        vehicle.setModel(request.getVehicle().getModel());
+        vehicle.setType(request.getVehicle().getType());
+        vehicle.setBabyFriendly(request.getVehicle().isBabyFriendly());
+        vehicle.setPetsFriendly(request.getVehicle().isPetsFriendly());
+        vehicle.setLicensePlate(request.getVehicle().getLicensePlate());
+        vehicle.setSeatCount(request.getVehicle().getSeatCount());
+
+        vehicle.setDriver(driver);
+        driver.setVehicle(vehicle);
+
+        String token = UUID.randomUUID().toString();
+        driver.setActivationToken(token);
+        driver.setActivationTokenExpiresAt(LocalDateTime.now().plusHours(24));
+        driver.setPasswordResetToken(null);
+        driver.setPasswordResetTokenExpiresAt(null);
+        LocalDateTime now = LocalDateTime.now();
+        driver.setCreatedAt(now);
+        driver.setUpdatedAt(now);
+
+        Driver saved = driverRepository.save(driver);
+
+        emailService.sendDriverActivationEmail(saved);
+
+        return driver.getId();
+    }
+
+    @Override
+    public DriverDTO getDriver(Integer driverId) {
+        Driver driver = driverRepository.findById(driverId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found.")
+        );
+
+        return new DriverDTO(driver);
+    }
+
+    @Override
+    public void activateDriver(DriverActivationDTO req) {
+        User driver = userRepository.findByActivationToken(req.getToken())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid activation token"));
+
+        if (driver.isActivated()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Account already activated");
+        }
+        if (driver.getActivationTokenExpiresAt().isBefore(LocalDateTime.now())){
+            throw new ResponseStatusException(HttpStatus.GONE, "Token expired");
+        }
+
+        driver.setActivated(true);
+        driver.setActivationToken(null);
+        driver.setActivationTokenExpiresAt(null);
+        driver.setPassword(passwordEncoder.encode(req.getPassword()));
+        userRepository.save(driver);
     }
 }

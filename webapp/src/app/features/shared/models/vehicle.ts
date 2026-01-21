@@ -4,6 +4,13 @@ export enum VehicleType {
   VAN = 'Van'
 }
 
+export function vehicleTypeKeyFromValue(
+  value: string
+): keyof typeof VehicleType {
+  return (Object.keys(VehicleType) as Array<keyof typeof VehicleType>)
+    .find(key => VehicleType[key] === value) ?? 'STANDARD';
+}
+
 export interface Vehicle {
   id: number;
   model: string;

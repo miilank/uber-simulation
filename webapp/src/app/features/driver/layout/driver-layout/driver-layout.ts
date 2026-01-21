@@ -11,6 +11,4 @@ import { DriverSidebar } from '../../common/driver-sidebar/driver-sidebar';
   templateUrl: './driver-layout.html',
 })
 export class DriverLayout {
-  firstName = 'John'
-  lastName = 'Doe'
 }

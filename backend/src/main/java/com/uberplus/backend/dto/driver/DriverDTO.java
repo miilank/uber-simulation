@@ -12,14 +12,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-public class DriverProfileDTO extends UserProfileDTO {
+public class DriverDTO extends UserProfileDTO {
     private boolean available;
     private boolean active;
     private double workedMinutesLast24h;
     private Double averageRating;
     private VehicleDTO vehicle;
 
-    public DriverProfileDTO(Driver driver) {
+    public DriverDTO(Driver driver) {
         this.id = driver.getId();
         this.email = driver.getEmail();
         this.firstName = driver.getFirstName();

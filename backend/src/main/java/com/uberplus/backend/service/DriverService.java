@@ -1,5 +1,6 @@
 package com.uberplus.backend.service;
 
+import com.uberplus.backend.dto.driver.DriverActivationDTO;
 import com.uberplus.backend.dto.driver.DriverCreationDTO;
 import com.uberplus.backend.dto.driver.DriverDTO;
 import com.uberplus.backend.dto.user.UserUpdateDTO;
@@ -13,6 +14,6 @@ public interface DriverService {
     void rejectProfileUpdate(Integer driverId);
 
     Integer createDriver(@Valid DriverCreationDTO request);
-
     DriverDTO getDriver(Integer driverId);
+    void activateDriver(DriverActivationDTO req);
 }

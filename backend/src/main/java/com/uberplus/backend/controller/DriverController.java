@@ -1,5 +1,6 @@
 package com.uberplus.backend.controller;
 
+import com.uberplus.backend.dto.driver.DriverActivationDTO;
 import com.uberplus.backend.dto.driver.DriverCreationDTO;
 import com.uberplus.backend.dto.driver.DriverDTO;
 import com.uberplus.backend.dto.driver.DriverStatusUpdateDTO;
@@ -30,6 +31,13 @@ public class DriverController {
                 .build()
                 .toUri();
         return ResponseEntity.created(location).build();
+    }
+
+    // PUT /api/drivers/activate
+    @PutMapping("/activate")
+    public ResponseEntity<Void> activateDriver(@Valid @RequestBody DriverActivationDTO dto) {
+        driverService.activateDriver(dto);
+        return ResponseEntity.noContent().build();
     }
 
     // GET /api/drivers/{id}

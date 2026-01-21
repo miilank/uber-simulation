@@ -17,12 +17,14 @@ import { RegisteredSidebar } from './features/registered/components/registered-s
 import {CurrentRideComponent} from './features/registered/pages/current-ride/current-ride';
 import { DriverRegistration } from './features/admin/pages/driver-registration/driver-registration';
 import { AdminLayout } from './features/admin/layout/admin-layout/admin-layout';
+import { DriverActivationComponent } from './core/auth/driver-activation';
 
 export const routes: Routes = [
   { path: '', component: UnregisteredHomeComponent },
   { path: 'registerUser', component: UserRegistrationComponent },
   { path: 'signIn', component: SignInComponent },
   { path: 'activate', component: AccountActivationComponent},
+  {path: 'activate-driver', component: DriverActivationComponent},
   { path: 'map', component: MapComponent },
   { path: 'user', component: RegisteredLayout, children: [
       { path: 'profile', component: RegisteredProfileComponent },

@@ -39,4 +39,8 @@ export class DriverService {
     createDriver(driver: DriverCreationDTO) : Observable<void> {
         return this.http.post<void>(this.config.driverUrl, driver);
     }
+
+    activateDriver(token: string, password: string) {
+        return this.http.put<void>(this.config.driverActivateUrl, {token, password});
+    }
 }

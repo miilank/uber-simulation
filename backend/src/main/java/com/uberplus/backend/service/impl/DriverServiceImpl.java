@@ -1,5 +1,6 @@
 package com.uberplus.backend.service.impl;
 
+import com.uberplus.backend.dto.driver.DriverActivationDTO;
 import com.uberplus.backend.dto.driver.DriverCreationDTO;
 import com.uberplus.backend.dto.driver.DriverDTO;
 import com.uberplus.backend.dto.user.UserUpdateDTO;
@@ -14,6 +15,7 @@ import com.uberplus.backend.service.EmailService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,6 +31,8 @@ public class DriverServiceImpl implements DriverService {
     private final UserRepository userRepository;
     private final ProfileChangeRequestRepository changeRequestRepository;
     private final EmailService emailService;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional()
     @Override
@@ -162,5 +166,24 @@ public class DriverServiceImpl implements DriverService {
         );
 
         return new DriverDTO(driver);
+    }
+
+    @Override
+    public void activateDriver(DriverActivationDTO req) {
+        User driver = userRepository.findByActivationToken(req.getToken())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid activation token"));
+
+        if (driver.isActivated()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Account already activated");
+        }
+        if (driver.getActivationTokenExpiresAt().isBefore(LocalDateTime.now())){
+            throw new ResponseStatusException(HttpStatus.GONE, "Token expired");
+        }
+
+        driver.setActivated(true);
+        driver.setActivationToken(null);
+        driver.setActivationTokenExpiresAt(null);
+        driver.setPassword(passwordEncoder.encode(req.getPassword()));
+        userRepository.save(driver);
     }
 }

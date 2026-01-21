@@ -23,7 +23,7 @@ public class EmailServiceImpl implements EmailService {
     private final String fromEmail;
     @Value("${app.frontend.activation-url:http://localhost:4200/activate?token=}")
     private String activationUrl;
-    @Value("${app.frontend.driver-activation-url}")
+    @Value("${app.frontend.driver-activation-url:http://localhost:4200/activate-driver?token=}")
     private String driverActivationURl;
 
     public EmailServiceImpl(@Value("${sendgrid.api.key}") String apiKey, @Value("${sendgrid.from.email}") String fromEmail) {
@@ -33,7 +33,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendActivationEmail(Passenger user){
         String token = user.getActivationToken();
-        String activationLink = driverActivationURl + token;
+        String activationLink = activationUrl + token;
         Email from = new Email(fromEmail, "UberPLUS");
         Email to = new Email(user.getEmail());
         Content content = new Content("text/html", " ");
@@ -60,7 +60,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendDriverActivationEmail(Driver driver) {
         String token = driver.getActivationToken();
-        String activationLink = activationUrl + token;
+        String activationLink = driverActivationURl + token;
         Personalization personalization = new Personalization();
         personalization.addDynamicTemplateData("firstName", driver.getFirstName());
         personalization.addDynamicTemplateData("activationLink", activationLink);

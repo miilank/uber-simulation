@@ -12,13 +12,11 @@ constructor(
     private rideState: CurrentRideStateService,
     private http: HttpClient,
     private configService: ConfigService,
-    private userService: UserService
   ) {
     effect(() => {
       const panicActive = this.rideState.panicSignal().pressed;
       if (panicActive) {
-        const userId = this.userService.getCurrentUserId();
-        this.notifyAdminAboutPanic(this.rideState.panicSignal().rideId, userId);
+        this.notifyAdminAboutPanic(this.rideState.panicSignal().rideId, this.rideState.panicSignal().userId);
       }
     });
   }

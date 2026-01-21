@@ -12,16 +12,20 @@ export class RidesService {
     public rides: WritableSignal<RideDTO[]> = signal<RideDTO[]>([]);
     public readonly currentRide: Signal<RideDTO | null> = computed(() => {
 
-        const pastRides = this.rides()
-        .filter(r => new Date(r.scheduledTime).getTime() <= Date.now());
+      const pastRides: RideDTO[] = this.rides()
+        .filter((r: RideDTO) => new Date(r.scheduledTime).getTime() <= Date.now())
+        .sort((a: RideDTO, b: RideDTO) =>
+          Number(b.status === 'IN_PROGRESS') - Number(a.status === 'IN_PROGRESS')
+        );
 
-        if (pastRides.length === 0) {
+
+      if (pastRides.length === 0) {
             return null;
         }
 
         return pastRides[0];
     });
-    
+
     constructor(
         private http: HttpClient,
         private config: ConfigService

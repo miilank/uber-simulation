@@ -1,5 +1,7 @@
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
+import { Component, EventEmitter, inject, Output, signal, OnInit, ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {VehicleMarker} from '../../../shared/map/vehicle-marker';
+import {VehiclesApiService} from '../../../shared/api/vehicles-api.service';
 import { FormsModule } from '@angular/forms';
 import {MapComponent} from '../../../shared/map/map';
 import { CurrentRideStateService } from '../../services/current-ride-state.service';
@@ -15,7 +17,19 @@ type PassengerItem = { id: number; name: string; role: 'You' | 'Passenger' };
   imports: [CommonModule, FormsModule, MapComponent],
   templateUrl: './current-ride.html',
 })
-export class CurrentRideComponent {
+export class CurrentRideComponent implements OnInit {
+  vehicles: VehicleMarker[] = [];
+  constructor(private vehiclesApi: VehiclesApiService, private cdr: ChangeDetectorRef) {}
+
+  ngOnInit(): void {
+    this.vehiclesApi.getMapVehicles().subscribe({
+      next: (data) => {
+        this.vehicles = data
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Failed to load vehicles', err),
+    });
+  }
   // page state (mock for now)
   private notificationService = inject(NotificationService);
   private userService = inject(UserService);

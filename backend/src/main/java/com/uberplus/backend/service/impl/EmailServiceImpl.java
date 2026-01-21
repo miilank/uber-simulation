@@ -33,13 +33,13 @@ public class EmailServiceImpl implements EmailService {
         String activationLink = activationUrl + token;
         Email from = new Email(fromEmail, "UberPLUS");
         Email to = new Email(user.getEmail());
-        Content content = new Content("text/html", " ");
         Personalization  personalization = new Personalization ();
         personalization.addDynamicTemplateData("firstName", user.getFirstName());
         personalization.addDynamicTemplateData("activationLink", activationLink);
         personalization.addTo(to);
 
-        Mail mail = new Mail(from, "UberPlus - Activate your account", to, content);
+        Mail mail = new Mail();
+        mail.setFrom(from);
         mail.addPersonalization(personalization);
         mail.setTemplateId("d-cfc193aca9e34d6998b0fff380c38d92");
         Request request = new Request();
@@ -59,13 +59,13 @@ public class EmailServiceImpl implements EmailService {
         String link = "http://localhost:4200/signIn?token=" + token;
         Email from = new Email(fromEmail, "UberPLUS");
         Email to = new Email(user.getEmail());
-        Content content = new Content("text/html", " ");
         Personalization  personalization = new Personalization ();
         personalization.addDynamicTemplateData("firstName", user.getFirstName());
         personalization.addDynamicTemplateData("resetLink", link);
         personalization.addTo(to);
 
-        Mail mail = new Mail(from, "UberPlus - Reset your password", to, content);
+        Mail mail = new Mail();
+        mail.setFrom(from);
         mail.addPersonalization(personalization);
         mail.setTemplateId("d-1368ae54b78c4abe9b9b0ae3a7189974");
         Request request = new Request();

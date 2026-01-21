@@ -33,5 +33,10 @@ export class RideBookingStateService {
     this.stops.update(arr => arr.filter((_, i) => i !== index));
   }
 
-  clearStops() { this.stops.set([]); }
+  reset() {
+    this.pickup.set(null);
+    this.dropoff.set(null);
+    this.stops.set([]);
+    this.routeInfo.set(null);
+  }
 }

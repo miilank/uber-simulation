@@ -12,7 +12,6 @@ import com.uberplus.backend.repository.UserRepository;
 import com.uberplus.backend.service.RideService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -58,11 +57,32 @@ public class RideServiceImpl implements RideService {
         ride.setVehicleType(driver.getVehicle().getType());
         ride.setBabyFriendly(request.isBabyFriendly());
         ride.setPetsFriendly(request.isPetFriendly());
-        // Passengers, kad bude bilo
+
+        ride.getPassengers().add(passenger);
+
+        if (request.getLinkedPassengerEmails() != null) {
+            for (String pEmail : request.getLinkedPassengerEmails()) {
+                if (pEmail == null) continue;
+
+                String trimmed = pEmail.trim();
+                if (trimmed.isEmpty()) continue;
+
+                if (trimmed.equalsIgnoreCase(passenger.getEmail())) continue;
+
+                Passenger linked = (Passenger) userRepository.findByEmail(trimmed)
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND, "Linked passenger not found: " + trimmed
+                        ));
+
+                boolean alreadyAdded = ride.getPassengers().stream()
+                        .anyMatch(pp -> pp.getId().equals(linked.getId()));
+                if (!alreadyAdded) {
+                    ride.getPassengers().add(linked);
+                }
+            }
+        }
 
         ride.setScheduledTime(request.getScheduledTime());
-        // Itd.
-
         ride.setCreatedAt(LocalDateTime.now());
         rideRepository.save(ride);
 

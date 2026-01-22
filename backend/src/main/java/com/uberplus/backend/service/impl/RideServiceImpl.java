@@ -159,5 +159,12 @@ public class RideServiceImpl implements RideService {
         ride.setPanicActivatedBy(null);
         rideRepository.save(ride);
     }
+
+    @Override
+    public RideDTO getInProgressForPassenger(String email) {
+        Ride ride = rideRepository.findInProgressForPassenger(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No IN_PROGRESS ride."));
+        return new RideDTO(ride);
+    }
 }
 

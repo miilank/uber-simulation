@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface VehicleService {
     List<VehicleMapDTO> getVehiclesForMap();
+    VehicleMapDTO getDriverVehicleForMap(String driverEmail);
 }

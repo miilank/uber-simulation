@@ -90,8 +90,16 @@
 
             @if (currentRide()?.status == 'IN_PROGRESS')
             {
-              <div class="h-10 px-5 rounded-full bg-gray-200 text-neutral-900 text-sm flex items-center">
+              <div class="flex items-center gap-3 flex-row w-full">
+              <div class="ml-auto h-10 px-5 rounded-full bg-gray-200 text-neutral-900 text-sm flex items-center">
                 Stop ride
+              </div>
+              <button class="h-10 px-8 rounded-full bg-red-600 text-white text-sm font-semibold flex items-center
+              disabled:bg-red-300 disabled:text-white disabled:opacity-75 disabled:cursor-not-allowed"
+                [disabled]="rideState.panicSignal().pressed"
+                (click)="onPanic()">
+                {{ rideState.panicSignal().pressed ? 'PANIC sent' : 'PANIC' }}
+              </button>
               </div>
             }
           </div>
@@ -105,8 +113,8 @@
     }
       <!-- Right: Map -->
       <div class="flex">
-        <div class="flex-1 rounded-2xl border border-gray-100 overflow-hidden bg-gray-50 flex items-center justify-center min-h-[360px]">
-          <div class="w-full h-[390px]">
+        <div class="flex-1 rounded-2xl border border-gray-100 overflow-hidden bg-gray-50 flex items-center justify-center min-h-90">
+          <div class="w-full h-97.5">
             <app-map></app-map>
           </div>
         </div>

@@ -18,15 +18,16 @@ type PassengerItem = { id: number; name: string; role: 'You' | 'Passenger' };
   templateUrl: './current-ride.html',
 })
 export class CurrentRideComponent implements OnInit {
-  constructor(private rideState: CurrentRideStateService, private vehiclesApi: VehiclesApiService, private cdr: ChangeDetectorRef) {}
+  constructor(private vehiclesApi: VehiclesApiService, private cdr: ChangeDetectorRef) {}
   private notificationService = inject(NotificationService);
   private userService = inject(UserService);
-  panicSent = signal(false);
+  rideState = inject(CurrentRideStateService);
   vehicles: VehicleMarker[] = [];
   ngOnInit(): void {
     this.vehiclesApi.getMapVehicles().subscribe({
       next: (data) => {
         this.vehicles = data
+        this.rideState.loadPanic();
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Failed to load vehicles', err),
@@ -35,11 +36,11 @@ export class CurrentRideComponent implements OnInit {
   // page state (mock for now)
 
   onPanic(): void {
-    if (this.panicSent()) return; 
+     if (this.rideState.panicSignal().pressed) return;
 
-    const userId = this.userService.getCurrentUserId();
-    this.rideState.panicSignal.set({pressed: true, rideId: 1, userId: userId ? userId : 0});
-    this.panicSent.set(true);
+    const userId = this.userService.getCurrentUserId() ?? 0;
+    const rideId = 1; // Mock ride ID
+    this.rideState.setPanic(rideId, userId);
   }
 
   currentRideStatus: RideStatus = 'Started';

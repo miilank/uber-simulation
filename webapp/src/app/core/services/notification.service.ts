@@ -23,7 +23,7 @@ constructor(
   notifyAdminAboutPanic(rideId: number, userId: number | null) : void {
     this.http.post(this.configService.ridesUrl + `/${rideId}/panic`, { userId }).subscribe({
       next: () => {
-        this.rideState.panicSignal.set({pressed: false, rideId: 1, userId: 1});
+        console.log('Admin notified about panic');
       },
       error: (err) => {
         console.error('Failed to notify admin about panic', err);

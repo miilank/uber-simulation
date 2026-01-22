@@ -18,6 +18,7 @@ import {CurrentRideComponent} from './features/registered/pages/current-ride/cur
 import { DriverRegistration } from './features/admin/pages/driver-registration/driver-registration';
 import { AdminLayout } from './features/admin/layout/admin-layout/admin-layout';
 import { DriverActivationComponent } from './core/auth/driver-activation';
+import { PanicResponseComponent } from './features/admin/pages/panic-response/panic-response';
 
 export const routes: Routes = [
   { path: '', component: UnregisteredHomeComponent },
@@ -48,6 +49,7 @@ export const routes: Routes = [
     { path: 'profile', component: RegisteredProfileComponent },
     { path: 'register-driver', component: DriverRegistration },
     { path: 'dashboard', component: RegisteredDashboard },
+    { path: 'panic-notifications', component: PanicResponseComponent },
     { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
   ] }
 ];

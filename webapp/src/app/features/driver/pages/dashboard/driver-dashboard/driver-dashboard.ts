@@ -5,6 +5,8 @@ import { RidesService } from '../../../services/rides.service';
 import { RideDTO, RideStatus } from '../../../../shared/models/ride';
 import { UserService } from '../../../../../core/services/user.service';
 import { Driver } from '../../../../shared/models/driver';
+import { CurrentRideStateService } from '../../../../registered/services/current-ride-state.service';
+import { NotificationService } from '../../../../../core/services/notification.service';
 
 type Passenger = { name: string; email: string };
 
@@ -32,6 +34,8 @@ export class DriverDashboard {
 
   ridesService = inject(RidesService);
   userService = inject(UserService);
+  rideState = inject(CurrentRideStateService);
+  notificationService = inject(NotificationService);
   readonly rides = this.ridesService.rides;
   readonly currentRide = this.ridesService.currentRide;
 
@@ -43,8 +47,15 @@ export class DriverDashboard {
           }
         });
     this.userService.fetchMe().subscribe();
+    this.rideState.loadPanic();
   }
+  onPanic(): void {
+    if (this.rideState.panicSignal().pressed) return;
 
+    const userId = this.userService.getCurrentUserId() ?? 0;
+    const rideId = this.currentRide()?.id ?? 0;
+    this.rideState.setPanic(rideId, userId);
+  }
   readonly bookedRides: Signal<BookedRide[]> = computed(() =>
     this.rides()
         .filter(ride => (this.currentRide() !== null && ride.id !== this.currentRide()!.id))

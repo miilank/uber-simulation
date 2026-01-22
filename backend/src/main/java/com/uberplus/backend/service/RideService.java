@@ -1,6 +1,7 @@
 package com.uberplus.backend.service;
 
 import com.uberplus.backend.dto.common.MessageDTO;
+import com.uberplus.backend.dto.notification.PanicNotificationDTO;
 import com.uberplus.backend.dto.ride.CreateRideRequestDTO;
 import com.uberplus.backend.dto.ride.RideDTO;
 import jakarta.validation.Valid;
@@ -14,4 +15,7 @@ public interface RideService {
     RideDTO startRide(Integer rideId);
 
     void setPanic(Integer rideId, Integer userId);
+    List<PanicNotificationDTO> getPanicNotifications();
+    void resolvePanic(Integer rideId);
+
 }

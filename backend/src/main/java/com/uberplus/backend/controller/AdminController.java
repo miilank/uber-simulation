@@ -7,6 +7,7 @@ import com.uberplus.backend.dto.driver.DriverDTO;
 import com.uberplus.backend.dto.notification.PanicNotificationDTO;
 import com.uberplus.backend.dto.ride.RideDTO;
 import com.uberplus.backend.repository.DriverRepository;
+import com.uberplus.backend.service.RideService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.util.List;
 public class AdminController {
 
     private final DriverRepository driverRepository;
+    private final RideService rideService;
 
     // POST /api/admin/drivers
     @PostMapping("/drivers")
@@ -42,8 +44,14 @@ public class AdminController {
     // GET /api/admin/panic-notifications
     @GetMapping("/panic-notifications")
     public ResponseEntity<List<PanicNotificationDTO>> getPanicNotifications() {
-        List<PanicNotificationDTO> panics = List.of(new PanicNotificationDTO(), new PanicNotificationDTO());
+        List<PanicNotificationDTO> panics = rideService.getPanicNotifications();
         return ResponseEntity.ok(panics);
+    }
+
+    @PutMapping("/panic-notifications/{rideId}/resolve")
+    public ResponseEntity<Void> resolvePanic(@PathVariable Integer rideId) {
+        rideService.resolvePanic(rideId);
+        return ResponseEntity.ok().build();
     }
 
     // GET /api/admin/rides/active

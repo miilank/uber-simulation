@@ -82,9 +82,9 @@
 
               <button class="h-10 px-8 rounded-full bg-red-600 text-white text-sm font-semibold flex items-center
               disabled:bg-red-300 disabled:text-white disabled:opacity-75 disabled:cursor-not-allowed"
-                [disabled]="panicSent()"
+                [disabled]="rideState.panicSignal().pressed"
                 (click)="onPanic()">
-                {{ panicSent() ? 'PANIC sent' : 'PANIC' }}
+                {{ rideState.panicSignal().pressed ? 'PANIC sent' : 'PANIC' }}
               </button>
         </div>
         <!-- Guard: available only during active ride -->
@@ -97,8 +97,8 @@
 
       <!-- Right: Map -->
       <div class="flex">
-        <div class="flex-1 rounded-2xl border border-gray-100 overflow-hidden bg-gray-50 flex items-center justify-center min-h-[360px]">
-          <div class="w-full h-[640px]">
+        <div class="flex-1 rounded-2xl border border-gray-100 overflow-hidden bg-gray-50 flex items-center justify-center min-h-90">
+          <div class="w-full h-160">
             <app-map [vehicles]="vehicles"></app-map>
           </div>
         </div>

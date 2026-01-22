@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface RideRepository extends JpaRepository<Ride, Integer>, JpaSpecificationExecutor<Ride> {
     List<Ride> findByDriver(Driver driver);
+    List<Ride> findAllByPanicActivated(boolean state);
 }

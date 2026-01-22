@@ -1,6 +1,7 @@
 package com.uberplus.backend.service.impl;
 
 import com.uberplus.backend.dto.common.MessageDTO;
+import com.uberplus.backend.dto.notification.PanicNotificationDTO;
 import com.uberplus.backend.dto.ride.CreateRideRequestDTO;
 import com.uberplus.backend.dto.ride.LocationDTO;
 import com.uberplus.backend.dto.ride.RideDTO;
@@ -19,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -123,9 +125,39 @@ public class RideServiceImpl implements RideService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.")
         );
+        if (ride.isPanicActivated()){
+            return;
+        }
         ride.setPanicActivatedAt(LocalDateTime.now());
         ride.setPanicActivatedBy(user.getEmail());
         ride.setPanicActivated(true);
         rideRepository.save(ride);
     }
+    @Override
+    public List<PanicNotificationDTO> getPanicNotifications(){
+        List<Ride> ridesWithPanic = rideRepository.findAllByPanicActivated(true);
+        return ridesWithPanic.stream()
+                .map(ride -> {
+                    PanicNotificationDTO dto = new PanicNotificationDTO();
+                    dto.setRideId(ride.getId());
+                    dto.setActivatedBy(ride.getPanicActivatedBy());
+                    dto.setDriverId(ride.getDriver().getId());
+                    dto.setTimestamp(ride.getPanicActivatedAt());
+                    dto.setUserType(userRepository.findByEmail(ride.getPanicActivatedBy()).get().getRole());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+    }
+    @Override
+    public void resolvePanic(Integer rideId){
+        Ride ride = rideRepository.findById(rideId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found.")
+        );
+        ride.setPanicActivated(false);
+        ride.setPanicActivatedAt(null);
+        ride.setPanicActivatedBy(null);
+        rideRepository.save(ride);
+    }
 }
+

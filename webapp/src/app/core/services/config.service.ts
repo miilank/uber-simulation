@@ -21,6 +21,7 @@ export class ConfigService {
   
   public ridesUrl = this.baseUrl + '/rides';
   public priceEstimateUrl = this.ridesUrl + '/estimate';
+  public getPanicsUrl = this.baseUrl + '/admin/panic-notifications';
   
   startRideUrl(rideId: number): string {
       return this.ridesUrl + '/' + rideId.toString() + '/start';

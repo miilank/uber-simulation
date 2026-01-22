@@ -22,7 +22,7 @@ type PassengerItem = { id: number; name: string; role: 'You' | 'Passenger' };
 })
 export class CurrentRideComponent implements OnInit {
   constructor(
-    private rideState: CurrentRideStateService,
+    public rideState: CurrentRideStateService,
     private vehiclesApi: VehiclesApiService,
     private cdr: ChangeDetectorRef
   ) {}

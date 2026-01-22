@@ -17,7 +17,7 @@ export class AdminSidebar {
       { label: 'Dashboard', route: '/admin/dashboard', icon: 'dashboard' },
       { label: 'Register a driver', route: '/admin/register-driver', icon: 'car' },
       { label: 'Profile', route: '/admin/profile', icon: 'user' },
-      { label: 'PANIC notifications', route: '/admin/panic-notifications', icon: 'support' },
+      { label: 'PANIC notifications', route: '/admin/panic-notifications', icon: 'panic' },
     ];
   }
 

@@ -32,4 +32,20 @@ public class VehicleServiceImpl implements VehicleService {
                 ))
                 .toList();
     }
+    @Override
+    public VehicleMapDTO getDriverVehicleForMap(String driverEmail) {
+        Vehicle v = vehicleRepository.findByDriverEmail(driverEmail)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found for driver."));
+
+        if (v.getCurrentLocation() == null) {
+            return new VehicleMapDTO(v.getId(), 0.0, 0.0, v.getStatus());
+        }
+
+        return new VehicleMapDTO(
+                v.getId(),
+                v.getCurrentLocation().getLatitude(),
+                v.getCurrentLocation().getLongitude(),
+                v.getStatus()
+        );
+    }
 }

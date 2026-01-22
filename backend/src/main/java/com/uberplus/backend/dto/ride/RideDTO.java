@@ -32,6 +32,10 @@ public class RideDTO {
     private boolean babyFriendly;
     private boolean petsFriendly;
 
+    private Integer vehicleId;
+    private String vehicleModel;
+    private String vehicleLicensePlate;
+
     public RideDTO(Ride ride) {
         this.id = ride.getId();
 //        this.creatorId = ride.getCreator().getId();
@@ -62,5 +66,11 @@ public class RideDTO {
 
         this.petsFriendly = ride.isPetsFriendly();
         this.babyFriendly = ride.isBabyFriendly();
+
+        if (ride.getDriver() != null && ride.getDriver().getVehicle() != null) {
+            this.vehicleId = ride.getDriver().getVehicle().getId();
+            this.vehicleModel = ride.getDriver().getVehicle().getModel();
+            this.vehicleLicensePlate = ride.getDriver().getVehicle().getLicensePlate();
+        }
     }
 }

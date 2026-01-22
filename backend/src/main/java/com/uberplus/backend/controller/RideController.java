@@ -105,4 +105,10 @@ public class RideController {
     public ResponseEntity<MessageDTO> reportInconsistency(@PathVariable Integer rideId, @RequestBody RideInconsistencyDTO request) {
         return ResponseEntity.ok(new MessageDTO());
     }
+
+    // GET /api/rides/current-in-progress
+    @GetMapping("/current-in-progress")
+    public ResponseEntity<RideDTO> getMyInProgress(Authentication auth) {
+        return ResponseEntity.ok(rideService.getInProgressForPassenger(auth.getName()));
+    }
 }

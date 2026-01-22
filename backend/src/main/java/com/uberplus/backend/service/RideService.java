@@ -18,4 +18,5 @@ public interface RideService {
     List<PanicNotificationDTO> getPanicNotifications();
     void resolvePanic(Integer rideId);
 
+    RideDTO getInProgressForPassenger(String email);
 }

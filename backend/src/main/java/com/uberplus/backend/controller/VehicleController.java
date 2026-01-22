@@ -20,4 +20,10 @@ public class VehicleController {
     public ResponseEntity<List<VehicleMapDTO>> getVehiclesForMap() {
         return ResponseEntity.ok(vehicleService.getVehiclesForMap());
     }
+
+    // GET /api/vehicles/driver/{email}/map
+    @GetMapping("/driver/{email}/map")
+    public ResponseEntity<VehicleMapDTO> getDriverVehicleForMap(@PathVariable String email) {
+        return ResponseEntity.ok(vehicleService.getDriverVehicleForMap(email));
+    }
 }

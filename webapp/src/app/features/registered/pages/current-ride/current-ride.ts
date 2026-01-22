@@ -1,14 +1,17 @@
-import { Component, EventEmitter, inject, Output, signal, OnInit, ChangeDetectorRef} from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {VehicleMarker} from '../../../shared/map/vehicle-marker';
-import {VehiclesApiService} from '../../../shared/api/vehicles-api.service';
 import { FormsModule } from '@angular/forms';
-import {MapComponent} from '../../../shared/map/map';
+
+import { VehicleMarker } from '../../../shared/map/vehicle-marker';
+import { VehiclesApiService } from '../../../shared/api/vehicles-api.service';
+import { MapComponent } from '../../../shared/map/map';
+
 import { CurrentRideStateService } from '../../services/current-ride-state.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { UserService } from '../../../../core/services/user.service';
+import { RideDTO, RideService } from '../../../../core/services/ride.service';
 
-type RideStatus = 'Assigned' | 'Started' | 'Finished' | 'Cancelled';
+type UiRideStatus = 'Assigned' | 'Started' | 'Finished' | 'Cancelled';
 type PassengerItem = { id: number; name: string; role: 'You' | 'Passenger' };
 
 @Component({
@@ -18,22 +21,102 @@ type PassengerItem = { id: number; name: string; role: 'You' | 'Passenger' };
   templateUrl: './current-ride.html',
 })
 export class CurrentRideComponent implements OnInit {
-  constructor(private vehiclesApi: VehiclesApiService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private rideState: CurrentRideStateService,
+    private vehiclesApi: VehiclesApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
   private notificationService = inject(NotificationService);
   private userService = inject(UserService);
-  rideState = inject(CurrentRideStateService);
+  private rideService = inject(RideService);
+
+  panicSent = signal(false);
+
   vehicles: VehicleMarker[] = [];
+
+  currentRideStatus: UiRideStatus = 'Started';
+  fromAddress = '';
+  toAddress = '';
+  vehicleText = '';
+  passengers: PassengerItem[] = [];
+
+  etaMinutes = 1;
+
+  reportNote = '';
+  submittingReport = false;
+
+  private ride: RideDTO | null = null;
+
   ngOnInit(): void {
-    this.vehiclesApi.getMapVehicles().subscribe({
-      next: (data) => {
-        this.vehicles = data
-        this.rideState.loadPanic();
-        this.cdr.detectChanges();
+    this.rideService.getMyInProgressRide().subscribe({
+      next: (r) => {
+        this.ride = r;
+
+        this.currentRideStatus = 'Started';
+        this.fromAddress = r.startLocation.address;
+        this.toAddress = r.endLocation.address;
+
+        this.vehicleText =
+          r.vehicleModel && r.vehicleLicensePlate
+            ? `${r.vehicleModel} • ${r.vehicleLicensePlate}`
+            : 'Vehicle';
+
+        this.passengers = (r.passengerEmails ?? []).map((email, idx) => ({
+          id: idx + 1,
+          name: email,
+          role: 'Passenger'
+        }));
+
+        this.vehiclesApi.getDriverVehicleForMap(r.driverEmail).subscribe({
+          next: (v) => {
+            this.vehicles = [v];
+            this.cdr.detectChanges();
+
+            this.runSimulation(r);
+          },
+          error: (err) => console.error('Failed to load driver vehicle', err),
+        });
       },
-      error: (err) => console.error('Failed to load vehicles', err),
+      error: () => {
+        this.ride = null;
+        this.vehicles = [];
+        this.currentRideStatus = 'Cancelled';
+        this.fromAddress = '';
+        this.toAddress = '';
+        this.vehicleText = '';
+      }
     });
   }
-  // page state (mock for now)
+
+  private runSimulation(r: RideDTO) {
+    window.setTimeout(() => {
+      if (!this.vehicles.length) return;
+
+      this.vehicles = [{
+        ...this.vehicles[0],
+        lat: r.startLocation.latitude,
+        lng: r.startLocation.longitude
+      }];
+      this.cdr.detectChanges();
+
+      window.setTimeout(() => {
+        if (!this.vehicles.length) return;
+
+        this.vehicles = [{
+          ...this.vehicles[0],
+          lat: r.endLocation.latitude,
+          lng: r.endLocation.longitude
+        }];
+        this.cdr.detectChanges();
+
+        window.alert('Ride finished!');
+        this.currentRideStatus = 'Finished';
+        this.cdr.detectChanges();
+      }, 10_000);
+
+    }, 30_000);
+  }
 
   onPanic(): void {
      if (this.rideState.panicSignal().pressed) return;
@@ -43,27 +126,7 @@ export class CurrentRideComponent implements OnInit {
     this.rideState.setPanic(rideId, userId);
   }
 
-  currentRideStatus: RideStatus = 'Started';
-
-  fromAddress = 'Bulevar oslobođenja 46';
-  toAddress = 'Ulica Narodnih heroja 14';
-
-  vehicleText = 'Skoda Octavia • NS-123-AB';
-
-  passengers: PassengerItem[] = [
-    { id: 1, name: 'Milan Kacarevic', role: 'You' },
-    { id: 2, name: 'Mirko Mirkovic', role: 'Passenger' },
-    { id: 3, name: 'Ana Jovanovic', role: 'Passenger' },
-    { id: 4, name: 'Ana Markovic', role: 'Passenger' },
-  ];
-
-  // ETA (mock)
-  etaMinutes = 7;
-
-  reportNote = '';
-  submittingReport = false;
-
-  statusPillClasses: Record<RideStatus, string> = {
+  statusPillClasses: Record<UiRideStatus, string> = {
     Assigned: 'bg-blue-100 text-blue-700',
     Started: 'bg-green-100 text-green-700',
     Finished: 'bg-gray-100 text-slate-700',
@@ -81,15 +144,6 @@ export class CurrentRideComponent implements OnInit {
   }
 
   submitReport(): void {
-    const note = this.reportNote.trim();
-    if (!this.isRideActive || !note) return;
-
-    this.submittingReport = true;
-
-    // UI-only placeholder: later API call
-    setTimeout(() => {
-      this.submittingReport = false;
-      this.reportNote = '';
-    }, 600);
+    return;
   }
 }

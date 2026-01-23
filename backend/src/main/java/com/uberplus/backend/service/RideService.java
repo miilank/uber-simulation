@@ -9,7 +9,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 public interface RideService {
-    RideDTO reqestRide(String email, @Valid CreateRideRequestDTO request);
+    RideDTO requestRide(String email, @Valid CreateRideRequestDTO request);
     List<RideDTO> getRides(String email);
 
     RideDTO startRide(Integer rideId);

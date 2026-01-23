@@ -15,4 +15,6 @@ public interface DriverRepository extends JpaRepository<Driver, Integer> {
     List<Driver> findByActiveTrueAndAvailableTrue();
 
     boolean existsByEmail(String email);
+
+    List<Driver> findByActiveTrue();
 }

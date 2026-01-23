@@ -21,4 +21,6 @@ public class CreateRideRequestDTO {
     private List<String> linkedPassengerEmails;
     private LocalDateTime scheduledTime;
     private Long favoriteRouteId;
+
+    private int estimatedDurationMinutes;
 }

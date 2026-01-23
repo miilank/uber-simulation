@@ -28,6 +28,7 @@ public class RideDTO {
     private boolean panicActivated;
     private String cancelledBy;
     private LocalDateTime scheduledTime;
+    private LocalDateTime estimatedStartTime;
 
     private boolean babyFriendly;
     private boolean petsFriendly;
@@ -72,5 +73,7 @@ public class RideDTO {
             this.vehicleModel = ride.getDriver().getVehicle().getModel();
             this.vehicleLicensePlate = ride.getDriver().getVehicle().getLicensePlate();
         }
+
+        this.estimatedStartTime = ride.getEstimatedStartTime();
     }
 }

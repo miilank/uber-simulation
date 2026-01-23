@@ -40,7 +40,7 @@ public class RideController {
     // POST /api/rides
     @PostMapping
     public ResponseEntity<RideDTO> createRide(Authentication auth, @Valid @RequestBody CreateRideRequestDTO request) {
-        return ResponseEntity.ok(rideService.reqestRide(auth.getName(), request));
+        return ResponseEntity.ok(rideService.requestRide(auth.getName(), request));
     }
     // Za sad samo driver. Ne znam da li treba za druge.
     // GET /api/rides

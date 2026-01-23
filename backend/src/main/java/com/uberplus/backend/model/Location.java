@@ -30,4 +30,24 @@ public class Location {
     void onCreate() {
         if (createdAt == null) createdAt = LocalDateTime.now();
     }
+
+    public double distanceTo(Location other) {
+        // Approximates meter distance
+        double lat1 = this.latitude;
+        double lon1 = this.longitude;
+        double lat2 = other.getLatitude();
+        double lon2 = other.getLongitude();
+
+        double deltaLat = lat2 - lat1;
+        double deltaLon = lon2 - lon1;
+        double avgLat = Math.toRadians((lat1 + lat2) / 2.0);
+
+        double metersPerDegLat = 111_000;
+        double metersPerDegLon = 111_000 * Math.cos(avgLat);
+
+        double x = deltaLon * metersPerDegLon;
+        double y = deltaLat * metersPerDegLat;
+
+        return Math.sqrt(x*x + y*y);
+    }
 }

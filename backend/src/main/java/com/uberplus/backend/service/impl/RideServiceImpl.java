@@ -1,6 +1,5 @@
 package com.uberplus.backend.service.impl;
 
-import com.uberplus.backend.dto.common.MessageDTO;
 import com.uberplus.backend.dto.notification.PanicNotificationDTO;
 import com.uberplus.backend.dto.ride.CreateRideRequestDTO;
 import com.uberplus.backend.dto.ride.LocationDTO;
@@ -10,17 +9,24 @@ import com.uberplus.backend.model.enums.RideStatus;
 import com.uberplus.backend.repository.DriverRepository;
 import com.uberplus.backend.repository.RideRepository;
 import com.uberplus.backend.repository.UserRepository;
+import com.uberplus.backend.service.OSRMService;
 import com.uberplus.backend.service.RideService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.antlr.v4.runtime.misc.Pair;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.partitioningBy;
 
 @Service
 @AllArgsConstructor
@@ -28,39 +34,141 @@ public class RideServiceImpl implements RideService {
     private RideRepository rideRepository;
     private UserRepository userRepository;
     private DriverRepository driverRepository;
+    private OSRMService osrmService;
 
     @Override
     @Transactional
-    public RideDTO reqestRide(String email, CreateRideRequestDTO request) {
-        Passenger passenger = (Passenger) userRepository.findByEmail(email).orElseThrow(
+    public RideDTO requestRide(String email, CreateRideRequestDTO request) {
+        Passenger creator = (Passenger) userRepository.findByEmail(email).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.")
         );
 
-        List<Driver> availableDrivers = driverRepository.findByActiveTrueAndAvailableTrue();
+        List<Driver> potentialDrivers = driverRepository.findByActiveTrue();
 
-        if (availableDrivers.isEmpty()) throw new ResponseStatusException(HttpStatus.OK, "No drivers currently available.");
+        if (potentialDrivers.isEmpty()) throw new ResponseStatusException(HttpStatus.OK, "No drivers currently active.");
 
-        Driver driver = availableDrivers.getFirst();
+        LocalDateTime scheduledEnd = request.getScheduledTime().plusMinutes(request.getEstimatedDurationMinutes());
+
+        // Filter drivers that will be inactive
+        potentialDrivers = potentialDrivers.stream().filter(driver -> {
+           LocalDateTime workEndTime = LocalDateTime.now().plusMinutes((long)(8*60-driver.getWorkedMinutesLast24h()));
+           return scheduledEnd.isBefore(workEndTime);
+        }).toList();
+
+        if(potentialDrivers.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.OK, "No drivers will be active during your scheduled time.");
+        }
+
+        //Filter drivers with overlapping rides
+        potentialDrivers =  potentialDrivers.stream().filter(driver -> {
+            List<Ride> rides = driver.getRides();
+            for(Ride ride : rides) {
+                if ((ride.getEstimatedStartTime().isBefore(scheduledEnd) && // TODO: Proveri
+                        ride.getEstimatedEndTime().isAfter(request.getScheduledTime()))) {
+                    return false;
+                }
+            }
+            return true;
+        }).toList();
+
+        if(potentialDrivers.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.OK, "All drivers are busy during your scheduled time.");
+        }
+
+        // Filter drivers by vehicle requirements
+        potentialDrivers = potentialDrivers.stream().filter(driver -> {
+            Vehicle vehicle = driver.getVehicle();
+            return ((!request.isBabyFriendly() || vehicle.isBabyFriendly()) &&
+                    (!request.isPetFriendly() || vehicle.isPetsFriendly()) &&
+                    ((request.getVehicleType() == vehicle.getType()) || (request.getVehicleType()==null)) &&
+                    (vehicle.getSeatCount() >= (request.getLinkedPassengerEmails().size() + 1)));
+        }).toList();
+
+        if(potentialDrivers.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.OK, "No available drivers meet your requirements.");
+        }
+
+
+        List<Driver> availableDrivers = filterDriversWhoCanMakeRide(potentialDrivers,
+                scheduledEnd,
+                request.getEndLocation().toEntity());
+
+        if(availableDrivers.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.OK,
+                    "Cannot assign this ride because the time is incompatible with drivers' schedules (debug message).");
+        }
+
+        // Finally, sort drivers based on how far they will be after their last ride before the scheduled ride
+        // If there was no previous ride, take driver's location
+        Location requestStart = request.getStartLocation().toEntity();
+
+        Driver selectedDriver = availableDrivers.stream()
+                .map(driver -> {
+                    Ride lastRide = getLastRideBefore(request.getScheduledTime(), driver);
+                    long distance;
+                    if (lastRide != null && lastRide.getEndLocation() != null) {
+                        distance = (long) lastRide.getEndLocation().distanceTo(requestStart);
+
+                    } else if (driver.getVehicle().getCurrentLocation() != null) {
+                        distance = (long) driver.getVehicle().getCurrentLocation().distanceTo(requestStart);
+
+                    } else {
+                        distance = Long.MAX_VALUE;
+                    }
+                    return new AbstractMap.SimpleEntry<>(driver, distance);
+                })
+                .sorted(Comparator.comparingLong(Map.Entry::getValue))
+                .map(Map.Entry::getKey)
+                .toList()
+                .getFirst();
+
 
         Ride ride = new Ride();
-        ride.setCreator(passenger);
-        ride.setDriver(driver);
+        ride.setCreator(creator);
+        ride.setDriver(selectedDriver);
         ride.setStatus(RideStatus.ACCEPTED);
         ride.setStartLocation(request.getStartLocation().toEntity());
         ride.setEndLocation(request.getEndLocation().toEntity());
 
-        List<Location> waypoints = new ArrayList<Location>();
+        List<Location> waypoints = new ArrayList<>();
 
         for(LocationDTO dto : request.getWaypoints()) {
             waypoints.add(dto.toEntity());
         }
-
         ride.setWaypoints(waypoints);
-        ride.setVehicleType(driver.getVehicle().getType());
+
+        // Estimate arrival time
+        Ride lastRide = getLastRideBefore(request.getScheduledTime(), selectedDriver);
+        Location loc;
+        if (lastRide != null) {
+            loc = lastRide.getEndLocation();
+        } else {
+            loc = selectedDriver.getVehicle().getCurrentLocation();
+        }
+
+        LocalDateTime estArrival;
+        try {
+            estArrival = LocalDateTime.now()
+                    .plusSeconds((long) osrmService.getDuration(loc, requestStart));
+        } catch (IOException | InterruptedException e) {
+            // If error, assume ride will be on time
+            estArrival = request.getScheduledTime();
+        }
+
+        if(estArrival.isBefore(request.getScheduledTime())) {
+            ride.setEstimatedStartTime(request.getScheduledTime());
+        } else {
+            ride.setEstimatedStartTime(estArrival);
+        }
+
+        ride.setEstimatedEndTime(ride.getEstimatedStartTime()
+                .plusMinutes(request.getEstimatedDurationMinutes()));
+
+        ride.setVehicleType(selectedDriver.getVehicle().getType());
         ride.setBabyFriendly(request.isBabyFriendly());
         ride.setPetsFriendly(request.isPetFriendly());
 
-        ride.getPassengers().add(passenger);
+        ride.getPassengers().add(creator);
 
         if (request.getLinkedPassengerEmails() != null) {
             for (String pEmail : request.getLinkedPassengerEmails()) {
@@ -69,7 +177,7 @@ public class RideServiceImpl implements RideService {
                 String trimmed = pEmail.trim();
                 if (trimmed.isEmpty()) continue;
 
-                if (trimmed.equalsIgnoreCase(passenger.getEmail())) continue;
+//                if (trimmed.equalsIgnoreCase(passenger.getEmail())) continue;
 
                 Passenger linked = (Passenger) userRepository.findByEmail(trimmed)
                         .orElseThrow(() -> new ResponseStatusException(
@@ -165,6 +273,77 @@ public class RideServiceImpl implements RideService {
         Ride ride = rideRepository.findInProgressForPassenger(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No IN_PROGRESS ride."));
         return new RideDTO(ride);
+    }
+
+    private Ride getLastRideBefore(LocalDateTime date, Driver driver) {
+        // Filter canceled/completed rides and those after set date
+        List<Ride> rides = driver.getRides().stream().filter(ride ->
+                ride.getEstimatedEndTime().isBefore(date) &&
+                (ride.getStatus() == RideStatus.PENDING || ride.getStatus() == RideStatus.IN_PROGRESS)).toList();
+
+        rides = new ArrayList<>(rides);
+        rides.sort(Comparator.comparing(Ride::getEstimatedEndTime));
+
+        return rides.isEmpty() ? null : rides.getLast();
+    }
+
+    private Ride getFirstRideAfter(LocalDateTime date, Driver driver) {
+        // Filter canceled/completed rides and those before set date
+        List<Ride> rides = driver.getRides().stream().filter(ride ->
+                ride.getEstimatedStartTime().isAfter(date) &&
+                (ride.getStatus() == RideStatus.PENDING || ride.getStatus() == RideStatus.IN_PROGRESS)).toList();
+
+        rides = new ArrayList<>(rides);
+        rides.sort(Comparator.comparing(Ride::getEstimatedEndTime));
+
+        return rides.isEmpty() ? null : rides.getFirst();
+    }
+
+
+    private List<Driver> filterDriversWhoCanMakeRide(List<Driver> potentialDrivers,
+                                                     LocalDateTime scheduledEnd,
+                                                     Location startLocation) {
+        Map<Boolean, List<Map.Entry<Driver, Ride>>> pairedParts =
+                potentialDrivers.stream()
+                        .map(driver -> new AbstractMap.SimpleEntry<>(driver, getFirstRideAfter(scheduledEnd, driver)))
+                        .collect(Collectors.partitioningBy( entry -> entry.getValue() != null));
+
+        // Split list based on if they have another ride afterwards or not
+        List<Driver> hasNextDrivers = pairedParts.get(true).stream()
+                .map(Map.Entry::getKey)
+                .toList();
+
+        List<Ride> nextRides = pairedParts.get(true).stream()
+                .map(Map.Entry::getValue)
+                .toList();
+
+        List<Location> nextLocations = nextRides.stream()
+                .map(Ride::getStartLocation)
+                .toList();
+
+        List<Driver> noNextDrivers = pairedParts.get(false).stream()
+                .map(Map.Entry::getKey)
+                .toList();
+
+        double[][] durationMatrix;
+        try {
+            durationMatrix = osrmService.getDurationsMatrix(nextLocations,
+                    new ArrayList<>(Collections.singletonList(startLocation)));
+        } catch (IOException | InterruptedException e) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Routing service temporarily unavailable.");
+        }
+
+        // Goes through drivers with next rides, then appends those who can get to the ride before its scheduled start
+        ArrayList<Driver> availableDrivers = new ArrayList<>(noNextDrivers);
+        for (int i = 0; i < hasNextDrivers.size(); i++) {
+            double durationSeconds = durationMatrix[i][0];
+            if (scheduledEnd.plusSeconds((long)durationSeconds)
+                    .isBefore(nextRides.get(i).getScheduledTime())) {
+                availableDrivers.add(hasNextDrivers.get(i));
+            }
+        }
+
+        return availableDrivers;
     }
 }
 

@@ -276,8 +276,8 @@
 
         </div>
       }
-        @if (isSuccessOpen) {
-        <div class="fixed inset-0 z-50 flex items-center justify-center">
+        @if (isSuccessOpen()) {
+        <div class="fixed inset-0 z-800 flex items-center justify-center">
           <!-- Backdrop -->
           <div class="absolute inset-0 bg-black/50"></div>
 
@@ -294,7 +294,7 @@
                 {{successMessage}}
               </p>
               <button
-                routerLink="/user/dashboard"
+                [routerLink]="dashboardUrl"
                 class="mt-4 px-6 py-2 cursor-pointer rounded-full text-sm bg-app-accent text-app-dark hover:bg-app-accent-dark transition"
               >
                 Exit
@@ -304,12 +304,12 @@
         </div>
       }
 
-      @if(!isSuccessOpen){
-        <error-alert
-        [isOpen]="isErrorOpen"
-        [message]="errorMessage"
-        [title]="errorTitle"
-        (close)="closeErrorAlert()"> </error-alert>
-      }
+      <error-alert
+      [isOpen]="isErrorOpen"
+      [message]="errorMessage"
+      [title]="errorTitle"
+      (close)="closeErrorAlert()"> </error-alert>
+
+
   </div>
 </div>

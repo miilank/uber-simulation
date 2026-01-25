@@ -1,6 +1,17 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Ride } from '../../../../../shared/models/ride';
+
+interface RideHistoryItem {
+  id: number;
+  date: string;
+  time: string;
+  from: string;
+  to: string;
+  status: string;
+  cancelledBy: string | null;
+  panic: boolean;
+  price: string;
+}
 
 type Passenger = { name: string; phone: string };
 
@@ -12,7 +23,7 @@ type Passenger = { name: string; phone: string };
 })
 export class RideDetailsDrawer {
   @Input() open = false;
-  @Input() ride: Ride | null = null;
+  @Input() ride: RideHistoryItem | null = null;
   @Output() close = new EventEmitter<void>();
 
   // mock details (later from db)
@@ -23,29 +34,30 @@ export class RideDetailsDrawer {
 
   // mock additional fields
   get startDateTime() {
-    // can be parsed from db
     return this.ride ? `${this.ride.date}2025, ${this.ride.time.split(' - ')[0]}` : '';
   }
+
   get endDateTime() {
     return this.ride ? `${this.ride.date}2025, ${this.ride.time.split(' - ')[1]}` : '';
   }
+
   get duration() {
-    // dummy
     return this.ride?.status ? '17 minutes' : '';
   }
 
-  // panic details (mock)
+  // panic details
   get panicYes() {
     return !!this.ride?.panic;
   }
+
   get panicTimestamp() {
     return this.ride?.panic ? `${this.ride.date}2025, 09:15` : '';
   }
 
-  // cancelled details (mock)
   get cancelReason() {
     return 'Changed plans';
   }
+
   get cancelTime() {
     return this.ride ? `${this.ride.date}2025, 14:18` : '';
   }
@@ -53,6 +65,7 @@ export class RideDetailsDrawer {
   onBackdropClick() {
     this.close.emit();
   }
+
   onClose() {
     this.close.emit();
   }

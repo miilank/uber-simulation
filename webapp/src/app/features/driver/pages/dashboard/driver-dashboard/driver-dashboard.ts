@@ -49,6 +49,8 @@ export class DriverDashboard implements OnDestroy {
   private workMinutes = signal<number>(24);
   private readonly workLimitMinutes = 8 * 60;
 
+  protected simulationCompleted = signal<boolean>(false);
+
   ridesService = inject(DriverRidesService);
   userService = inject(UserService);
   rideState = inject(CurrentRideStateService);
@@ -73,6 +75,7 @@ export class DriverDashboard implements OnDestroy {
 
       // cleanup if no ride
       if (!r) {
+        this.simulationCompleted.set(false);
         if (this.driverEmail) this.follow.stop(this.driverEmail);
         this.driverEmail = undefined;
 
@@ -109,6 +112,7 @@ export class DriverDashboard implements OnDestroy {
 
       // start/stop simulation runner (root) based on ride status
       if (r.status === 'IN_PROGRESS') {
+        this.simulationCompleted.set(false);
         this.simRunner.startForRide(r);
       } else {
         this.simRunner.stopForRide(r.id);
@@ -127,6 +131,16 @@ export class DriverDashboard implements OnDestroy {
 
     this.userService.fetchMe().subscribe();
     this.rideState.loadPanic();
+
+    this.subs.push(
+      this.simRunner.onSimulationComplete$.subscribe(rideId => {
+        const current = this.currentRide();
+        if (current && current.id === rideId) {
+          this.simulationCompleted.set(true);
+          this.cdr.detectChanges();
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -210,6 +224,23 @@ export class DriverDashboard implements OnDestroy {
 
     this.ridesService.startRide(r.id).subscribe({
       next: () => this.ridesService.fetchRides().subscribe(),
+    });
+  }
+
+  completeCurrentRide() {
+    const r = this.currentRide();
+
+    if (!r || r.status !== 'IN_PROGRESS' || !this.simulationCompleted()) {
+      return;
+    }
+
+    this.ridesService.completeRide(r.id).subscribe({
+      next: () => {
+        this.ridesService.fetchRides().subscribe();
+        this.simRunner.stopForRide(r.id);
+        this.simulationCompleted.set(false);
+      },
+      error: (err) => console.error('Failed to complete ride', err)
     });
   }
 

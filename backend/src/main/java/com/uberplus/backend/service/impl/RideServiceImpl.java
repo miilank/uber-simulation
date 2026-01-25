@@ -6,6 +6,7 @@ import com.uberplus.backend.dto.ride.LocationDTO;
 import com.uberplus.backend.dto.ride.RideDTO;
 import com.uberplus.backend.model.*;
 import com.uberplus.backend.model.enums.RideStatus;
+import com.uberplus.backend.model.enums.VehicleStatus;
 import com.uberplus.backend.repository.DriverRepository;
 import com.uberplus.backend.repository.RideRepository;
 import com.uberplus.backend.repository.UserRepository;
@@ -344,6 +345,53 @@ public class RideServiceImpl implements RideService {
         }
 
         return availableDrivers;
+    }
+
+    @Override
+    @Transactional
+    public RideDTO completeRide(Integer rideId, String driverEmail) {
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Ride not found."
+                ));
+
+        if (ride.getDriver() == null || !ride.getDriver().getEmail().equals(driverEmail)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "You are not the driver of this ride."
+            );
+        }
+
+        if (ride.getStatus() != RideStatus.IN_PROGRESS) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Ride is not in progress."
+            );
+        }
+
+        ride.setStatus(RideStatus.COMPLETED);
+        ride.setActualEndTime(LocalDateTime.now());
+
+        Driver driver = ride.getDriver();
+        if (driver.getVehicle() != null) {
+            driver.getVehicle().setStatus(VehicleStatus.AVAILABLE);
+        }
+
+        if (ride.getActualStartTime() != null) {
+            long minutesWorked = java.time.Duration.between(
+                    ride.getActualStartTime(),
+                    ride.getActualEndTime()
+            ).toMinutes();
+
+            driver.setWorkedMinutesLast24h(
+                    driver.getWorkedMinutesLast24h() + minutesWorked
+            );
+        }
+
+        rideRepository.save(ride);
+        driverRepository.save(driver);
+
+        // TODO: posalji notifikacije putnicima
+
+        return new RideDTO(ride);
     }
 }
 

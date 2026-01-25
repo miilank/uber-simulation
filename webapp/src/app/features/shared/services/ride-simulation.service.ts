@@ -26,6 +26,8 @@ export class RideSimulationService {
   private simAbort?: AbortController;
   private vehicleSub?: Subscription;
 
+  private onCompleteCallback?: () => void;
+
   constructor(
     private vehiclesApi: VehiclesApiService,
     private routing: RoutingService,
@@ -44,16 +46,20 @@ export class RideSimulationService {
 
     this.vehiclesSub.next([]);
     this.routePathSub.next([]);
+
+    this.onCompleteCallback = undefined;
   }
 
   // pokrece simulaciju
-  start(ride: RideLike, opts?: { startDelayMs?: number; stepMeters?: number; tickMs?: number }): void {
+  start(ride: RideLike, opts?: { startDelayMs?: number; stepMeters?: number; tickMs?: number; }, onComplete?: () => void): void {
     this.stop();
 
     if (!ride.driverEmail) {
       console.error('Simulation: missing driverEmail on ride');
       return;
     }
+
+    this.onCompleteCallback = onComplete;
 
     const startDelayMs = opts?.startDelayMs ?? 30_000;
     const stepMeters = opts?.stepMeters ?? 100;
@@ -145,6 +151,9 @@ export class RideSimulationService {
         if (!isLastStop) {
           await this.sleep(3000);
         }
+      }
+      if (this.onCompleteCallback) {
+        this.onCompleteCallback();
       }
     } catch (e: any) {
       if (e?.name === 'AbortError') return;

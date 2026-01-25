@@ -1,5 +1,6 @@
 package com.uberplus.backend.dto.ride;
 
+import com.uberplus.backend.dto.passenger.PassengerDTO;
 import com.uberplus.backend.model.Passenger;
 import com.uberplus.backend.model.Ride;
 import com.uberplus.backend.model.enums.RideStatus;
@@ -22,6 +23,7 @@ public class RideDTO {
     private LocationDTO startLocation;
     private LocationDTO endLocation;
     private List<LocationDTO> waypoints;
+    private List<PassengerDTO> passengers;
     private List<String> passengerEmails;
     private VehicleType vehicleType;
     private double totalPrice;
@@ -53,7 +55,10 @@ public class RideDTO {
                 .stream()
                 .map(LocationDTO::new)
                 .toList();
-
+        this.passengers = ride.getPassengers()
+                .stream()
+                .map(PassengerDTO::new)
+                .toList();
         this.passengerEmails = ride.getPassengers()
                 .stream()
                 .map(Passenger::getEmail)

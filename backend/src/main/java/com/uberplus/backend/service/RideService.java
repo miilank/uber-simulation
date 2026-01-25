@@ -19,4 +19,5 @@ public interface RideService {
     void resolvePanic(Integer rideId);
 
     RideDTO getInProgressForPassenger(String email);
+    RideDTO completeRide(Integer rideId, String driverEmail);
 }

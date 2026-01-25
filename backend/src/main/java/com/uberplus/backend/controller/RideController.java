@@ -81,10 +81,14 @@ public class RideController {
         return ResponseEntity.ok(rideService.startRide(rideId));
     }
 
-    // PUT /api/rides/{rideId}/end
-    @PutMapping("/{rideId}/end")
-    public ResponseEntity<RideDTO> endRide(@PathVariable Integer rideId) {
-        return ResponseEntity.ok(new RideDTO());
+    // PUT /api/rides/{rideId}/complete
+    @PutMapping("/{rideId}/complete")
+    public ResponseEntity<RideDTO> completeRide(
+            Authentication auth,
+            @PathVariable Integer rideId
+    ) {
+        RideDTO completed = rideService.completeRide(rideId, auth.getName());
+        return ResponseEntity.ok(completed);
     }
 
     // POST /api/rides/{rideId}/panic

@@ -32,6 +32,8 @@ export class MapComponent implements AfterViewInit, OnChanges {
   @Input() vehicles: VehicleMarker[] = [];
   @Input() routeStart?: { lat: number; lon: number } | null;
   @Input() routeEnd?: { lat: number; lon: number } | null;
+  @Input() routePath: [number, number][] = [];
+  @Input() routePoints: { lat: number; lon: number; label?: string }[] = [];
 
   private L?: typeof Leaflet;
   private map?: LeafletMap;
@@ -122,7 +124,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
       this.renderVehicles();
     }
 
-    if ((changes['routeStart'] || changes['routeEnd']) && this.map && this.routeLayer) {
+    if ((changes['routePoints'] || changes['routePath'] || changes['routeStart'] || changes['routeEnd']) && this.map && this.routeLayer) {
       void this.renderRouteInputs();
     }
   }
@@ -252,27 +254,38 @@ export class MapComponent implements AfterViewInit, OnChanges {
   private async renderRouteInputs(): Promise<void> {
     if (!this.L || !this.map || !this.routeLayer) return;
 
-    const start = this.routeStart;
-    const end = this.routeEnd;
-
-    if (!start || !end) {
+    if ((!this.routePoints || this.routePoints.length < 2) && (!this.routePath || this.routePath.length < 2)) {
       this.clearLayer(this.routeLayer, this.currentRideDrawState);
       return;
     }
 
-    const points: LatLng[] = [
-      [start.lat, start.lon],
-      [end.lat, end.lon],
-    ];
+    this.clearLayer(this.routeLayer, this.currentRideDrawState);
+
+    if (this.routePoints?.length) {
+      this.routePoints.forEach((p, i) => {
+        const label = p.label ?? (i === 0 ? 'Pickup' : i === this.routePoints.length - 1 ? 'Destination' : `Stop ${i}`);
+        const radius = (i === 0 || i === this.routePoints.length - 1) ? 7 : 6;
+
+        this.L!.circleMarker([p.lat, p.lon], { radius })
+          .addTo(this.routeLayer!)
+          .bindTooltip(label, { direction: 'top' });
+      });
+    }
+
+    if (this.routePath && this.routePath.length >= 2) {
+      this.L.polyline(this.routePath as any).addTo(this.routeLayer);
+      this.map.fitBounds(this.L.latLngBounds(this.routePath as any), { padding: [20, 20] });
+      return;
+    }
+
+    const points: LatLng[] = (this.routePoints ?? []).map(p => [p.lat, p.lon]);
 
     try {
-      await this.drawRouteOnLayer(
-        points,
-        this.routeLayer,
-        this.currentRideDrawState,
-        { start: 'From', end: 'To' },
-        true
-      );
+      const { routeCoords } = await this.routing.buildFullRoute(points, this.currentRideDrawState.abort?.signal ?? undefined as any);
+      if (routeCoords.length) {
+        this.L.polyline(routeCoords).addTo(this.routeLayer);
+        this.map.fitBounds(this.L.latLngBounds(routeCoords), { padding: [20, 20] });
+      }
     } catch (e: any) {
       if (e?.name === 'AbortError') return;
     }

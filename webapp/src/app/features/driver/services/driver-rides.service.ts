@@ -50,4 +50,14 @@ export class DriverRidesService {
             })
         )
     }
+
+    completeRide(rideId: number): Observable<RideDTO> {
+      return this.http.put<RideDTO>(this.config.completeRideUrl(rideId), {}).pipe(
+        tap((completedRide) => {
+          // Ukloni zavrsenu voznju iz liste (prebacuje se u history)
+          let ridesArr: RideDTO[] = this.rides().filter(r => r.id !== completedRide.id);
+          this.rides.set(ridesArr);
+        })
+      )
+    }
 }

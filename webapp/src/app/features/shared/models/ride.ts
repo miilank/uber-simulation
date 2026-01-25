@@ -1,5 +1,6 @@
 import { LocationDTO } from "./location";
 import { VehicleType } from "./vehicle";
+import {PassengerDTO} from './passenger';
 
 export type RideStatus = 'PENDING' | 'ACCEPTED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
@@ -22,6 +23,7 @@ export interface RideDTO {
   startLocation: LocationDTO;
   endLocation: LocationDTO;
   waypoints: LocationDTO[];
+  passengers: PassengerDTO[];
   passengerEmails: string[];
   vehicleType: VehicleType;
   totalPrice: number;

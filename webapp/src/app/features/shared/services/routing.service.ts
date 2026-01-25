@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 
-export type LatLng = [number, number];
+export type LatLng = [number, number];  // tacka predstavljena kao tuple
 
-export type RouteSegment = {
+export type RouteSegment = {  // jedan segment rute: metri, sekunde, LatLng
   distance: number;
   duration: number;
   coordinates: LatLng[];
@@ -12,6 +12,7 @@ export type RouteSegment = {
 export class RoutingService {
   private readonly baseUrl = 'https://router.project-osrm.org';
 
+  // ovo zove OSRM
   async fetchRoute(from: LatLng, to: LatLng, signal: AbortSignal): Promise<RouteSegment> {
     const url =
       `${this.baseUrl}/route/v1/driving/` +
@@ -33,6 +34,7 @@ export class RoutingService {
     };
   }
 
+  // pravi rutu kroz vise tacaka
   async buildFullRoute(points: LatLng[], signal: AbortSignal): Promise<{
     totalDistance: number;
     totalDuration: number;

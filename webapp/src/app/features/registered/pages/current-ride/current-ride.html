@@ -1,107 +1,127 @@
 <section class="w-full bg-white rounded-[28px] shadow-xl p-10 relative pointer-events-auto">
   <h2 class="text-2xl font-poppins mb-6">Current ride:</h2>
-
   <!-- Current ride card -->
   <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_640px] gap-6 items-stretch">
       <!-- Left -->
-      <div class="min-w-0">
-        <!-- Status + Estimated Time of Arrival(ETA) -->
-        <div class="flex items-center gap-3 mb-3">
-          <span class="inline-flex items-center px-3 h-7 rounded-full text-xs"
-                [ngClass]="statusPillClasses[currentRideStatus]">
-            {{ currentRideStatus }}
-          </span>
+      @if (ride) {
+        <div class="min-w-0">
+          <!-- Status + Estimated Time of Arrival(ETA) -->
+          <div class="flex items-center gap-3 mb-3">
+            <span class="inline-flex items-center px-3 h-7 rounded-full text-xs"
+                  [ngClass]="statusPillClasses[currentRideStatus]">
+              {{ currentRideStatus }}
+            </span>
 
-          <span class="ml-auto text-sm text-gray-600">
-            ETA:
-            <span class="text-gray-900 font-semibold tabular-nums">{{ etaText }}</span>
-          </span>
-        </div>
+            <span class="ml-auto text-sm text-gray-600">
+              ETA:
+              <span class="text-gray-900 font-semibold tabular-nums">{{ etaText }}</span>
+            </span>
+          </div>
 
-        <!-- Route -->
-        <div class="text-base text-gray-900 font-medium mb-5 truncate">
-          {{ fromAddress }} <span class="text-gray-400">→</span> {{ toAddress }}
-        </div>
+          <!-- Route -->
+          <div class="text-base text-gray-900 font-medium mb-5 truncate">
+            {{ fromAddress }} <span class="text-gray-400">→</span> {{ toAddress }}
+          </div>
 
-        <!-- Vehicle -->
-        <div class="text-sm text-gray-600 mb-5">
-          Vehicle:
-          <span class="text-gray-900 font-medium">{{ vehicleText }}</span>
-        </div>
+          <!-- WayPoints -->
+          @if (waypoints.length) {
+            <div class="text-sm text-gray-700 font-semibold mb-2">Stops:</div>
 
-        <!-- Other passengers -->
-        <div class="text-sm text-gray-700 font-semibold mb-2">Passengers:</div>
-        <div class="relative rounded-xl border border-gray-100 overflow-hidden mb-6">
-          <div class="max-h-36 overflow-y-auto">
-            <div class="divide-y divide-gray-100">
-              @for (p of passengers; track p.id) {
-                <div class="flex items-center justify-between px-4 py-3 text-sm">
-                  <span class="text-gray-900 font-medium">{{ p.name }}</span>
-                  <span class="text-gray-500">{{ p.role }}</span>
+            <div class="relative rounded-xl border border-gray-100 overflow-hidden mb-5">
+              <div class="max-h-44 overflow-y-auto">
+                <div class="divide-y divide-gray-100">
+                  @for (addr of waypoints; track $index) {
+                    <div class="px-4 py-3 text-sm text-gray-800">
+                      <span class="text-gray-500">Stop {{ $index + 1 }}:</span>
+                      <span class="ml-2">{{ addr }}</span>
+                    </div>
+                  }
                 </div>
-              }
+              </div>
+            </div>
+          }
+
+          <!-- Vehicle -->
+          <div class="text-sm text-gray-600 mb-5">
+            Vehicle:
+            <span class="text-gray-900 font-medium">{{ vehicleText }}</span>
+          </div>
+
+          <!-- Other passengers -->
+          <div class="text-sm text-gray-700 font-semibold mb-2">Passengers:</div>
+          <div class="relative rounded-xl border border-gray-100 overflow-hidden mb-6">
+            <div class="max-h-36 overflow-y-auto">
+              <div class="divide-y divide-gray-100">
+                @for (p of passengers; track p.id) {
+                  <div class="flex items-center justify-between px-4 py-3 text-sm">
+                    <span class="text-gray-900 font-medium">{{ p.name }}</span>
+                    <span class="text-gray-500">{{ p.role }}</span>
+                  </div>
+                }
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Report inconsistency -->
-        <div class="rounded-2xl border border-gray-100 p-5 bg-gray-50">
-          <div class="text-sm font-semibold text-gray-900 mb-2">
-            Report driver inconsistency
-          </div>
+          <!-- Report inconsistency -->
+          <div class="rounded-2xl border border-gray-100 p-5 bg-gray-50">
+            <div class="text-sm font-semibold text-gray-900 mb-2">
+              Report driver inconsistency
+            </div>
 
-          <div class="text-xs text-gray-600 mb-3">
-            If the route looks unexpected or inadequate, leave a short note.
-          </div>
+            <div class="text-xs text-gray-600 mb-3">
+              If the route looks unexpected or inadequate, leave a short note.
+            </div>
 
-          <textarea
-            class="w-full min-h-23 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-gray-300"
-            placeholder="Write a short note..."
-            [(ngModel)]="reportNote"
-            [disabled]="!isRideActive"
-            maxlength="300"
-          ></textarea>
+            <textarea
+              class="w-full min-h-23 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-gray-300"
+              placeholder="Write a short note..."
+              [(ngModel)]="reportNote"
+              [disabled]="!isRideActive"
+              maxlength="300"
+            ></textarea>
 
-          <div class="flex items-center justify-between mt-3">
-            <span class="text-xs text-gray-500">{{ reportNote.length }}/300</span>
+            <div class="flex items-center justify-between mt-3">
+              <span class="text-xs text-gray-500">{{ reportNote.length }}/300</span>
 
-            <button
-              class="h-10 px-6 rounded-full bg-neutral-900 text-white text-sm flex items-center disabled:opacity-40"
-              (click)="submitReport()"
-              [disabled]="!isRideActive || !reportNote.trim() || submittingReport"
-            >
-              {{ submittingReport ? 'Sending...' : 'Submit' }}
-            </button>
-          </div>
-        </div>
-        <div class="flex gap-1 flex-wrap mt-6">
-              <button class="ml-auto mr-1 h-10 px-5 rounded-full bg-gray-200 text-neutral-900 text-sm flex items-center">
-                Stop ride here
+              <button
+                class="h-10 px-6 rounded-full bg-neutral-900 text-white text-sm flex items-center disabled:opacity-40"
+                (click)="submitReport()"
+                [disabled]="!isRideActive || !reportNote.trim() || submittingReport"
+              >
+                {{ submittingReport ? 'Sending...' : 'Submit' }}
               </button>
-
-              <button class="h-10 px-8 rounded-full bg-red-600 text-white text-sm font-semibold flex items-center
-              disabled:bg-red-300 disabled:text-white disabled:opacity-75 disabled:cursor-not-allowed"
-                [disabled]="rideState.panicSignal().pressed"
-                (click)="onPanic()">
-                {{ rideState.panicSignal().pressed ? 'PANIC sent' : 'PANIC' }}
-              </button>
-        </div>
-        <!-- Guard: available only during active ride -->
-        @if (!isRideActive){
-          <div class="mt-4 text-xs text-red-600">
-            Tracking and reporting are available only during an active ride.
+            </div>
           </div>
-        }
-      </div>
+          <div class="flex gap-1 flex-wrap mt-6">
+                <button class="ml-auto mr-1 h-10 px-5 rounded-full bg-gray-200 text-neutral-900 text-sm flex items-center">
+                  Stop ride here
+                </button>
 
+                <button class="h-10 px-8 rounded-full bg-red-600 text-white text-sm font-semibold flex items-center
+                disabled:bg-red-300 disabled:text-white disabled:opacity-75 disabled:cursor-not-allowed"
+                  [disabled]="rideState.panicSignal().pressed"
+                  (click)="onPanic()">
+                  {{ rideState.panicSignal().pressed ? 'PANIC sent' : 'PANIC' }}
+                </button>
+          </div>
+          <!-- Guard: available only during active ride -->
+          @if (!isRideActive){
+            <div class="mt-4 text-xs text-red-600">
+              Tracking and reporting are available only during an active ride.
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="text-gray-600">No current ride.</div>
+      }
       <!-- Right: Map -->
       <div class="flex">
         <div class="flex-1 rounded-2xl border border-gray-100 overflow-hidden bg-gray-50 flex items-center justify-center min-h-90">
           <div class="w-full h-160">
             <app-map [vehicles]="vehicles"
-                     [routeStart]="routeStart"
-                     [routeEnd]="routeEnd">
+                     [routePoints]="routePoints"
+                     [routePath]="routePath">
             </app-map>
           </div>
         </div>

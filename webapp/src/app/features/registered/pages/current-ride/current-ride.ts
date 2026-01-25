@@ -1,17 +1,22 @@
-import {Component, inject, OnInit, ChangeDetectorRef, OnDestroy} from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { VehicleMarker } from '../../../shared/map/vehicle-marker';
-import { VehiclesApiService } from '../../../shared/api/vehicles-api.service';
 import { MapComponent } from '../../../shared/map/map';
+
 import { CurrentRideStateService } from '../../services/current-ride-state.service';
 import { UserService } from '../../../../core/services/user.service';
 import { RideDTO, RideService } from '../../../../core/services/ride.service';
-import { RoutingService, LatLng } from '../../../shared/services/routing.service';
-import { resamplePolyline } from '../../../shared/map/route-utils';
 
-type UiRideStatus = 'Assigned' | 'Started' | 'Finished' | 'Cancelled'
-type PassengerItem = { id: number; name: string; role: 'You' | 'Passenger' };
+import { LatLng } from '../../../shared/services/routing.service';
+import { LocationDTO } from '../../../shared/models/location';
+
+import { Subscription } from 'rxjs';
+import { VehicleFollowService } from '../../../shared/services/vehicle-follow.service';
+
+type UiRideStatus = 'Assigned' | 'Started' | 'Finished' | 'Cancelled';
+type PassengerItem = { id: number; name: string; email: string; role: 'You' | 'Passenger' };
 
 @Component({
   selector: 'app-current-ride',
@@ -19,31 +24,34 @@ type PassengerItem = { id: number; name: string; role: 'You' | 'Passenger' };
   imports: [CommonModule, FormsModule, MapComponent],
   templateUrl: './current-ride.html',
 })
-
-
 export class CurrentRideComponent implements OnInit, OnDestroy {
-  private vehiclesApi = inject(VehiclesApiService);
   private cdr = inject(ChangeDetectorRef);
   private userService = inject(UserService);
   private rideService = inject(RideService);
-  private routing = inject(RoutingService);
   public rideState = inject(CurrentRideStateService);
 
-  private ride: RideDTO | null = null;
-  routeStart: { lat: number; lon: number } | null = null;
-  routeEnd: { lat: number; lon: number } | null = null;
+  private follow = inject(VehicleFollowService);
+  private subs: Subscription[] = [];
 
-  private simStartTimeout?: number;
-  private simMoveInterval?: number;
-  private simAbort?: AbortController;
+  private driverEmail?: string;
 
+  ride: RideDTO | null = null;
+
+  waypoints: string[] = [];
+  waypointLocations: LocationDTO[] = [];
+
+  // map inputs
   vehicles: VehicleMarker[] = [];
+  routePath: LatLng[] = [];
+  routePoints: { lat: number; lon: number; label?: string }[] = [];
+
   currentRideStatus: UiRideStatus = 'Started';
   fromAddress = '';
   toAddress = '';
   vehicleText = '';
   passengers: PassengerItem[] = [];
   etaMinutes = 1;
+
   reportNote = '';
   submittingReport = false;
 
@@ -52,139 +60,74 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
       next: (r) => {
         this.ride = r;
         this.currentRideStatus = 'Started';
+
         this.fromAddress = r.startLocation.address;
         this.toAddress = r.endLocation.address;
-        this.routeStart = { lat: r.startLocation.latitude, lon: r.startLocation.longitude };
-        this.routeEnd   = { lat: r.endLocation.latitude,   lon: r.endLocation.longitude };
+
+        this.routePoints = [
+          { lat: r.startLocation.latitude, lon: r.startLocation.longitude, label: 'Pickup' },
+          ...(r.waypoints ?? []).map((w, i) => ({
+            lat: w.latitude,
+            lon: w.longitude,
+            label: `Stop ${i + 1}`,
+          })),
+          { lat: r.endLocation.latitude, lon: r.endLocation.longitude, label: 'Destination' },
+        ];
+
+        this.waypointLocations = (r.waypoints ?? []);
+        this.waypoints = this.waypointLocations.map(w => w.address).filter(Boolean);
+
         this.vehicleText =
           r.vehicleModel && r.vehicleLicensePlate
             ? `${r.vehicleModel} • ${r.vehicleLicensePlate}`
             : 'Vehicle';
-        this.passengers = (r.passengerEmails ?? []).map((email, idx) => ({
+
+        this.passengers = (r.passengers ?? []).map((p, idx: number) => ({
           id: idx + 1,
-          name: email,
-          role: 'Passenger'
+          name: `${p.firstName} ${p.lastName}`.trim(),
+          email: p.email,
+          role: 'Passenger' as const,
         }));
-        this.vehiclesApi.getDriverVehicleForMap(r.driverEmail).subscribe({
-          next: (v) => {
-            this.vehicles = [v];
-            this.cdr.detectChanges();
-            this.runSimulation(r);
-          },
-          error: (err) => console.error('Failed to load driver vehicle', err),
-        });
+
+        // FOLLOW (per driver)
+        if (r.driverEmail) {
+          this.driverEmail = r.driverEmail;
+          this.follow.start(this.driverEmail, 1000);
+          this.subs.push(
+            this.follow.vehicle$(this.driverEmail).subscribe(v => {
+              this.vehicles = v ? [v] : [];
+              this.cdr.detectChanges();
+            })
+          );
+        }
       },
       error: () => {
-        this.ride = null;
-        this.vehicles = [];
-        this.currentRideStatus = 'Cancelled';
-        this.fromAddress = '';
-        this.toAddress = '';
-        this.routeStart = null;
-        this.routeEnd = null;
-        this.vehicleText = '';
+        this.clearUi();
       }
     });
   }
 
-  private stopSimulation(): void {
-    if (this.simStartTimeout) window.clearTimeout(this.simStartTimeout);
-    if (this.simMoveInterval) window.clearInterval(this.simMoveInterval);
-    this.simStartTimeout = undefined;
-    this.simMoveInterval = undefined;
+  private clearUi(): void {
+    if (this.driverEmail) this.follow.stop(this.driverEmail);
+    this.driverEmail = undefined;
 
-    this.simAbort?.abort();
-    this.simAbort = undefined;
-  }
-
-  private runSimulation(r: RideDTO) {
-    this.stopSimulation();
-
-    this.simStartTimeout = window.setTimeout(async () => {
-      if (!this.vehicles.length) return;
-
-      // auto ide na start location
-      this.vehicles = [{
-        ...this.vehicles[0],
-        lat: r.startLocation.latitude,
-        lng: r.startLocation.longitude
-      }];
-      this.cdr.detectChanges();
-
-      // fetch rute
-      const from: LatLng = [r.startLocation.latitude, r.startLocation.longitude];
-      const to: LatLng = [r.endLocation.latitude, r.endLocation.longitude];
-
-      this.simAbort?.abort();
-      this.simAbort = new AbortController();
-
-      let seg;
-      try {
-        seg = await this.routing.fetchRoute(from, to, this.simAbort.signal);
-      } catch (e: any) {
-        if (e?.name === 'AbortError') return;
-        console.error('Failed to fetch route', e);
-        return;
-      }
-
-      // resample na sto metara
-      const sampled = resamplePolyline(seg.coordinates, 100);
-
-      // ako nema dovoljno tacaka skoci na kraj
-      if (sampled.length < 2) {
-        this.vehicles = [{
-          ...this.vehicles[0],
-          lat: r.endLocation.latitude,
-          lng: r.endLocation.longitude
-        }];
-        this.cdr.detectChanges();
-        window.alert('Ride finished!');
-        this.currentRideStatus = 'Finished';
-        this.cdr.detectChanges();
-        return;
-      }
-
-      // kretanje po tackama (1s jedna tacka)
-      let i = 0;
-
-      this.simMoveInterval = window.setInterval(() => {
-        if (!this.vehicles.length) return;
-
-        if (i >= sampled.length) {
-          this.stopSimulation();
-          window.alert('Ride finished!');
-          this.currentRideStatus = 'Finished';
-          this.cdr.detectChanges();
-          return;
-        }
-
-        const [lat, lng] = sampled[i++];
-
-        this.vehicles = [{
-          ...this.vehicles[0],
-          lat,
-          lng
-        }];
-        this.cdr.detectChanges();
-
-        // ovo dolje cuva u bazu
-        const vehicleId = this.vehicles[0].id;
-
-        this.vehiclesApi.updateVehiclePosition(vehicleId, {
-          latitude: lat,
-          longitude: lng
-        }).subscribe();
-
-      }, 1000);
-
-    }, 10_000);
+    this.ride = null;
+    this.vehicles = [];
+    this.routePath = [];
+    this.routePoints = [];
+    this.currentRideStatus = 'Cancelled';
+    this.fromAddress = '';
+    this.toAddress = '';
+    this.vehicleText = '';
   }
 
   onPanic(): void {
     if (this.rideState.panicSignal().pressed) return;
+
     const userId = this.userService.getCurrentUserId() ?? 0;
     const rideId = this.ride?.id;
-    if(!rideId) return;
+    if (!rideId) return;
+
     this.rideState.setPanic(rideId, userId);
   }
 
@@ -210,6 +153,8 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.stopSimulation();
+    if (this.driverEmail) this.follow.stop(this.driverEmail);
+    this.subs.forEach(s => s.unsubscribe());
+    this.subs = [];
   }
 }

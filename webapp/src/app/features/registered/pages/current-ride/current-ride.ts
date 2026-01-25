@@ -14,6 +14,7 @@ import { LocationDTO } from '../../../shared/models/location';
 
 import { Subscription } from 'rxjs';
 import { VehicleFollowService } from '../../../shared/services/vehicle-follow.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 type UiRideStatus = 'Assigned' | 'Started' | 'Finished' | 'Cancelled';
 type PassengerItem = { id: number; name: string; email: string; role: 'You' | 'Passenger' };
@@ -29,6 +30,7 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
   private userService = inject(UserService);
   private rideService = inject(RideService);
   public rideState = inject(CurrentRideStateService);
+  private notificationService = inject(NotificationService);
 
   private follow = inject(VehicleFollowService);
   private subs: Subscription[] = [];
@@ -88,7 +90,7 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
           email: p.email,
           role: 'Passenger' as const,
         }));
-
+        this.rideState.loadPanic(r.id);
         // FOLLOW (per driver)
         if (r.driverEmail) {
           this.driverEmail = r.driverEmail;

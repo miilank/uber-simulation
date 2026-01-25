@@ -23,6 +23,7 @@ import { ActiveRideSimRunnerService } from '../../../../shared/services/active-r
 import { VehicleMarker } from '../../../../shared/map/vehicle-marker';
 import { LatLng } from '../../../../shared/services/routing.service';
 import { Subscription } from 'rxjs';
+import { NotificationService } from '../../../../../core/services/notification.service';
 
 type Passenger = { name: string; email: string };
 
@@ -54,6 +55,7 @@ export class DriverDashboard implements OnDestroy {
   ridesService = inject(DriverRidesService);
   userService = inject(UserService);
   rideState = inject(CurrentRideStateService);
+  notificationService = inject(NotificationService);
 
   private follow = inject(VehicleFollowService);
   private simRunner = inject(ActiveRideSimRunnerService);
@@ -95,6 +97,7 @@ export class DriverDashboard implements OnDestroy {
         })),
         { lat: r.endLocation.latitude, lon: r.endLocation.longitude, label: 'Destination' },
       ];
+      this.rideState.loadPanic(r.id);
 
       // follow per driverEmail
       if (r.driverEmail && r.driverEmail !== this.driverEmail) {
@@ -130,7 +133,6 @@ export class DriverDashboard implements OnDestroy {
     });
 
     this.userService.fetchMe().subscribe();
-    this.rideState.loadPanic();
 
     this.subs.push(
       this.simRunner.onSimulationComplete$.subscribe(rideId => {
@@ -241,6 +243,7 @@ export class DriverDashboard implements OnDestroy {
         this.ridesService.fetchRides().subscribe();
         this.simRunner.stopForRide(r.id);
         this.simulationCompleted.set(false);
+        this.rideState.clearPanic(r.id);
       },
       error: (err) => console.error('Failed to complete ride', err)
     });

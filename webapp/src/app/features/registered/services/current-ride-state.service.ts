@@ -7,15 +7,27 @@ export class CurrentRideStateService {
   panicSignal = signal<{pressed: boolean; rideId: number; userId: number}>({pressed: false, rideId: 0, userId: 0})
 
   setPanic(rideId: number, userId: number) {
-    const state = {pressed: true, rideId, userId};
-    this.panicSignal.set(state);
-    localStorage.setItem('panic_currentRide', JSON.stringify(state));
+    const fullState = { pressed: true, rideId, userId};
+    localStorage.setItem(this.getStorageKey(rideId), JSON.stringify(fullState));
+    this.panicSignal.set(fullState);
   }
 
-  loadPanic() {
-    const saved = localStorage.getItem('panic_currentRide');
-    if (saved) {
-      this.panicSignal.set(JSON.parse(saved));
+  loadPanic(rideId: number): void {
+    const saved = localStorage.getItem(this.getStorageKey(rideId));
+    if (!saved) return;
+    
+    try {
+      const state = JSON.parse(saved);
+      this.panicSignal.set(state);
+    } catch (e) {
+      console.error('Corrupted panic storage');
     }
+  }
+  private getStorageKey(rideId: number): string {
+    return `panic_${rideId}`;
+  }
+  clearPanic(rideId: number): void {
+    localStorage.removeItem(this.getStorageKey(rideId));
+    this.panicSignal.set({pressed: false, rideId: 0, userId: 0});
   }
 }

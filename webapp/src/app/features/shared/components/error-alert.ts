@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
           'opacity-0 -translate-y-2 pointer-events-none': !isOpen
         }">
         <p class="text-lg font-semibold">{{title}}</p>
-        <p>{{message}}</p>
+        <p class="overflow-hidden wrap-break-word whitespace-normal">{{message}}</p>
       </div>
     </div>
   `,
@@ -35,7 +35,7 @@ export class ErrorAlert implements OnChanges {
       if (this.isOpen) {
         setTimeout(() => {
           this.close.emit();
-        }, 3000);
+        }, 6000);
       }
     }
   }

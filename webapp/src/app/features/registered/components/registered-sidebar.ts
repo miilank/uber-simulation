@@ -51,6 +51,7 @@ export class RegisteredSidebar {
       { label: 'Current ride', route: '/user/current-ride', icon: 'current_ride' },
       { label: 'Ride history', route: '/user/ride-history', icon: 'history' },
       { label: 'Booked rides', route: '/user/booked-rides', icon: 'bookedrides' },
+      { label: 'Favorite routes', route: '/user/favorite-routes', icon: 'routes'},
       { label: 'Reports', route: '/user/reports', icon: 'reports' },
       { label: 'Profile', route: '/user/profile', icon: 'user' },
       { label: 'Support', route: '/user/support', icon: 'support' },

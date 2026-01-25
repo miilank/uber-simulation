@@ -19,6 +19,7 @@ import { DriverRegistration } from './features/admin/pages/driver-registration/d
 import { AdminLayout } from './features/admin/layout/admin-layout/admin-layout';
 import { DriverActivationComponent } from './core/auth/driver-activation';
 import { PanicResponseComponent } from './features/admin/pages/panic-response/panic-response';
+import { FavouriteRoutes } from './features/registered/pages/favourite-rides/favourite-routes';
 
 export const routes: Routes = [
   { path: '', component: UnregisteredHomeComponent },
@@ -35,6 +36,7 @@ export const routes: Routes = [
       { path: 'current-ride', component: CurrentRideComponent },
       { path: 'booking', outlet: 'aside', component: RideBookingSidebar },
       { path: '', outlet: 'aside', component: RegisteredSidebar },
+      { path: 'favorite-routes', component: FavouriteRoutes }
   ] },
   { path: 'registerUser', component: UserRegistrationComponent },
   { path: 'signIn', component: SignInComponent },

@@ -49,6 +49,7 @@ export class DriverDashboard {
     this.userService.fetchMe().subscribe();
     this.rideState.loadPanic();
   }
+  
   onPanic(): void {
     if (this.rideState.panicSignal().pressed) return;
 
@@ -56,6 +57,8 @@ export class DriverDashboard {
     const rideId = this.currentRide()?.id ?? 0;
     this.rideState.setPanic(rideId, userId);
   }
+
+
   readonly bookedRides: Signal<BookedRide[]> = computed(() =>
     this.rides()
         .filter(ride => (this.currentRide() !== null && ride.id !== this.currentRide()!.id))
@@ -141,7 +144,7 @@ export class DriverDashboard {
   requirementEmoji: Record<string, string> = {
     Baby: '🧸',
     Luxury: '🚗',
-    SUV: '🧭',
+    Standard: '🧭',
     Pets: '🐾',
     Van: '🚐',
   };
@@ -149,7 +152,7 @@ export class DriverDashboard {
   requirementClasses: Record<string, string> = {
     Baby: 'bg-[#FFEDD4] text-[#CA3500]',
     Luxury: 'bg-[#DBEAFE] text-[#1447E6]',
-    SUV: 'bg-[#F3E8FF] text-[#8200DB]',
+    Standard: 'bg-[#F3E8FF] text-[#8200DB]',
     Pets: 'bg-[#FEF3C6] text-[#BB4D00]',
     Van: 'bg-[#E0E7FF] text-[#432DD7]',
   };

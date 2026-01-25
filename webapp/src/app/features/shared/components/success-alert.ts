@@ -7,14 +7,14 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <div
-    class="fixed top-27.5 right-4 z-50">
+    class="fixed top-27.5 right-4 z-800">
       <div class="border-l-4 border-app-accent text-green-700 font-poppins p-4 rounded-lg transform transition-all duration-300 ease-out origin-top-right max-w-sm"
         [ngClass]="{
           'opacity-100 translate-y-0 pointer-events-auto': isOpen,
           'opacity-0 -translate-y-2 pointer-events-none': !isOpen
         }" style="background-color:#e0fabe">
         <p class="text-lg font-semibold">{{title}}</p>
-        <p>{{message}}</p>
+        <p class="overflow-hidden wrap-break-word whitespace-normal">{{message}}</p>
       </div>
     </div>
   `,
@@ -35,7 +35,7 @@ export class SuccessAlert implements OnChanges {
       if (this.isOpen) {
         setTimeout(() => {
           this.close.emit();
-        }, 3000);
+        }, 6000);
       }
     }
   }

@@ -1,0 +1,80 @@
+<section class="w-full bg-white rounded-[28px] shadow-xl p-10 relative pointer-events-auto">
+  <h2 class="text-2xl font-poppins mb-6">Favourite routes:</h2>
+
+  <div class="grid grid-cols-[100px_1fr_450px_150px] text-xs text-gray-500 px-2 pb-2">
+    <div>Name</div>
+    <div>Route</div>
+    <div>Requirements</div>
+    <div>Actions</div>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6">
+    <div class="divide-y divide-gray-100">
+    @for (r of routes(); track $index) {
+      <div class="grid grid-cols-[100px_1fr_450px_150px] items-center py-5 px-2">
+          <!-- route -->
+        <div class="text-sm text-gray-900 flex items-center gap-2 min-w-0 truncate">
+          {{r.name}}
+        </div>
+
+        <!-- route -->
+        <div class="text-sm text-gray-900 flex items-center gap-2 min-w-0">
+          <span class="truncate">{{ r.startLocation }}</span>
+          <span class="text-gray-400">→</span>
+          <span class="truncate">{{ r.endLocation }}</span>
+        </div>
+
+        <!-- requirements -->
+        <div class="flex gap-2 flex-wrap">
+          @for (tag of r.requirements; track tag) {
+            <span
+              class="inline-flex items-center justify-center gap-2 h-7 w-28 rounded-full text-sm font-medium"
+              [ngClass]="requirementClasses[tag]">
+
+              <span class="text-base leading-none">{{ requirementEmoji[tag] }}</span>
+              <span class="truncate">{{ tag }}</span>
+            </span>
+          }
+        </div>
+
+
+        <!-- details -->
+        <div class="flex justify-end">
+          <button
+            type="button"
+            class="h-9 px-6 rounded-full border border-gray-400 text-sm hover:bg-gray-50 active:scale-[0.99] cursor-pointer"
+            (click)="openDetails(r)">
+            Details
+          </button>
+
+          <button
+            type="button"
+            class="h-9 px-6 rounded-full border border-gray-400 text-sm hover:bg-gray-50 active:scale-[0.99] cursor-pointer"
+            (click)="deleteRoute(r, $index)">
+            Delete
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <error-alert
+  [isOpen]="isErrorOpen()"
+  [message]="errorMessage"
+  [title]="errorTitle"
+  (close)="closeErrorAlert()"> </error-alert>
+
+  <success-alert
+  [isOpen]="isSuccessOpen()"
+  [message]="successMessage"
+  [title]="successTitle"
+  (close)="closeSuccessAlert()"> </success-alert>
+
+  <app-favorite-route-details-drawer
+  [open]="isDetailsOpen"
+  [route]="selectedRoute"
+  (close)="closeDetails()">
+
+  </app-favorite-route-details-drawer>
+  </div>
+</section>

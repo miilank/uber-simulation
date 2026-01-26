@@ -14,6 +14,7 @@ export class ConfigService {
   public driverUrl = this.baseUrl + '/drivers';
   public driverProfileUrl = this.driverUrl + '/profile';
   public driverActivateUrl = this.driverUrl + '/activate';
+  public driverPendingUpdatesUrl = this.driverUrl + '/pending-updates';
 
   public activateUrl = this.baseUrl + '/auth/activate'
   public forgotPassUrl = this.baseUrl + '/auth/forgot-password'

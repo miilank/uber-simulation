@@ -1,0 +1,210 @@
+@for (request of updateRequests(); track $index) {
+    <div class="flex flex-col m-8">
+    <div class="flex flex-col gap-6 w-full">
+        <!-- Info Card -->
+        <div class="border-[1.5px] border-gray-200 rounded-3xl shadow-lg p-8 flex flex-col gap-11">
+
+            <div class="flex flex-col sm:flex-row gap-6">
+            <!-- Old column -->
+            <div class="flex-1 flex flex-col gap-4">
+            <h4 class="text-sm font-medium font-poppins text-gray-700">Old</h4>
+
+            <!-- Profile Picture (Old) -->
+            <div class="w-30 h-30 rounded-full border-[3px] border-app-accent p-0.5">
+                <img class="w-full h-full rounded-full object-cover" src="defaultprofile.png" alt="Old Profile" />
+            </div>
+
+            <!-- Email (Old) -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-normal font-poppins text-gray-700 flex items-center gap-2">
+                <img class="w-6 h-6" src="mail.svg" alt="Mail"/>
+                Email
+                </label>
+                <input
+                type="email"
+                [(ngModel)]="request.email"
+                class="input-base brightness-95"
+                placeholder="E-Mail"
+                disabled
+                />
+            </div>
+
+            <!-- First Name (Old) -->
+            <div class="flex-1 flex flex-col gap-2">
+                <label class="text-sm font-normal font-poppins flex items-center text-gray-700">
+                <img class="w-6 h-6" src="profile.svg" alt="First name" />
+                First Name
+                </label>
+                <input
+                type="text"
+                [(ngModel)]="request.oldFirstName"
+                class="input-base"
+                placeholder="First name"
+                disabled
+                />
+            </div>
+
+            <!-- Last Name (Old) -->
+            <div class="flex-1 flex flex-col gap-2">
+                <label class="text-sm font-normal font-poppins flex items-center text-gray-700">
+                <img class="w-6 h-6" src="profile.svg" alt="Last name" />
+                Last Name
+                </label>
+                <input
+                type="text"
+                [(ngModel)]="request.oldLastName"
+                class="input-base"
+                placeholder="Last name"
+                disabled
+                />
+            </div>
+
+            <!-- Address (Old) -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-normal font-poppins text-gray-700 flex items-center gap-2">
+                <img class="w-6 h-6" src="location.svg" alt="address"/>
+                Address
+                </label>
+                <input
+                type="text"
+                [(ngModel)]="request.oldAddress"
+                class="input-base"
+                placeholder="Address"
+                disabled
+                />
+            </div>
+
+            <!-- Phone Number (Old) -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-normal font-poppins text-gray-700 flex items-center gap-2">
+                <img class="w-6 h-6" src="phone.svg" alt="Phone" />
+                Phone Number
+                </label>
+                <input
+                type="tel"
+                [(ngModel)]="request.oldPhoneNumber"
+                class="input-base"
+                placeholder="Phone number"
+                disabled
+                />
+            </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="hidden sm:block w-px bg-gray-200"></div>
+
+            <!-- New column -->
+            <div class="flex-1 flex flex-col gap-4">
+            <h4 class="text-sm font-medium font-poppins text-gray-700">New</h4>
+
+            <!-- Profile Picture (New) -->
+            <div class="w-30 h-30 rounded-full border-[3px] border-app-accent p-0.5">
+                <img class="w-full h-full rounded-full object-cover" src="defaultprofile.png" alt="New Profile" />
+            </div>
+
+            <!-- Email (New) -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-normal font-poppins text-gray-700 flex items-center gap-2">
+                    <img class="w-6 h-6" src="mail.svg" alt="Mail"/>
+                    Email
+                </label>
+                <input
+                    type="email"
+                    [(ngModel)]="request.email"
+                    class="input-base brightness-95"
+                    placeholder="E-Mail"
+                    disabled
+                    />
+            </div>
+
+            <!-- First Name (New) -->
+            <div class="flex-1 flex flex-col gap-2">
+                <label class="text-sm font-normal font-poppins flex items-center text-gray-700">
+                    <img class="w-6 h-6" src="profile.svg" alt="First name" />
+                    First Name
+                </label>
+                <input
+                type="text"
+                [(ngModel)]="request.newFirstName"
+                class="input-base"
+                placeholder="First name"
+                disabled
+                />
+            </div>
+
+            <!-- Last Name (New) -->
+            <div class="flex-1 flex flex-col gap-2">
+                <label class="text-sm font-normal font-poppins flex items-center text-gray-700">
+                    <img class="w-6 h-6" src="profile.svg" alt="Last name" />
+                    Last Name
+                </label>
+                <input
+                type="text"
+                [(ngModel)]="request.newLastName"
+                class="input-base"
+                placeholder="Last name"
+                disabled
+                />
+            </div>
+
+            <!-- Address (New) -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-normal font-poppins text-gray-700 flex items-center gap-2">
+                    <img class="w-6 h-6" src="location.svg" alt="address"/>
+                    Address
+                </label>
+                <input
+                type="text"
+                [(ngModel)]="request.newAddress"
+                class="input-base"
+                placeholder="Address"
+                disabled
+                />
+            </div>
+
+            <!-- Phone Number (New) -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-normal font-poppins text-gray-700 flex items-center gap-2">
+                    <img class="w-6 h-6" src="phone.svg" alt="Phone" />
+                    Phone Number
+                </label>
+                <input
+                type="tel"
+                [(ngModel)]="request.newPhoneNumber"
+                class="input-base"
+                placeholder="Phone number"
+                disabled
+                />
+            </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-4 flex-col sm:flex-row">
+            <button (click)="onApprove(request.driverId, $index)" class="cursor-pointer flex-1 h-12 bg-app-accent rounded-full text-sm font-normal font-poppins text-neutral-900 hover:bg-lime-500 transition-colors">
+            Approve change
+            </button>
+            <button (click)="onReject(request.driverId, $index)" class="cursor-pointer flex-1 h-12 border-[1.5px] border-gray-300 rounded-full text-sm font-normal font-poppins text-gray-700 hover:bg-gray-50 transition-colors">
+            Reject change
+            </button>
+        </div>
+        </div>
+    </div>
+    </div>
+}
+
+@if (updateRequests().length === 0) {
+    <h2 class="text-[20px] m-8 font-normal font-poppins text-black leading-10.5">There are no requests pending at this time.</h2>
+}
+
+<error-alert
+[isOpen]="isErrorOpen()"
+[message]="errorMessage"
+[title]="errorTitle"
+(close)="closeErrorAlert()"> </error-alert>
+
+<success-alert
+[isOpen]="isSuccessOpen()"
+[message]="successMessage"
+[title]="successTitle"
+(close)="closeSuccessAlert()"> </success-alert>

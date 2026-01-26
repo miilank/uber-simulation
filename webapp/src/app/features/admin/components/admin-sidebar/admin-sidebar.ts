@@ -16,6 +16,7 @@ export class AdminSidebar {
     this.items = [
       { label: 'Dashboard', route: '/admin/dashboard', icon: 'dashboard' },
       { label: 'Register a driver', route: '/admin/register-driver', icon: 'car' },
+      { label: 'Review profile changes', route: '/admin/driver-profile-changes', icon: 'pencil' },
       { label: 'Profile', route: '/admin/profile', icon: 'user' },
       { label: 'PANIC notifications', route: '/admin/panic-notifications', icon: 'panic' },
     ];

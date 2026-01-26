@@ -20,6 +20,7 @@ import { AdminLayout } from './features/admin/layout/admin-layout/admin-layout';
 import { DriverActivationComponent } from './core/auth/driver-activation';
 import { PanicResponseComponent } from './features/admin/pages/panic-response/panic-response';
 import { FavouriteRoutes } from './features/registered/pages/favourite-rides/favourite-routes';
+import { DriverProfileChanges } from './features/admin/pages/driver-profile-changes/driver-profile-changes';
 
 export const routes: Routes = [
   { path: '', component: UnregisteredHomeComponent },
@@ -52,6 +53,7 @@ export const routes: Routes = [
     { path: 'register-driver', component: DriverRegistration },
     { path: 'dashboard', component: RegisteredDashboard },
     { path: 'panic-notifications', component: PanicResponseComponent },
+    { path: 'driver-profile-changes', component: DriverProfileChanges},
     { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
   ] }
 ];

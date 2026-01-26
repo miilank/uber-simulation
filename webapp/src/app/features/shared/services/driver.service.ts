@@ -4,6 +4,7 @@ import { ConfigService } from "../../../core/services/config.service";
 import { User } from "../../../core/models/user";
 import { Observable } from "rxjs";
 import { VehicleType } from "../models/vehicle";
+import { Driver } from "../models/driver";
 
 export interface DriverCreationDTO {
     email: string,
@@ -23,6 +24,25 @@ export interface VehicleCreationDTO {
     petsFriendly: boolean
 }
 
+export interface DriverUpdateDTO {
+    driverId: number;
+    email: string;
+
+    newFirstName: string;
+    newLastName: string;
+    newPhoneNumber: string;
+    newAddress: string;
+    newProfilePicture: string;
+
+    oldFirstName: string;
+    oldLastName: string;
+    oldPhoneNumber: string;
+    oldAddress: string;
+    oldProfilePicture: string;
+}
+
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -40,7 +60,19 @@ export class DriverService {
         return this.http.post<void>(this.config.driverUrl, driver);
     }
 
-    activateDriver(token: string, password: string) {
+    activateDriver(token: string, password: string) : Observable<void> {
         return this.http.put<void>(this.config.driverActivateUrl, {token, password});
+    }
+
+    getPendingUpdates() : Observable<DriverUpdateDTO[]> {
+        return this.http.get<DriverUpdateDTO[]>(this.config.driverPendingUpdatesUrl);
+    }
+
+    approveUpdate(id: number) : Observable<void> {
+        return this.http.put<void>(`${this.config.driverUrl}/${id}/approve-update`, {});
+    }
+
+    rejectUpdate(id: number) : Observable<void> {
+        return this.http.put<void>(`${this.config.driverUrl}/${id}/reject-update`, {});
     }
 }

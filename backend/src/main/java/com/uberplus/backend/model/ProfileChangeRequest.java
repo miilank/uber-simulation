@@ -1,9 +1,7 @@
 package com.uberplus.backend.model;
 
-import com.uberplus.backend.dto.user.UserProfileDTO;
-import com.uberplus.backend.dto.user.UserUpdateDTO;
+import com.uberplus.backend.dto.user.UserUpdateRequestDTO;
 import com.uberplus.backend.model.enums.ProfileUpdateStatus;
-import com.uberplus.backend.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -49,7 +47,7 @@ public class ProfileChangeRequest {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public ProfileChangeRequest(UserUpdateDTO dto, Driver driver) {
+    public ProfileChangeRequest(UserUpdateRequestDTO dto, Driver driver) {
         this.driver = driver;
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();

@@ -1,14 +1,12 @@
 package com.uberplus.backend.controller;
 
-import com.uberplus.backend.dto.auth.LoginRequestDTO;
 import com.uberplus.backend.dto.common.MessageDTO;
 import com.uberplus.backend.dto.user.ChangePasswordDTO;
 import com.uberplus.backend.dto.user.UserProfileDTO;
-import com.uberplus.backend.dto.user.UserUpdateDTO;
+import com.uberplus.backend.dto.user.UserUpdateRequestDTO;
 import com.uberplus.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -33,7 +31,7 @@ public class UserController {
     // PUT /api/users/profile
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/profile")
-    public ResponseEntity<UserProfileDTO> updateProfile(Authentication authentication, @Valid @RequestBody UserUpdateDTO update) {
+    public ResponseEntity<UserProfileDTO> updateProfile(Authentication authentication, @Valid @RequestBody UserUpdateRequestDTO update) {
         UserProfileDTO saved = userService.updateProfile(authentication.getName(), update);
         return ResponseEntity.ok(saved);
     }

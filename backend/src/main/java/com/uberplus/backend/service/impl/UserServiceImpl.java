@@ -3,7 +3,7 @@ package com.uberplus.backend.service.impl;
 import com.uberplus.backend.dto.common.MessageDTO;
 import com.uberplus.backend.dto.user.ChangePasswordDTO;
 import com.uberplus.backend.dto.user.UserProfileDTO;
-import com.uberplus.backend.dto.user.UserUpdateDTO;
+import com.uberplus.backend.dto.user.UserUpdateRequestDTO;
 import com.uberplus.backend.model.User;
 import com.uberplus.backend.repository.UserRepository;
 import com.uberplus.backend.service.UserService;
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserProfileDTO updateProfile(String email, UserUpdateDTO update) {
+    public UserProfileDTO updateProfile(String email, UserUpdateRequestDTO update) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));

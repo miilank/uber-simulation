@@ -3,7 +3,8 @@ package com.uberplus.backend.service.impl;
 import com.uberplus.backend.dto.driver.DriverActivationDTO;
 import com.uberplus.backend.dto.driver.DriverCreationDTO;
 import com.uberplus.backend.dto.driver.DriverDTO;
-import com.uberplus.backend.dto.user.UserUpdateDTO;
+import com.uberplus.backend.dto.driver.DriverUpdateDTO;
+import com.uberplus.backend.dto.user.UserUpdateRequestDTO;
 import com.uberplus.backend.model.*;
 import com.uberplus.backend.model.enums.ProfileUpdateStatus;
 import com.uberplus.backend.model.enums.UserRole;
@@ -20,13 +21,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class DriverServiceImpl implements DriverService {
-
-
     private final DriverRepository driverRepository;
     private final UserRepository userRepository;
     private final ProfileChangeRequestRepository changeRequestRepository;
@@ -44,7 +44,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public void requestProfileUpdate(String email, UserUpdateDTO update) {
+    public void requestProfileUpdate(String email, UserUpdateRequestDTO update) {
         Driver driver = driverRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
 
@@ -185,5 +185,11 @@ public class DriverServiceImpl implements DriverService {
         driver.setActivationTokenExpiresAt(null);
         driver.setPassword(passwordEncoder.encode(req.getPassword()));
         userRepository.save(driver);
+    }
+
+    @Override
+    public List<DriverUpdateDTO> getPendingUpdates() {
+        List<ProfileChangeRequest> changeRequests = changeRequestRepository.findByStatus(ProfileUpdateStatus.PENDING);
+        return changeRequests.stream().map(DriverUpdateDTO::new).toList();
     }
 }

@@ -1,10 +1,7 @@
 package com.uberplus.backend.controller;
 
-import com.uberplus.backend.dto.driver.DriverActivationDTO;
-import com.uberplus.backend.dto.driver.DriverCreationDTO;
-import com.uberplus.backend.dto.driver.DriverDTO;
-import com.uberplus.backend.dto.driver.DriverStatusUpdateDTO;
-import com.uberplus.backend.dto.user.UserUpdateDTO;
+import com.uberplus.backend.dto.driver.*;
+import com.uberplus.backend.dto.user.UserUpdateRequestDTO;
 import com.uberplus.backend.service.DriverService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/drivers")
@@ -54,9 +52,15 @@ public class DriverController {
 
     // PUT /api/drivers/profile
     @PutMapping("/profile")
-    public ResponseEntity<Void> updateProfile(Authentication authentication, @Valid @RequestBody UserUpdateDTO update) {
+    public ResponseEntity<Void> updateProfile(Authentication authentication, @Valid @RequestBody UserUpdateRequestDTO update) {
         driverService.requestProfileUpdate(authentication.getName(), update);
         return ResponseEntity.accepted().build();
+    }
+
+    // GET /api/drivers/pending-updates
+    @GetMapping("/pending-updates")
+    public ResponseEntity<List<DriverUpdateDTO>> getPendingUpdates() {
+        return ResponseEntity.ok(driverService.getPendingUpdates());
     }
 
     // PUT /api/drivers/{driverId}/approve-update
@@ -67,6 +71,7 @@ public class DriverController {
     }
 
     // PUT /api/drivers/{driverId}/reject-update
+    @PutMapping("/{driverId}/reject-update")
     public ResponseEntity<Void> rejectUpdate(@PathVariable Integer driverId) {
         driverService.rejectProfileUpdate(driverId);
         return ResponseEntity.noContent().build();

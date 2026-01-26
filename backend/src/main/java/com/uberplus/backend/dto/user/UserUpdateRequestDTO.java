@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Data @NoArgsConstructor @AllArgsConstructor
-public class UserUpdateDTO {
+public class UserUpdateRequestDTO {
     private String firstName;
     private String lastName;
     private String phoneNumber;

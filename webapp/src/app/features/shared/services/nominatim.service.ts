@@ -16,6 +16,9 @@ export interface NominatimResult {
     postcode?: string;
     country?: string;
     municipality?: string;
+    suburb?: string;
+    hamlet?: string;
+    state?: string;
   };
   boundingbox?: string[];
   formattedText: string;
@@ -34,9 +37,10 @@ export class NominatimService {
       .set('q', query)
       .set('format', 'jsonv2')
       .set('addressdetails', '1')
+      .set('countrycodes', 'rs')
       .set('limit', String(limit))
-      .set('layer', "address")
-      .set('viewbox', '45.316329,19.708797,45.199067,19.958903');
+      .set('layer', 'address')
+      .set('viewbox', '19.708797,45.316329,19.958903,45.199067');
 
     return this.http.get<NominatimResult[]>(this.baseUrl, { params }).pipe(
       map(results =>
@@ -46,32 +50,41 @@ export class NominatimService {
         }))
       )
     );
-}
-
-formatResult(r: NominatimResult): string {
-  function pickFirst<T>(...values: (T | undefined)[]): T | undefined {
-    return values.find(v => v !== undefined);
   }
 
-  const addr = r.address ?? {};
+  formatResult(r: NominatimResult): string {
+    function pickFirst<T>(...values: (T | undefined)[]): T | undefined {
+      return values.find(v => v !== undefined);
+    }
 
-  const street: string = addr.road ?? '';
+    const addr = r.address ?? {};
 
-  const house: string = (addr.house_number===undefined)? '' : ` ${addr.house_number}`;
+    const road = addr.road?.trim() ?? '';
+    const house = addr.house_number?.trim() ?? '';
 
-  let city: string | undefined = pickFirst(
-    addr.city,
-    addr.town,
-    addr.village,
-    addr.municipality
-  );
+    let streetPart = '';
+    if (road && house) streetPart = `${road} ${house}`;
+    else if (road) streetPart = road;
+    else if (house) streetPart = house;
 
-  if (city === undefined) {
-    city = '';
-  } else {
-    city = `, ${city}`;
+    let city: string | undefined = pickFirst(
+      addr.city,
+      addr.town,
+      addr.village,
+      addr.municipality,
+      addr.suburb,
+      addr.hamlet,
+      addr.state
+    );
+
+    const parts: string[] = [];
+    if (streetPart) parts.push(streetPart);
+    if (city) parts.push(city);
+
+    if (parts.length === 0) {
+      return (r.display_name ?? '').trim();
+    }
+
+    return parts.join(', ');
   }
-
-  return street+house+city;
-}
 }

@@ -4,6 +4,7 @@ import com.uberplus.backend.dto.notification.PanicNotificationDTO;
 import com.uberplus.backend.dto.ride.CreateRideRequestDTO;
 import com.uberplus.backend.dto.ride.LocationDTO;
 import com.uberplus.backend.dto.ride.RideDTO;
+import com.uberplus.backend.dto.ride.RideETADTO;
 import com.uberplus.backend.model.*;
 import com.uberplus.backend.model.enums.RideStatus;
 import com.uberplus.backend.model.enums.VehicleStatus;
@@ -14,15 +15,11 @@ import com.uberplus.backend.service.OSRMService;
 import com.uberplus.backend.service.RideService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.antlr.v4.runtime.misc.Pair;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -230,8 +227,17 @@ public class RideServiceImpl implements RideService {
                 ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found.")
         );
 
+        if (ride.getStatus() != RideStatus.ACCEPTED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride must be ACCEPTED to start.");
+        }
+
         ride.setStatus(RideStatus.IN_PROGRESS);
         ride.setActualStartTime(LocalDateTime.now());
+
+        if (ride.getDriver() != null && ride.getDriver().getVehicle() != null) {
+            ride.getDriver().getVehicle().setStatus(VehicleStatus.OCCUPIED);
+        }
+
         rideRepository.save(ride);
         return new RideDTO(ride);
     }
@@ -420,6 +426,80 @@ public class RideServiceImpl implements RideService {
         ride.setCancelledBy(user.getEmail());
         rideRepository.save(ride);
 
+        return new RideDTO(ride);
+    }
+
+    @Override
+    public RideETADTO getRideETA(Integer rideId) throws IOException, InterruptedException {
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found."));
+
+        if (ride.getStatus() != RideStatus.IN_PROGRESS) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride is not in progress.");
+        }
+
+        Vehicle vehicle = ride.getDriver().getVehicle();
+        Location currentLocation = vehicle.getCurrentLocation();
+
+        if (currentLocation == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vehicle location unknown.");
+        }
+
+        RideETADTO eta = new RideETADTO();
+        eta.setRideId(rideId);
+
+        Location pickupLocation = ride.getStartLocation();
+        Location destinationLocation = ride.getEndLocation();
+
+        double distanceToPickup = currentLocation.distanceTo(pickupLocation);
+        double distanceToDestination = currentLocation.distanceTo(destinationLocation);
+
+        if (distanceToDestination < 50) {
+            eta.setPhase("IN_PROGRESS");
+            eta.setDistanceToNextPointKm(0.0);
+            eta.setEtaToNextPointSeconds(0);
+            eta.setProgressPercent(100.0);
+            return eta;
+        }
+
+        if (ride.getArrivedAtPickupTime() != null || distanceToPickup < 50) {
+            double durationSeconds = osrmService.getDuration(currentLocation, destinationLocation);
+
+            eta.setPhase("IN_PROGRESS");
+            eta.setDistanceToNextPointKm(distanceToDestination / 1000.0);
+            eta.setEtaToNextPointSeconds((int) durationSeconds);
+
+            double totalDistance = pickupLocation.distanceTo(destinationLocation);
+            double remainingDistance = distanceToDestination;
+            double traveled = totalDistance - remainingDistance;
+            double progress = totalDistance > 0 ? (traveled / totalDistance) * 100.0 : 0.0;
+            eta.setProgressPercent(Math.max(0, Math.min(100, progress)));
+
+        } else {
+            double durationSeconds = osrmService.getDuration(currentLocation, pickupLocation);
+
+            eta.setPhase("TO_PICKUP");
+            eta.setDistanceToNextPointKm(distanceToPickup / 1000.0);
+            eta.setEtaToNextPointSeconds((int) durationSeconds);
+            eta.setProgressPercent(0.0);
+        }
+
+        return eta;
+    }
+
+    @Override
+    @Transactional
+    public RideDTO arrivedAtPickup(Integer rideId) {
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found."));
+
+        if (ride.getStatus() != RideStatus.IN_PROGRESS) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ride must be IN_PROGRESS.");
+        }
+
+        ride.setArrivedAtPickupTime(LocalDateTime.now());
+
+        rideRepository.save(ride);
         return new RideDTO(ride);
     }
 }

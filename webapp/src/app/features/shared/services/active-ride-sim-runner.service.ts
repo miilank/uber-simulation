@@ -1,6 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { RideSimulationService } from './ride-simulation.service';
-import {Subject} from 'rxjs';
+import { RideApiService } from '../api/ride-api.service';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { VehicleMarker } from '../map/vehicle-marker';
+import { LatLng } from './routing.service';
+import { VehiclesApiService } from '../api/vehicles-api.service';
+import { RoutingService } from './routing.service';
 
 type RideLike = {
   id: number;
@@ -11,24 +16,48 @@ type RideLike = {
   status?: string;
 };
 
+interface SimulationInstance {
+  rideId: number;
+  simulator: RideSimulationService;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ActiveRideSimRunnerService {
-  private runningRideId: number | null = null;
+  private simulations = new Map<number, SimulationInstance>();
+
+  private pickupReachedSubject = new Subject<number>();
+  readonly onPickupReached$ = this.pickupReachedSubject.asObservable();
 
   private completionSubject = new Subject<number>();
   readonly onSimulationComplete$ = this.completionSubject.asObservable();
 
-  constructor(private sim: RideSimulationService) {}
+  constructor(
+    private rideApi: RideApiService,
+    private vehiclesApi: VehiclesApiService,
+    private routing: RoutingService
+  ) {}
 
   startForRide(ride: RideLike): void {
     if (!ride?.driverEmail) return;
 
-    if (this.runningRideId === ride.id) return;
+    // Ako simulacija vec postoji za ovaj ride, ne pokreci ponovo
+    if (this.simulations.has(ride.id)) {
+      console.log(`Simulation already running for ride ${ride.id}`);
+      return;
+    }
 
-    this.sim.stop();
-    this.runningRideId = ride.id;
+    // Kreiraj novu instancu simulatora sa injectovanim dependencies
+    const simulator = new RideSimulationService(this.vehiclesApi, this.routing);
 
-    this.sim.start(
+    const instance: SimulationInstance = {
+      rideId: ride.id,
+      simulator,
+    };
+
+    this.simulations.set(ride.id, instance);
+
+    // Pokreni simulaciju
+    simulator.start(
       ride,
       {
         startDelayMs: 0,
@@ -36,18 +65,55 @@ export class ActiveRideSimRunnerService {
         tickMs: 1000
       },
       () => {
-        this.notifyCompletion(ride.id);
+        // Stigli do pickup-a
+        this.rideApi.arrivedAtPickup(ride.id).subscribe({
+          next: () => {
+            console.log(`Backend notified: arrived at pickup for ride ${ride.id}`);
+            this.pickupReachedSubject.next(ride.id);
+          },
+          error: (err) => console.error('Failed to notify pickup arrival', err)
+        });
+      },
+      () => {
+        // Stigli do destinacije - automatski stopuj simulaciju
+        console.log(`Simulation completed for ride ${ride.id}`);
+        this.completionSubject.next(ride.id);
       }
     );
+
+    console.log(`Started simulation for ride ${ride.id}`);
   }
 
   stopForRide(rideId: number): void {
-    if (this.runningRideId !== rideId) return;
-    this.sim.stop();
-    this.runningRideId = null;
+    const instance = this.simulations.get(rideId);
+    if (!instance) return;
+
+    instance.simulator.stop();
+    this.simulations.delete(rideId);
+
+    console.log(`Stopped simulation for ride ${rideId}`);
   }
 
-  notifyCompletion(rideId: number): void {
-    this.completionSubject.next(rideId);
+  getVehicles$(rideId: number): Observable<VehicleMarker[]> | null {
+    const instance = this.simulations.get(rideId);
+    return instance ? instance.simulator.vehicles$ : null;
+  }
+
+  getRoutePath$(rideId: number): Observable<LatLng[]> | null {
+    const instance = this.simulations.get(rideId);
+    return instance ? instance.simulator.routePath$ : null;
+  }
+
+  getCurrentPhase(rideId: number): 'to-pickup' | 'in-progress' | 'idle' {
+    const instance = this.simulations.get(rideId);
+    return instance ? instance.simulator.getCurrentPhase() : 'idle';
+  }
+
+  isRunning(rideId: number): boolean {
+    return this.simulations.has(rideId);
+  }
+
+  stopAll(): void {
+    this.simulations.forEach((_, rideId) => this.stopForRide(rideId));
   }
 }

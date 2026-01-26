@@ -290,4 +290,12 @@ export class MapComponent implements AfterViewInit, OnChanges {
       if (e?.name === 'AbortError') return;
     }
   }
+
+  public clearMap(): void {
+    if (this.vehiclesLayer) this.vehiclesLayer.clearLayers();
+    if (this.bookingLayer) this.bookingLayer.clearLayers();
+    if (this.routeLayer) this.routeLayer.clearLayers();
+
+    console.log('Map cleared');
+  }
 }

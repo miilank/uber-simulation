@@ -5,8 +5,8 @@ import {
   effect,
   inject,
   OnDestroy,
+  OnInit,
   signal,
-  Signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MapComponent } from '../../../../shared/map/map';
@@ -19,24 +19,14 @@ import { CurrentRideStateService } from '../../../../registered/services/current
 
 import { VehicleFollowService } from '../../../../shared/services/vehicle-follow.service';
 import { ActiveRideSimRunnerService } from '../../../../shared/services/active-ride-sim-runner.service';
+import { RideApiService, RideETADTO } from '../../../../shared/api/ride-api.service';
 
 import { VehicleMarker } from '../../../../shared/map/vehicle-marker';
 import { LatLng } from '../../../../shared/services/routing.service';
-import { Subscription } from 'rxjs';
-import { NotificationService } from '../../../../../core/services/notification.service';
+import { interval, Subscription } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 type Passenger = { name: string; email: string };
-
-type BookedRide = {
-  id: number;
-  date: string;
-  time: string;
-  from: string;
-  to: string;
-  passengers: number;
-  requirements: string[];
-  status: RideStatus;
-};
 
 @Component({
   selector: 'app-driver-dashboard',
@@ -44,24 +34,28 @@ type BookedRide = {
   imports: [CommonModule, MapComponent],
   templateUrl: './driver-dashboard.html',
 })
-export class DriverDashboard implements OnDestroy {
+export class DriverDashboard implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   private workMinutes = signal<number>(24);
   private readonly workLimitMinutes = 8 * 60;
 
   protected simulationCompleted = signal<boolean>(false);
+  protected currentETA = signal<RideETADTO | null>(null);
+  protected ridePhase = signal<'TO_PICKUP' | 'IN_PROGRESS' | 'IDLE'>('IDLE');
 
   ridesService = inject(DriverRidesService);
   userService = inject(UserService);
   rideState = inject(CurrentRideStateService);
-  notificationService = inject(NotificationService);
+  rideApi = inject(RideApiService);
 
   private follow = inject(VehicleFollowService);
   private simRunner = inject(ActiveRideSimRunnerService);
 
   private subs: Subscription[] = [];
   private driverEmail?: string;
+  private etaPollSub?: Subscription;
+  private currentRideId?: number;
 
   // map inputs
   vehicles: VehicleMarker[] = [];
@@ -75,17 +69,26 @@ export class DriverDashboard implements OnDestroy {
     effect(() => {
       const r = this.currentRide();
 
-      // cleanup if no ride
+      // Cleanup za stari ride
+      if (this.currentRideId && (!r || r.id !== this.currentRideId)) {
+        this.cleanupCurrentRideSubscriptions();
+      }
+
       if (!r) {
         this.simulationCompleted.set(false);
+        this.stopETAPolling();
         if (this.driverEmail) this.follow.stop(this.driverEmail);
         this.driverEmail = undefined;
+        this.currentRideId = undefined;
 
         this.routePoints = [];
         this.vehicles = [];
         this.routePath = [];
+        this.ridePhase.set('IDLE');
         return;
       }
+
+      this.currentRideId = r.id;
 
       // route points
       this.routePoints = [
@@ -99,26 +102,55 @@ export class DriverDashboard implements OnDestroy {
       ];
       this.rideState.loadPanic(r.id);
 
-      // follow per driverEmail
-      if (r.driverEmail && r.driverEmail !== this.driverEmail) {
-        if (this.driverEmail) this.follow.stop(this.driverEmail);
-        this.driverEmail = r.driverEmail;
-
-        this.follow.start(this.driverEmail, 1000);
-        this.subs.push(
-          this.follow.vehicle$(this.driverEmail).subscribe(v => {
-            this.vehicles = v ? [v] : [];
-            this.cdr.detectChanges();
-          })
-        );
-      }
-
-      // start/stop simulation runner (root) based on ride status
       if (r.status === 'IN_PROGRESS') {
         this.simulationCompleted.set(false);
+
+        // Stopuj follow jer simulacija preuzima
+        if (this.driverEmail) {
+          this.follow.stop(this.driverEmail);
+        }
+
+        // Pokreni simulaciju
         this.simRunner.startForRide(r);
+
+        // Subscribe na vehicles i routePath iz simulacije
+        const vehiclesSub = this.simRunner.getVehicles$(r.id);
+        const routePathSub = this.simRunner.getRoutePath$(r.id);
+
+        if (vehiclesSub) {
+          this.subs.push(
+            vehiclesSub.subscribe(v => {
+              this.vehicles = v;
+              this.cdr.detectChanges();
+            })
+          );
+        }
+
+        if (routePathSub) {
+          this.subs.push(
+            routePathSub.subscribe(p => {
+              this.routePath = p;
+              this.cdr.detectChanges();
+            })
+          );
+        }
+
+        this.startETAPolling(r.id);
       } else {
-        this.simRunner.stopForRide(r.id);
+        if (r.driverEmail && r.driverEmail !== this.driverEmail) {
+          if (this.driverEmail) this.follow.stop(this.driverEmail);
+          this.driverEmail = r.driverEmail;
+
+          this.follow.start(this.driverEmail, 1000);
+          this.subs.push(
+            this.follow.vehicle$(this.driverEmail).subscribe(v => {
+              this.vehicles = v ? [v] : [];
+              this.cdr.detectChanges();
+            })
+          );
+        }
+
+        this.stopETAPolling();
       }
     });
   }
@@ -135,10 +167,22 @@ export class DriverDashboard implements OnDestroy {
     this.userService.fetchMe().subscribe();
 
     this.subs.push(
+      this.simRunner.onPickupReached$.subscribe(rideId => {
+        const current = this.currentRide();
+        if (current && current.id === rideId) {
+          this.ridePhase.set('IN_PROGRESS');
+          console.log('Pickup reached! Now in progress phase.');
+          this.cdr.detectChanges();
+        }
+      })
+    );
+
+    this.subs.push(
       this.simRunner.onSimulationComplete$.subscribe(rideId => {
         const current = this.currentRide();
         if (current && current.id === rideId) {
           this.simulationCompleted.set(true);
+          this.stopETAPolling();
           this.cdr.detectChanges();
         }
       })
@@ -146,13 +190,71 @@ export class DriverDashboard implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // NE STOPUJ SIMULACIJU OVDJE — runner je root i mora da nastavi dok ride traje
+    this.cleanupCurrentRideSubscriptions();
+    // NE stopuj sve simulacije - one treba da nastave u pozadini, ovo ispod je stop sve
+    // this.simRunner.stopAll();
+  }
+
+  private cleanupCurrentRideSubscriptions(): void {
     if (this.driverEmail) this.follow.stop(this.driverEmail);
+    this.stopETAPolling();
     this.subs.forEach(s => s.unsubscribe());
     this.subs = [];
   }
 
-  
+  private startETAPolling(rideId: number): void {
+    this.stopETAPolling();
+
+    this.subs.push(
+      this.simRunner.onSimulationComplete$.subscribe(rideId => {
+        const current = this.currentRide();
+        if (current && current.id === rideId) {
+          console.log('Simulation completed for ride', rideId);
+          this.simulationCompleted.set(true);
+          this.stopETAPolling();
+
+          this.rideApi.getRideETA(rideId).subscribe({
+            next: (eta) => {
+              this.currentETA.set(eta);
+              this.cdr.detectChanges();
+            },
+            error: () => {}
+          });
+
+          this.cdr.detectChanges();
+        }
+      })
+    );
+
+    this.etaPollSub = interval(2000)
+      .pipe(switchMap(() => this.rideApi.getRideETA(rideId)))
+      .subscribe({
+        next: (eta) => {
+          this.currentETA.set(eta);
+          this.ridePhase.set(eta.phase as any);
+
+          if (eta.etaToNextPointSeconds === 0 && eta.distanceToNextPointKm < 0.05) {
+            console.log('Vehicle arrived at destination (via ETA)');
+            this.simulationCompleted.set(true);
+            this.stopETAPolling();
+          }
+
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Failed to fetch ETA', err);
+        }
+      });
+  }
+
+  private stopETAPolling(): void {
+    if (this.etaPollSub) {
+      this.etaPollSub.unsubscribe();
+      this.etaPollSub = undefined;
+    }
+    this.currentETA.set(null);
+  }
+
   onPanic(): void {
     if (this.rideState.panicSignal().pressed) return;
 
@@ -163,8 +265,7 @@ export class DriverDashboard implements OnDestroy {
     this.rideState.setPanic(rideId, userId);
   }
 
-
-  readonly bookedRides: Signal<BookedRide[]> = computed(() =>
+  readonly bookedRides = computed(() =>
     this.rides()
       .filter(ride => (this.currentRide() !== null && ride.id !== this.currentRide()!.id))
       .map(ride => ({
@@ -186,17 +287,39 @@ export class DriverDashboard implements OnDestroy {
     })) ?? []
   );
 
-  readonly currentRideStatus: Signal<RideStatus> = computed(() =>
+  readonly currentRideStatus = computed<RideStatus>(() =>
     this.currentRide()?.status ?? 'PENDING'
   );
 
-  readonly currentRideStart: Signal<string> = computed(() =>
+  readonly currentRideStart = computed<string>(() =>
     this.currentRide()?.startLocation.address ?? ''
   );
 
-  readonly currentRideEnd: Signal<string> = computed(() =>
+  readonly currentRideEnd = computed<string>(() =>
     this.currentRide()?.endLocation.address ?? ''
   );
+
+  get etaText(): string {
+    const eta = this.currentETA();
+    if (!eta) return '--';
+
+    const minutes = Math.floor(eta.etaToNextPointSeconds / 60);
+    if (minutes === 0) return '< 1 min';
+    return `${minutes} min`;
+  }
+
+  get distanceText(): string {
+    const eta = this.currentETA();
+    if (!eta) return '--';
+    return `${eta.distanceToNextPointKm.toFixed(1)} km`;
+  }
+
+  get phaseLabel(): string {
+    const phase = this.ridePhase();
+    if (phase === 'TO_PICKUP') return 'Arriving to pickup';
+    if (phase === 'IN_PROGRESS') return 'In progress';
+    return '';
+  }
 
   statusPillClasses: Record<RideStatus, string> = {
     PENDING: 'bg-gray-100 text-slate-700',
@@ -226,8 +349,11 @@ export class DriverDashboard implements OnDestroy {
     const r = this.currentRide();
     if (!r) return;
 
-    this.ridesService.startRide(r.id).subscribe({
-      next: () => this.ridesService.fetchRides().subscribe(),
+    this.rideApi.startRide(r.id).subscribe({
+      next: () => {
+        this.ridesService.fetchRides().subscribe();
+        this.ridePhase.set('TO_PICKUP');
+      },
     });
   }
 
@@ -238,7 +364,7 @@ export class DriverDashboard implements OnDestroy {
       return;
     }
 
-    this.ridesService.completeRide(r.id).subscribe({
+    this.rideApi.completeRide(r.id).subscribe({
       next: () => {
         this.ridesService.fetchRides().subscribe();
         this.simRunner.stopForRide(r.id);
@@ -285,5 +411,6 @@ export class DriverDashboard implements OnDestroy {
     if (ride.vehicleType) requirements.push(ride.vehicleType);
     return requirements;
   }
+
   openCancel() { }
 }

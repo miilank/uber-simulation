@@ -25,13 +25,14 @@ import { VehicleMarker } from '../../../../shared/map/vehicle-marker';
 import { LatLng } from '../../../../shared/services/routing.service';
 import { interval, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { BookedRidesComponent } from "../../booked-rides/booked-rides";
 
 type Passenger = { name: string; email: string };
 
 @Component({
   selector: 'app-driver-dashboard',
   standalone: true,
-  imports: [CommonModule, MapComponent],
+  imports: [CommonModule, MapComponent, BookedRidesComponent],
   templateUrl: './driver-dashboard.html',
 })
 export class DriverDashboard implements OnInit, OnDestroy {

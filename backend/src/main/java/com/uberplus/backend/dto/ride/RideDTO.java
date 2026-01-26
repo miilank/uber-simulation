@@ -38,6 +38,7 @@ public class RideDTO {
     private Integer vehicleId;
     private String vehicleModel;
     private String vehicleLicensePlate;
+    private LocalDateTime arrivedAtPickupTime;
 
     public RideDTO(Ride ride) {
         this.id = ride.getId();
@@ -80,5 +81,6 @@ public class RideDTO {
         }
 
         this.estimatedStartTime = ride.getEstimatedStartTime();
+        this.arrivedAtPickupTime = ride.getArrivedAtPickupTime();
     }
 }

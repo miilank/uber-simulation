@@ -7,6 +7,7 @@ import com.uberplus.backend.service.PricingService;
 import com.uberplus.backend.service.RideService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,9 @@ import com.uberplus.backend.dto.report.RideHistoryFilterDTO;
 import com.uberplus.backend.dto.report.RideHistoryResponseDTO;
 import com.uberplus.backend.service.RideHistoryService;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -121,5 +124,20 @@ public class RideController {
     @GetMapping("/current-in-progress")
     public ResponseEntity<RideDTO> getMyInProgress(Authentication auth) {
         return ResponseEntity.ok(rideService.getInProgressForPassenger(auth.getName()));
+    }
+
+    @GetMapping("/{id}/eta")
+    public ResponseEntity<RideETADTO> getRideETA(@PathVariable Integer id) {
+        try {
+            return ResponseEntity.ok(rideService.getRideETA(id));
+        } catch (IOException | InterruptedException e) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "Could not calculate ETA");
+        }
+    }
+
+    @PutMapping("/{id}/arrived-pickup")
+    public ResponseEntity<RideDTO> arrivedAtPickup(@PathVariable Integer id) {
+        return ResponseEntity.ok(rideService.arrivedAtPickup(id));
     }
 }

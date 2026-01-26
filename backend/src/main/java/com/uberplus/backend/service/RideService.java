@@ -4,8 +4,10 @@ import com.uberplus.backend.dto.common.MessageDTO;
 import com.uberplus.backend.dto.notification.PanicNotificationDTO;
 import com.uberplus.backend.dto.ride.CreateRideRequestDTO;
 import com.uberplus.backend.dto.ride.RideDTO;
+import com.uberplus.backend.dto.ride.RideETADTO;
 import jakarta.validation.Valid;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface RideService {
@@ -23,4 +25,6 @@ public interface RideService {
 
     RideDTO getInProgressForPassenger(String email);
     RideDTO completeRide(Integer rideId, String driverEmail);
+    RideETADTO getRideETA(Integer rideId) throws IOException, InterruptedException;
+    RideDTO arrivedAtPickup(Integer rideId);
 }

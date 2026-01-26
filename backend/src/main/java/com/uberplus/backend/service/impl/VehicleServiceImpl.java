@@ -6,10 +6,12 @@ import com.uberplus.backend.model.enums.VehicleStatus;
 import com.uberplus.backend.repository.VehicleRepository;
 import com.uberplus.backend.service.VehicleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com.uberplus.backend.dto.vehicle.VehiclePositionUpdateDTO;
 import com.uberplus.backend.model.Location;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -69,5 +71,17 @@ public class VehicleServiceImpl implements VehicleService {
         }
 
         vehicleRepository.save(v);
+    }
+
+    @Override
+    @Transactional
+    public void updateVehicleStatus(Integer vehicleId, VehicleStatus status) {
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Vehicle not found"
+                ));
+
+        vehicle.setStatus(status);
+        vehicleRepository.save(vehicle);
     }
 }

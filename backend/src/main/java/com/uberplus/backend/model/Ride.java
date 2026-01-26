@@ -72,6 +72,9 @@ public class Ride {
     private LocalDateTime scheduledTime;
 
     @Column
+    private LocalDateTime arrivedAtPickupTime;
+
+    @Column
     private LocalDateTime estimatedStartTime;
 
     @Column

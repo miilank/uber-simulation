@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,10 +25,10 @@ public class AuthController {
 
     // POST /api/auth/register
     @PostMapping("/register")
-    public ResponseEntity<UserProfileDTO> register(@Valid @RequestBody RegisterRequestDTO request) {
-
-        UserProfileDTO createdUser = authService.register(request);
-
+    public ResponseEntity<UserProfileDTO> register(@Valid @RequestPart("user") RegisterRequestDTO request,
+                                                   @RequestPart(value = "avatar", required = false) MultipartFile avatar)
+    {
+        UserProfileDTO createdUser = authService.register(request, avatar);
         return ResponseEntity.ok(createdUser);
     }
 

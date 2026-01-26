@@ -11,15 +11,19 @@ import com.uberplus.backend.model.enums.UserRole;
 import com.uberplus.backend.repository.DriverRepository;
 import com.uberplus.backend.repository.ProfileChangeRequestRepository;
 import com.uberplus.backend.repository.UserRepository;
+import com.uberplus.backend.service.AvatarService;
 import com.uberplus.backend.service.DriverService;
 import com.uberplus.backend.service.EmailService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -31,20 +35,18 @@ public class DriverServiceImpl implements DriverService {
     private final UserRepository userRepository;
     private final ProfileChangeRequestRepository changeRequestRepository;
     private final EmailService emailService;
-
+    private final AvatarService avatarService;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional()
     @Override
-    public DriverDTO getProfile(String email) {
-        Driver driver = driverRepository.findByEmail(email)
+    public Driver getProfile(String email) {
+        return driverRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
-
-        return new DriverDTO(driver);
     }
 
     @Override
-    public void requestProfileUpdate(String email, UserUpdateRequestDTO update) {
+    public void requestProfileUpdate(String email, UserUpdateRequestDTO update, MultipartFile avatar) {
         Driver driver = driverRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
 
@@ -58,7 +60,16 @@ public class DriverServiceImpl implements DriverService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "There is already a pending change request for this driver.");
         }
 
-        ProfileChangeRequest changeRequest = new ProfileChangeRequest(update, driver);
+        String filename = null;
+        if(avatar != null && !avatar.isEmpty()) {
+            try {
+                filename = avatarService.storeAvatar(avatar);
+            } catch (IOException e) {
+                System.out.println("Couldn't store avatar.");
+            }
+        }
+
+        ProfileChangeRequest changeRequest = new ProfileChangeRequest(update, driver, filename);
         changeRequestRepository.save(changeRequest);
     }
 
@@ -82,7 +93,19 @@ public class DriverServiceImpl implements DriverService {
         driver.setLastName(changeRequest.getLastName());
         driver.setAddress(changeRequest.getAddress());
         driver.setPhoneNumber(changeRequest.getPhoneNumber());
-        driver.setProfilePicture(changeRequest.getProfilePicture());
+
+        if(changeRequest.getProfilePicture() != null && !changeRequest.getProfilePicture().isEmpty()) {
+            try {
+                String old = driver.getProfilePicture();
+                if(old != null) {
+                    avatarService.deleteAvatar(old);
+                }
+                driver.setProfilePicture(changeRequest.getProfilePicture());
+            } catch (IOException e) {
+                System.out.println("Couldn't store avatar.");
+            }
+
+        }
 
         driver.setUpdatedAt(LocalDateTime.now());
 
@@ -105,6 +128,15 @@ public class DriverServiceImpl implements DriverService {
             throw new ResponseStatusException(HttpStatus.GONE, "Change request is no longer pending.");
         }
 
+        if(changeRequest.getProfilePicture() != null && !changeRequest.getProfilePicture().isEmpty()) {
+            try {
+                avatarService.deleteAvatar(changeRequest.getProfilePicture());
+            } catch (IOException e) {
+                System.out.println("Couldn't delete avatar.");
+            }
+
+        }
+
         changeRequest.setStatus(ProfileUpdateStatus.REJECTED);
         changeRequest.setUpdatedAt(LocalDateTime.now());
 
@@ -113,7 +145,7 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     @Transactional()
-    public Integer createDriver(DriverCreationDTO request) {
+    public Integer createDriver(DriverCreationDTO request, MultipartFile avatar) {
         String email = request.getEmail().trim().toLowerCase();
 
         if (userRepository.existsByEmail(email)) {
@@ -126,7 +158,6 @@ public class DriverServiceImpl implements DriverService {
         driver.setLastName(request.getLastName());
         driver.setAddress(request.getAddress());
         driver.setPhoneNumber(request.getPhoneNumber());
-        driver.setProfilePicture("default-profile.png");
         driver.setRole(UserRole.PASSENGER);
         driver.setBlocked(false);
         driver.setBlockReason(null);
@@ -152,6 +183,19 @@ public class DriverServiceImpl implements DriverService {
         driver.setCreatedAt(now);
         driver.setUpdatedAt(now);
 
+        if(avatar != null && !avatar.isEmpty()) {
+            try {
+                String avatarFilename = avatarService.storeAvatar(avatar);
+                driver.setProfilePicture(avatarFilename);
+            } catch (IOException e) {
+                driver.setProfilePicture("defaultprofile.png");
+                System.out.println("Could not store profile picture.");
+                System.out.println(e.getMessage());
+            }
+        } else {
+            driver.setProfilePicture("defaultprofile.png");
+        }
+
         Driver saved = driverRepository.save(driver);
 
         emailService.sendDriverActivationEmail(saved);
@@ -160,12 +204,10 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public DriverDTO getDriver(Integer driverId) {
-        Driver driver = driverRepository.findById(driverId).orElseThrow(
+    public Driver getDriver(Integer driverId) {
+        return driverRepository.findById(driverId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found.")
         );
-
-        return new DriverDTO(driver);
     }
 
     @Override
@@ -191,5 +233,32 @@ public class DriverServiceImpl implements DriverService {
     public List<DriverUpdateDTO> getPendingUpdates() {
         List<ProfileChangeRequest> changeRequests = changeRequestRepository.findByStatus(ProfileUpdateStatus.PENDING);
         return changeRequests.stream().map(DriverUpdateDTO::new).toList();
+    }
+
+    @Override
+    public Resource getNewAvatar(Integer driverId) {
+        User user = userRepository.findById(driverId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found.")
+        );
+
+
+        ProfileChangeRequest changeRequest = changeRequestRepository
+                .findFirstByDriver_IdAndStatusOrderByCreatedAtDesc(driverId, ProfileUpdateStatus.PENDING)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No pending change request for this driver"));
+
+        Resource avatar;
+        String filename;
+        if(changeRequest.getProfilePicture() == null) {
+            filename = user.getProfilePicture();
+        } else {
+            filename = changeRequest.getProfilePicture();;
+        }
+        try {
+            avatar = avatarService.getAvatar(filename);
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not get profile picture.");
+        }
+
+        return avatar;
     }
 }

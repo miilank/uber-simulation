@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -36,7 +37,7 @@ public class ProfileChangeRequest {
     private String phoneNumber;
 
     @Column
-    private String profilePicture;
+    private String profilePicture; // Null if no changes
 
     @Column
     private ProfileUpdateStatus status;
@@ -47,13 +48,13 @@ public class ProfileChangeRequest {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public ProfileChangeRequest(UserUpdateRequestDTO dto, Driver driver) {
+    public ProfileChangeRequest(UserUpdateRequestDTO dto, Driver driver, String avatarFilename) {
         this.driver = driver;
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();
+        this.profilePicture = avatarFilename;
         this.address = dto.getAddress();
         this.phoneNumber = dto.getPhoneNumber();
-        this.profilePicture = dto.getProfilePicture();
         this.status = ProfileUpdateStatus.PENDING;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();

@@ -10,5 +10,4 @@ public class UserUpdateRequestDTO {
     private String lastName;
     private String phoneNumber;
     private String address;
-    private String profilePicture;
 }

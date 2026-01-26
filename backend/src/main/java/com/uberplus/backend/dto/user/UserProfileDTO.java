@@ -20,14 +20,14 @@ public class UserProfileDTO {
     protected String blockReason;
     protected boolean activated;
 
-    public UserProfileDTO(User user) {
+    public UserProfileDTO(User user, String avatarUrl) {
         id = user.getId();
         email = user.getEmail();
         firstName = user.getFirstName();
         lastName = user.getLastName();
         phoneNumber = user.getPhoneNumber();
         address = user.getAddress();
-        profilePicture = user.getProfilePicture();
+        profilePicture = avatarUrl;
         role = user.getRole();
         blocked = user.isBlocked();
         blockReason = user.getBlockReason();

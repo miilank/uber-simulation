@@ -36,12 +36,10 @@ public class DriverUpdateDTO {
         newLastName = request.getLastName();
         newPhoneNumber = request.getPhoneNumber();
         newAddress = request.getAddress();
-        newProfilePicture = request.getProfilePicture();
 
         oldFirstName = driver.getFirstName();
         oldLastName = driver.getLastName();
         oldPhoneNumber = driver.getPhoneNumber();
         oldAddress = driver.getAddress();
-        oldProfilePicture = driver.getProfilePicture();
     }
 }

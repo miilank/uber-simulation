@@ -10,14 +10,19 @@ import com.uberplus.backend.model.User;
 import com.uberplus.backend.model.enums.UserRole;
 import com.uberplus.backend.repository.UserRepository;
 import com.uberplus.backend.service.AuthService;
+import com.uberplus.backend.service.AvatarService;
 import com.uberplus.backend.service.EmailService;
 import com.uberplus.backend.service.JwtService;
 import com.uberplus.backend.utils.UserMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -30,10 +35,11 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final JwtService jwtService;
+    private final AvatarService avatarService;
 
     @Override
     @Transactional
-    public UserProfileDTO register(RegisterRequestDTO request) {
+    public UserProfileDTO register(RegisterRequestDTO request, MultipartFile avatar) {
         if (!Objects.equals(request.getPassword(), request.getConfirmPassword())) {
             throw new IllegalArgumentException("Passwords do not match.");
         }
@@ -51,7 +57,6 @@ public class AuthServiceImpl implements AuthService {
         user.setLastName(request.getLastName());
         user.setAddress(request.getAddress());
         user.setPhoneNumber(request.getPhoneNumber());
-        user.setProfilePicture("default-profile.png");
         user.setRole(UserRole.PASSENGER);
         user.setBlocked(false);
         user.setBlockReason(null);
@@ -66,6 +71,21 @@ public class AuthServiceImpl implements AuthService {
         LocalDateTime now = LocalDateTime.now();
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
+
+        user = userRepository.save(user); // Need to generate id
+
+        if(avatar != null && !avatar.isEmpty()) {
+            try {
+                String avatarFilename = avatarService.storeAvatar(avatar);
+                user.setProfilePicture(avatarFilename);
+            } catch (IOException e) {
+                user.setProfilePicture("defaultprofile.png");
+                System.out.println("Could not store profile picture.");
+                System.out.println(e.getMessage());
+            }
+        } else {
+            user.setProfilePicture("defaultprofile.png");
+        }
 
         Passenger saved = userRepository.save(user);
 

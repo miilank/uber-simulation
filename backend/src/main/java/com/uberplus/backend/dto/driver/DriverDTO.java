@@ -19,14 +19,14 @@ public class DriverDTO extends UserProfileDTO {
     private Double averageRating;
     private VehicleDTO vehicle;
 
-    public DriverDTO(Driver driver) {
+    public DriverDTO(Driver driver, String avatarUrl) {
         this.id = driver.getId();
         this.email = driver.getEmail();
         this.firstName = driver.getFirstName();
         this.lastName = driver.getLastName();
         this.phoneNumber = driver.getPhoneNumber();
         this.address = driver.getAddress();
-        this.profilePicture = driver.getProfilePicture();
+        this.profilePicture = avatarUrl;
         this.role = driver.getRole();
         this.blocked = driver.isBlocked();
         this.blockReason = driver.getBlockReason();

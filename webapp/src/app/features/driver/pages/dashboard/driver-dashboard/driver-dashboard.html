@@ -102,9 +102,6 @@
                 Cancel ride
               </div>
 
-              <div class="ml-auto h-10 px-8 rounded-full bg-red-600 text-white text-sm font-semibold flex items-center">
-                PANIC
-              </div>
             }
 
             @if (currentRide()?.status == 'IN_PROGRESS') {
@@ -212,7 +209,8 @@
               Details
             </div>
 
-            <div class="h-10 px-7 rounded-full bg-red-600 text-white text-sm flex items-center">
+            <div class="h-10 px-7 rounded-full bg-red-600 text-white text-sm flex items-center"
+            (click)="openCancel()">
               Cancel
             </div>
           </div>

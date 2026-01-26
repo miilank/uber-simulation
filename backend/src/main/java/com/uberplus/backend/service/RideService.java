@@ -18,6 +18,8 @@ public interface RideService {
     List<PanicNotificationDTO> getPanicNotifications();
     void resolvePanic(Integer rideId);
 
+    RideDTO cancelRide(Integer rideId, String reason, Integer userId);
+
     RideDTO getInProgressForPassenger(String email);
     RideDTO completeRide(Integer rideId, String driverEmail);
 }

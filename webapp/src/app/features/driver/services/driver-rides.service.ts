@@ -60,4 +60,12 @@ export class DriverRidesService {
         })
       )
     }
+    cancelRide(rideId: number, userId: number, reason: string): Observable<RideDTO> {
+      return this.http.post<RideDTO>(`${this.config.ridesUrl}/${rideId}/cancel`, { reason, userId }).pipe(
+        tap((cancelledRide) => {
+          let ridesArr: RideDTO[] = this.rides().filter(r => r.id !== cancelledRide.id);
+          this.rides.set(ridesArr);
+        })
+      );
+    }
 }

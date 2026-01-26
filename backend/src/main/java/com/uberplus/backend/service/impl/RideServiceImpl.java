@@ -393,5 +393,24 @@ public class RideServiceImpl implements RideService {
 
         return new RideDTO(ride);
     }
+
+    @Override
+    public RideDTO cancelRide(Integer rideId, String reason, Integer userId){
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Ride not found."
+                ));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "User not found."
+                ));
+        ride.setStatus(RideStatus.CANCELLED);
+        ride.setCancellationReason(reason);
+        ride.setCancellationTime(LocalDateTime.now());
+        ride.setCancelledBy(user.getEmail());
+        rideRepository.save(ride);
+
+        return new RideDTO(ride);
+    }
 }
 

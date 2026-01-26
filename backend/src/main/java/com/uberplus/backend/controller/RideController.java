@@ -72,7 +72,8 @@ public class RideController {
     // POST /api/rides/{rideId}/cancel
     @PostMapping("/{rideId}/cancel")
     public ResponseEntity<RideDTO> cancelRide(@PathVariable Integer rideId, @RequestBody RideCancellationDTO request) {
-        return ResponseEntity.ok(new RideDTO());
+        RideDTO response = rideService.cancelRide(rideId,request.getReason(), request.getUserId());
+        return ResponseEntity.ok(response);
     }
 
     // PUT /api/rides/{rideId}/start

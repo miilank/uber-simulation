@@ -12,14 +12,12 @@ export class DriverRidesService {
     public rides: WritableSignal<RideDTO[]> = signal<RideDTO[]>([]);
     public readonly currentRide: Signal<RideDTO | null> = computed(() => {
       const activeRides: RideDTO[] = this.rides()
-        // Prvo IN_PROGRESS, pa ACCEPTED, pa ostale
         .sort((a: RideDTO, b: RideDTO) => {
           if (a.status === 'IN_PROGRESS' && b.status !== 'IN_PROGRESS') return -1;
           if (b.status === 'IN_PROGRESS' && a.status !== 'IN_PROGRESS') return 1;
           if (a.status === 'ACCEPTED' && b.status !== 'ACCEPTED') return -1;
           if (b.status === 'ACCEPTED' && a.status !== 'ACCEPTED') return 1;
 
-          // Ako su isti status, sortiraj po scheduledTime
           return new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime();
         });
 

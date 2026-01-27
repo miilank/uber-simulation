@@ -215,7 +215,33 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
   }
 
   submitReport(): void {
-    return;
+    if (!this.isRideActive || !this.reportNote.trim() || this.submittingReport) {
+      return;
+    }
+
+    const userId = this.userService.getCurrentUserId();
+    const rideId = this.ride?.id;
+
+    if (!userId || !rideId) {
+      console.error('Missing userId or rideId');
+      return;
+    }
+
+    this.submittingReport = true;
+
+    this.rideApi.reportInconsistency(rideId, userId, this.reportNote.trim()).subscribe({
+      next: () => {
+        console.log('Inconsistency reported successfully');
+        this.reportNote = '';
+        this.submittingReport = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to report inconsistency', err);
+        this.submittingReport = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   ngOnDestroy(): void {

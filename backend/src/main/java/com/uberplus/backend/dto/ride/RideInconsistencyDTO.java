@@ -8,5 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RideInconsistencyDTO {
+    private Integer rideId;
+    private Integer passengerId;
     private String description;
 }

@@ -2,9 +2,7 @@ package com.uberplus.backend.service;
 
 import com.uberplus.backend.dto.common.MessageDTO;
 import com.uberplus.backend.dto.notification.PanicNotificationDTO;
-import com.uberplus.backend.dto.ride.CreateRideRequestDTO;
-import com.uberplus.backend.dto.ride.RideDTO;
-import com.uberplus.backend.dto.ride.RideETADTO;
+import com.uberplus.backend.dto.ride.*;
 import jakarta.validation.Valid;
 
 import java.io.IOException;
@@ -27,4 +25,6 @@ public interface RideService {
     RideDTO completeRide(Integer rideId, String driverEmail);
     RideETADTO getRideETA(Integer rideId) throws IOException, InterruptedException;
     RideDTO arrivedAtPickup(Integer rideId);
+
+    RideDTO stopEarly(Integer rideId, LocationDTO dto);
 }

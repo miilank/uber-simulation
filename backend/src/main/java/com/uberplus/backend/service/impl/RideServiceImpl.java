@@ -1,10 +1,7 @@
 package com.uberplus.backend.service.impl;
 
 import com.uberplus.backend.dto.notification.PanicNotificationDTO;
-import com.uberplus.backend.dto.ride.CreateRideRequestDTO;
-import com.uberplus.backend.dto.ride.LocationDTO;
-import com.uberplus.backend.dto.ride.RideDTO;
-import com.uberplus.backend.dto.ride.RideETADTO;
+import com.uberplus.backend.dto.ride.*;
 import com.uberplus.backend.model.*;
 import com.uberplus.backend.model.enums.RideStatus;
 import com.uberplus.backend.model.enums.VehicleStatus;
@@ -502,5 +499,20 @@ public class RideServiceImpl implements RideService {
         rideRepository.save(ride);
         return new RideDTO(ride);
     }
+    @Override
+    public RideDTO stopEarly(Integer rideId, LocationDTO dto){
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found."));
+
+        ride.setStoppedAt(LocalDateTime.now());
+        ride.setActualEndTime(LocalDateTime.now());
+        ride.setEndLocation(dto.toEntity());
+        ride.setStoppedLocation(dto.toEntity());
+        ride.setStatus(RideStatus.COMPLETED);
+
+        rideRepository.save(ride);
+        return new RideDTO(ride);
+    }
 }
+
 

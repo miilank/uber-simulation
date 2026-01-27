@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { LocationDTO } from '../models/location';
+import { RideDTO } from '../models/ride';
 
 export interface RideETADTO {
   rideId: number;
@@ -30,5 +32,9 @@ export class RideApiService {
 
   completeRide(rideId: number): Observable<any> {
     return this.http.put(`${this.baseUrl}/${rideId}/complete`, {});
+  }
+  stopRideEarly(rideId: number, dto: LocationDTO): Observable<any> {
+    console.log('Stopping ride early with DTO:', dto);
+    return this.http.put(`${this.baseUrl}/${rideId}/stop-early`, { dto });
   }
 }

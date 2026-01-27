@@ -124,11 +124,6 @@
                 Start ride
               </div>
 
-              <button class="h-10 px-5 rounded-full bg-gray-200 text-neutral-900 text-sm flex items-center"
-              onclick="openCancel()">
-                Cancel ride
-              </button>
-
             }
 
             @if (currentRide()?.status == 'IN_PROGRESS') {
@@ -145,7 +140,8 @@
                 </div>
 
                 <!-- STOP EARLY -->
-                <div class="h-10 px-5 rounded-full bg-gray-200 text-neutral-900 text-sm flex items-center cursor-pointer hover:bg-gray-300">
+                <div class="h-10 px-5 rounded-full bg-gray-200 text-neutral-900 text-sm flex items-center cursor-pointer hover:bg-gray-300"
+                (click)="stopRideEarly()">
                   Stop ride early
                 </div>
 

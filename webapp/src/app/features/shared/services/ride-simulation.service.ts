@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 import { VehiclesApiService } from '../api/vehicles-api.service';
 import { RoutingService, LatLng } from './routing.service';
 import { resamplePolyline } from '../map/route-utils';
 import { VehicleMarker } from '../map/vehicle-marker';
+import { DriverRidesService } from '../../driver/services/driver-rides.service';
+import { LocationDTO } from '../models/location';
 
 type RideLike = {
   id: number;
@@ -29,6 +31,9 @@ export class RideSimulationService {
   private onPickupReachedCallback?: () => void;
   private onCompleteCallback?: () => void;
   private currentPhase: 'to-pickup' | 'in-progress' | 'idle' = 'idle';
+  readonly stopAfterNextStep: WritableSignal<boolean> = signal(false);
+  lastPosition: { lat: number; lng: number } | null = null;
+  lastStopLocation: LocationDTO | null = null;
 
   constructor(
     private vehiclesApi: VehiclesApiService,
@@ -238,12 +243,24 @@ export class RideSimulationService {
       if (!current) return;
 
       const moved: VehicleMarker = { ...current, lat, lng, status: 'OCCUPIED' };
+      this.lastPosition = { lat, lng };
+      this.lastStopLocation = { 
+        latitude: lat, 
+        longitude: lng,
+        address: "adresa nije dostupna"
+      }; 
       this.vehiclesSub.next([moved]);
 
       this.vehiclesApi.updateVehiclePosition(vehicleId, {
         latitude: lat,
         longitude: lng,
       }).subscribe({ error: (e) => console.error('Position update failed', e) });
+
+      if (this.stopAfterNextStep()) {
+        this.stopAfterNextStep.set(false);
+        this.simAbort?.abort();  // Trigger clean stop
+        break;  // Exit this segment
+      }
 
       await this.sleep(tickMs);
     }

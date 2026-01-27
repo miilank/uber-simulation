@@ -26,6 +26,7 @@ import { LatLng } from '../../../../shared/services/routing.service';
 import { interval, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { BookedRidesComponent } from "../../booked-rides/booked-rides";
+import { LocationDTO } from '../../../../shared/models/location';
 
 type Passenger = { name: string; email: string };
 
@@ -361,7 +362,7 @@ export class DriverDashboard implements OnInit, OnDestroy {
   completeCurrentRide() {
     const r = this.currentRide();
 
-    if (!r || r.status !== 'IN_PROGRESS' || !this.simulationCompleted()) {
+    if (!r || r.status !== 'IN_PROGRESS') {
       return;
     }
 
@@ -413,5 +414,25 @@ export class DriverDashboard implements OnInit, OnDestroy {
     return requirements;
   }
 
-  openCancel() { }
+ stopRideEarly() {
+  const r = this.currentRide();
+  if (!r) return;
+
+  const result = this.simRunner.stopRideEarly(r.id);
+  if (result.location) {
+   const dto: LocationDTO = { 
+    latitude: result.location.latitude,
+    longitude: result.location.longitude,
+    address: 'Novi Sad'
+    };
+    this.rideApi.stopRideEarly(r.id, dto).subscribe({
+      next: (rideDto) => {
+        this.ridesService.fetchRides().subscribe();
+        this.simulationCompleted.set(true);
+        this.rideState.clearPanic(r.id);
+      },
+      error: (err) => console.error('Stop early failed', err)
+    });
+  }
+}
 }

@@ -12,7 +12,7 @@ export class DriverRidesService {
     public rides: WritableSignal<RideDTO[]> = signal<RideDTO[]>([]);
     public readonly currentRide: Signal<RideDTO | null> = computed(() => {
       const activeRides: RideDTO[] = this.rides()
-        // ✅ Prvo IN_PROGRESS, pa ACCEPTED, pa ostale
+        // Prvo IN_PROGRESS, pa ACCEPTED, pa ostale
         .sort((a: RideDTO, b: RideDTO) => {
           if (a.status === 'IN_PROGRESS' && b.status !== 'IN_PROGRESS') return -1;
           if (b.status === 'IN_PROGRESS' && a.status !== 'IN_PROGRESS') return 1;

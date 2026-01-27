@@ -26,7 +26,7 @@ export interface RideDTO {
   passengers: PassengerDTO[];
   passengerEmails: string[];
   vehicleType: VehicleType;
-  totalPrice: number;
+  basePrice: number;
   panicActivated: boolean;
   cancelledBy: string | null;
   scheduledTime: Date;

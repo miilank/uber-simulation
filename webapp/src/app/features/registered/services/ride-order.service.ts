@@ -16,9 +16,7 @@ export interface RideCreationDTO {
     linkedPassengerEmails: string[],
     scheduledTime: string,
     estimatedDurationMinutes: number,
-    favoriteRouteId?: number,
-
-    distance: number //novo
+    distanceKm: number
 }
 
 @Injectable({
@@ -29,7 +27,7 @@ export class RideOrderService {
     config = inject(ConfigService);
 
     requestRide(startLocation: LocationDTO, endLocation: LocationDTO, vehicleType: VehicleType | undefined, waypoints: LocationDTO[], babyFriendly: boolean,
-        petFriendly: boolean, linkedPassengerEmails: string[], scheduledTime: string, distance: number, estimatedDurationMinutes: number, favoriteRouteId: number | undefined) : Observable<RideDTO> {
+        petFriendly: boolean, linkedPassengerEmails: string[], scheduledTime: string, distanceKm: number, estimatedDurationMinutes: number) : Observable<RideDTO> {
         
         let vehicleTypeDTO: (keyof typeof VehicleType) | undefined;
 
@@ -46,10 +44,9 @@ export class RideOrderService {
             petFriendly,
             linkedPassengerEmails,
             scheduledTime,
-            distance,
-            estimatedDurationMinutes,
-            favoriteRouteId
-        }
+            distanceKm,
+            estimatedDurationMinutes
+            }
 
         return this.http.post<RideDTO>(this.config.ridesUrl, body);
     }

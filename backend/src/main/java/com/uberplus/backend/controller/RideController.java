@@ -32,7 +32,8 @@ public class RideController {
     // POST /api/rides/estimate
     @PostMapping("/estimate")
     public ResponseEntity<PriceEstimateResponseDTO> estimateRide(@Valid @RequestBody RideEstimateDTO request) {
-        double price = pricingService.calculatePrice(request);
+        double price = pricingService.calculatePrice(request.getEstimatedDistance()/1000.0,
+                                                                request.getVehicleType());
 
         return ResponseEntity.ok(new PriceEstimateResponseDTO(
                 price,
@@ -45,6 +46,7 @@ public class RideController {
     public ResponseEntity<RideDTO> createRide(Authentication auth, @Valid @RequestBody CreateRideRequestDTO request) {
         return ResponseEntity.ok(rideService.requestRide(auth.getName(), request));
     }
+
     // Za sad samo driver. Ne znam da li treba za druge.
     // GET /api/rides
     @GetMapping

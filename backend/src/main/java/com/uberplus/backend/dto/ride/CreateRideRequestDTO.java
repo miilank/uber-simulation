@@ -23,4 +23,5 @@ public class CreateRideRequestDTO {
     private Long favoriteRouteId;
 
     private int estimatedDurationMinutes;
+    private Double distanceKm;
 }

@@ -29,6 +29,8 @@ export class RideBookingSidebar {
   router = inject(Router);
   cdr = inject(ChangeDetectorRef);
 
+  profilePicture = signal<string>("defaultprofile.png");
+
   dashboardUrl: UrlTree = this.router.parseUrl('/user/dashboard');
 
   vehicleTypes: string[] = [];
@@ -235,16 +237,15 @@ export class RideBookingSidebar {
       this.infants, this.pets,
       this.passengerEmails(),
       this.scheduledDate(),
-      this.bookingState.routeInfo()?.totalDistance!,
+      (this.bookingState.routeInfo()?.totalDistance!/1000.0),
       (this.bookingState.routeInfo()?.totalDuration!/60),
-      undefined   
     ).subscribe({
       next: (ride => {
         this.successMessage = `Ride successfully assigned to driver: ${ride.driverEmail}!
         Car is expected to arrive at ${new Date(ride.scheduledTime).toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit'
-      })}. Total price is: ${ride.totalPrice}.`;
+      })}. Price is: €${ride.basePrice}.`;
         this.isSuccessOpen.set(true);
       }),
       error: (err => {

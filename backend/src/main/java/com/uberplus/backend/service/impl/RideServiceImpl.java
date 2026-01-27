@@ -12,6 +12,7 @@ import com.uberplus.backend.repository.DriverRepository;
 import com.uberplus.backend.repository.RideRepository;
 import com.uberplus.backend.repository.UserRepository;
 import com.uberplus.backend.service.OSRMService;
+import com.uberplus.backend.service.PricingService;
 import com.uberplus.backend.service.RideService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,7 @@ public class RideServiceImpl implements RideService {
     private UserRepository userRepository;
     private DriverRepository driverRepository;
     private OSRMService osrmService;
+    private PricingService pricingService;
 
     @Override
     @Transactional
@@ -127,6 +129,10 @@ public class RideServiceImpl implements RideService {
         ride.setStatus(RideStatus.ACCEPTED);
         ride.setStartLocation(request.getStartLocation().toEntity());
         ride.setEndLocation(request.getEndLocation().toEntity());
+
+        ride.setDistanceKm(request.getDistanceKm());
+        ride.setBasePrice(pricingService.calculatePrice(request.getDistanceKm(),
+                                                        selectedDriver.getVehicle().getType()));
 
         List<Location> waypoints = new ArrayList<>();
 

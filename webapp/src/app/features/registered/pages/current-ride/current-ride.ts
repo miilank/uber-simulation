@@ -12,9 +12,11 @@ import { UserRideDTO, RideService } from '../../../../core/services/ride.service
 import { LatLng } from '../../../shared/services/routing.service';
 import { LocationDTO } from '../../../shared/models/location';
 
-import { Subscription } from 'rxjs';
+import {interval, Subscription} from 'rxjs';
 import { VehicleFollowService } from '../../../shared/services/vehicle-follow.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import {RideApiService, RideETADTO} from '../../../shared/api/ride-api.service';
+import {switchMap} from 'rxjs/operators';
 
 type UiRideStatus = 'Assigned' | 'Started' | 'Finished' | 'Cancelled';
 type PassengerItem = { id: number; name: string; email: string; role: 'You' | 'Passenger' };
@@ -31,11 +33,15 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
   private rideService = inject(RideService);
   public rideState = inject(CurrentRideStateService);
   private notificationService = inject(NotificationService);
-
+  private rideApi = inject(RideApiService);
   private follow = inject(VehicleFollowService);
-  private subs: Subscription[] = [];
 
+  private subs: Subscription[] = [];
   private driverEmail?: string;
+
+  private etaPollSub?: Subscription;
+  currentETA: RideETADTO | null = null;
+  ridePhase: 'TO_PICKUP' | 'IN_PROGRESS' | 'IDLE' = 'IDLE';
 
   ride: UserRideDTO | null = null;
 
@@ -52,7 +58,6 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
   toAddress = '';
   vehicleText = '';
   passengers: PassengerItem[] = [];
-  etaMinutes = 1;
 
   reportNote = '';
   submittingReport = false;
@@ -90,7 +95,10 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
           email: p.email,
           role: 'Passenger' as const,
         }));
+
         this.rideState.loadPanic(r.id);
+        this.startETAPolling(r.id);
+
         // FOLLOW (per driver)
         if (r.driverEmail) {
           this.driverEmail = r.driverEmail;
@@ -112,7 +120,7 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
   private clearUi(): void {
     if (this.driverEmail) this.follow.stop(this.driverEmail);
     this.driverEmail = undefined;
-
+    this.stopETAPolling();
     this.ride = null;
     this.vehicles = [];
     this.routePath = [];
@@ -123,6 +131,37 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
     this.vehicleText = '';
   }
 
+  private startETAPolling(rideId: number): void {
+    this.stopETAPolling();
+
+    this.etaPollSub = interval(2000)
+      .pipe(switchMap(() => this.rideApi.getRideETA(rideId)))
+      .subscribe({
+        next: (eta) => {
+          this.currentETA = eta;
+          this.ridePhase = eta.phase as any;
+
+          if (eta.etaToNextPointSeconds === 0 && eta.distanceToNextPointKm < 0.05) {
+            console.log('Vehicle arrived at destination (via ETA)');
+            this.stopETAPolling();
+          }
+
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Failed to fetch ETA', err);
+        }
+      });
+  }
+
+  private stopETAPolling(): void {
+    if (this.etaPollSub) {
+      this.etaPollSub.unsubscribe();
+      this.etaPollSub = undefined;
+    }
+    this.currentETA = null;
+  }
+
   onPanic(): void {
     if (this.rideState.panicSignal().pressed) return;
 
@@ -131,6 +170,18 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
     if (!rideId) return;
 
     this.rideState.setPanic(rideId, userId);
+  }
+
+  get displayStatus(): string {
+    if (this.ridePhase === 'TO_PICKUP') return 'Arriving to pickup';
+    if (this.ridePhase === 'IN_PROGRESS') return 'In progress';
+    return 'Started';
+  }
+
+  get displayStatusClass(): string {
+    if (this.ridePhase === 'TO_PICKUP') return 'bg-blue-100 text-blue-700';
+    if (this.ridePhase === 'IN_PROGRESS') return 'bg-green-100 text-green-700';
+    return 'bg-green-100 text-green-700';
   }
 
   statusPillClasses: Record<UiRideStatus, string> = {
@@ -145,9 +196,22 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
   }
 
   get etaText(): string {
-    if (!this.isRideActive) return '--';
-    if (this.etaMinutes <= 1) return '< 1 min';
-    return `${this.etaMinutes} min`;
+    if (!this.currentETA) return '--';
+
+    const minutes = Math.floor(this.currentETA.etaToNextPointSeconds / 60);
+    if (minutes === 0) return '< 1 min';
+    return `${minutes} min`;
+  }
+
+  get distanceText(): string {
+    if (!this.currentETA) return '--';
+    return `${this.currentETA.distanceToNextPointKm.toFixed(1)} km`;
+  }
+
+  get phaseLabel(): string {
+    if (this.ridePhase === 'TO_PICKUP') return 'Arriving to pickup';
+    if (this.ridePhase === 'IN_PROGRESS') return 'In progress';
+    return '';
   }
 
   submitReport(): void {
@@ -156,6 +220,7 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.driverEmail) this.follow.stop(this.driverEmail);
+    this.stopETAPolling();
     this.subs.forEach(s => s.unsubscribe());
     this.subs = [];
   }

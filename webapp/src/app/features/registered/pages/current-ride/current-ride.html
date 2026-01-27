@@ -5,22 +5,36 @@
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_640px] gap-6 items-stretch">
       <!-- Left -->
       @if (ride) {
-        <div class="min-w-0">
+        <div class="min-w-0 max-h-160 overflow-y-auto">
           <!-- Status + Estimated Time of Arrival(ETA) -->
-          <div class="flex items-center gap-3 mb-3">
+          <div class="mb-3">
             <span class="inline-flex items-center px-3 h-7 rounded-full text-xs"
-                  [ngClass]="statusPillClasses[currentRideStatus]">
-              {{ currentRideStatus }}
-            </span>
-
-            <span class="ml-auto text-sm text-gray-600">
-              ETA:
-              <span class="text-gray-900 font-semibold tabular-nums">{{ etaText }}</span>
+                  [ngClass]="displayStatusClass">
+              {{ displayStatus }}
             </span>
           </div>
 
+          @if (currentRideStatus === 'Started') {
+            <div class="bg-blue-50 rounded-xl p-4 mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-semibold text-gray-700">
+                  @if (ridePhase === 'TO_PICKUP') {
+                    ETA to pickup:
+                  } @else {
+                    ETA to destination:
+                  }
+                </span>
+                <span class="text-lg font-bold text-blue-600 tabular-nums">{{ etaText }}</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Distance:</span>
+                <span class="text-sm font-medium text-gray-900 tabular-nums">{{ distanceText }}</span>
+              </div>
+            </div>
+          }
+
           <!-- Route -->
-          <div class="text-base text-gray-900 font-medium mb-5 truncate">
+          <div class="text-base text-gray font-medium mb-5 truncate">
             {{ fromAddress }} <span class="text-gray-400">→</span> {{ toAddress }}
           </div>
 
@@ -29,7 +43,7 @@
             <div class="text-sm text-gray-700 font-semibold mb-2">Stops:</div>
 
             <div class="relative rounded-xl border border-gray-100 overflow-hidden mb-5">
-              <div class="max-h-44 overflow-y-auto">
+              <div>
                 <div class="divide-y divide-gray-100">
                   @for (addr of waypoints; track $index) {
                     <div class="px-4 py-3 text-sm text-gray-800">
@@ -51,7 +65,7 @@
           <!-- Other passengers -->
           <div class="text-sm text-gray-700 font-semibold mb-2">Passengers:</div>
           <div class="relative rounded-xl border border-gray-100 overflow-hidden mb-6">
-            <div class="max-h-36 overflow-y-auto">
+            <div>
               <div class="divide-y divide-gray-100">
                 @for (p of passengers; track p.id) {
                   <div class="flex items-center justify-between px-4 py-3 text-sm">

@@ -42,7 +42,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_640px] gap-6 items-stretch">
       <!-- Left -->
       @if (currentRide() !== null) {
-        <div class="min-w-0">
+        <div class="min-w-0 max-h-97.5 overflow-y-auto">
           <div class="text-lg font-semibold text-gray-900 mb-3">Current ride:</div>
 
           <div class="flex items-center gap-3 mb-3">
@@ -59,7 +59,7 @@
           </div>
 
           <!-- ETA Info -->
-          @if (currentRideStatus() === 'IN_PROGRESS' && currentETA()) {
+          @if (currentRideStatus() === 'IN_PROGRESS') {
             <div class="bg-blue-50 rounded-xl p-4 mb-4">
               <div class="flex items-center justify-between mb-2">
               <span class="text-sm font-semibold text-gray-700">
@@ -88,7 +88,7 @@
             <div class="text-sm text-gray-700 font-semibold mb-2">Stops:</div>
 
             <div class="relative rounded-xl border border-gray-100 overflow-hidden mb-5">
-              <div class="max-h-20 overflow-y-auto">
+              <div>
                 <div class="divide-y divide-gray-100">
                   @for (w of currentRide()!.waypoints; track $index) {
                     <div class="px-4 py-3 text-sm text-gray-800">
@@ -105,7 +105,7 @@
 
           <!-- Passenger list-->
           <div class="relative rounded-xl border border-gray-100 overflow-hidden mb-5">
-            <div class="max-h-44 overflow-y-auto">
+            <div>
               <div class="divide-y divide-gray-100">
                 @for (p of currentPassengers(); track p.email) {
                   <div class="flex items-center justify-between px-4 py-3 text-sm">

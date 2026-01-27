@@ -17,6 +17,7 @@ import { VehicleFollowService } from '../../../shared/services/vehicle-follow.se
 import { NotificationService } from '../../../../core/services/notification.service';
 import {RideApiService, RideETADTO} from '../../../shared/api/ride-api.service';
 import {switchMap} from 'rxjs/operators';
+import {RatingData, RatingModalComponent} from '../../../shared/components/rating-modal.component';
 
 type UiRideStatus = 'Assigned' | 'Started' | 'Finished' | 'Cancelled';
 type PassengerItem = { id: number; name: string; email: string; role: 'You' | 'Passenger' };
@@ -24,7 +25,7 @@ type PassengerItem = { id: number; name: string; email: string; role: 'You' | 'P
 @Component({
   selector: 'app-current-ride',
   standalone: true,
-  imports: [CommonModule, FormsModule, MapComponent],
+  imports: [CommonModule, FormsModule, MapComponent, RatingModalComponent],
   templateUrl: './current-ride.html',
 })
 export class CurrentRideComponent implements OnInit, OnDestroy {
@@ -61,6 +62,8 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
 
   reportNote = '';
   submittingReport = false;
+
+  isRatingModalOpen = false;
 
   ngOnInit(): void {
     this.rideService.getMyInProgressRide().subscribe({
@@ -212,6 +215,38 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
     if (this.ridePhase === 'TO_PICKUP') return 'Arriving to pickup';
     if (this.ridePhase === 'IN_PROGRESS') return 'In progress';
     return '';
+  }
+
+  openRatingModal(): void {
+    this.isRatingModalOpen = true;
+  }
+
+  closeRatingModal(): void {
+    this.isRatingModalOpen = false;
+  }
+
+  submitRating(ratingData: RatingData): void {
+    if (!this.ride?.id) {
+      console.error('No ride ID available');
+      return;
+    }
+
+    const request = {
+      rideId: this.ride.id,
+      vehicleRating: ratingData.vehicleRating,
+      driverRating: ratingData.driverRating,
+      comment: ratingData.comment
+    };
+
+    this.rideApi.submitRating(request).subscribe({
+      next: (response) => {
+        console.log('Rating submitted successfully', response);
+        this.closeRatingModal();
+      },
+      error: (err) => {
+        console.error('Failed to submit rating', err);
+      }
+    });
   }
 
   submitReport(): void {

@@ -12,9 +12,27 @@ export interface RideETADTO {
   progressPercent: number;
 }
 
+export interface RatingRequest {
+  rideId: number;
+  vehicleRating: number;
+  driverRating: number;
+  comment?: string;
+}
+
+export interface RatingDTO {
+  id: number;
+  rideId: number;
+  driverName: string;
+  vehicleRating: number;
+  driverRating: number;
+  comment?: string;
+  createdAt: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class RideApiService {
   private readonly baseUrl = 'http://localhost:8080/api/rides';
+  private readonly ratingUrl = 'http://localhost:8080/api/ratings';
 
   constructor(private http: HttpClient) {}
 
@@ -41,8 +59,17 @@ export class RideApiService {
       description
     });
   }
+
   stopRideEarly(rideId: number, dto: LocationDTO): Observable<any> {
     console.log('Stopping ride early with DTO:', dto);
     return this.http.post(`${this.baseUrl}/${rideId}/stop-early`, dto );
+  }
+
+  submitRating(request: RatingRequest): Observable<RatingDTO> {
+    return this.http.post<RatingDTO>(`${this.ratingUrl}`, request);
+  }
+
+  getRideRatings(rideId: number): Observable<RatingDTO[]> {
+    return this.http.get<RatingDTO[]>(`${this.ratingUrl}/ride/${rideId}`);
   }
 }

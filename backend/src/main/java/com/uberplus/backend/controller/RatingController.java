@@ -2,10 +2,11 @@ package com.uberplus.backend.controller;
 
 import com.uberplus.backend.dto.rating.RatingDTO;
 import com.uberplus.backend.dto.rating.RatingRequestDTO;
-import com.uberplus.backend.repository.RatingRepository;
+import com.uberplus.backend.service.RatingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,17 +16,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RatingController {
 
-    private final RatingRepository ratingRepository;
+    private final RatingService ratingService;
 
-    // POST /api/ratings
     @PostMapping
-    public ResponseEntity<RatingDTO> submitRating(@Valid @RequestBody RatingRequestDTO request) {
-        return ResponseEntity.ok(new RatingDTO());
+    public ResponseEntity<RatingDTO> submitRating(
+            @Valid @RequestBody RatingRequestDTO request,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+        RatingDTO rating = ratingService.submitRating(request, email);
+        return ResponseEntity.ok(rating);
     }
 
-    // GET /api/ratings/ride/{rideId}
     @GetMapping("/ride/{rideId}")
     public ResponseEntity<List<RatingDTO>> getRideRatings(@PathVariable Integer rideId) {
-        return ResponseEntity.ok(List.of(new RatingDTO(), new RatingDTO()));
+        List<RatingDTO> ratings = ratingService.getRideRatings(rideId);
+        return ResponseEntity.ok(ratings);
     }
 }

@@ -23,6 +23,7 @@ import { FavouriteRoutes } from './features/registered/pages/favourite-rides/fav
 import { BookedRidesComponent } from './features/driver/pages/booked-rides/booked-rides';
 import { PassengerBookedRidesComponent } from './features/registered/pages/booked-rides/booked-rides';
 import { DriverProfileChanges } from './features/admin/pages/driver-profile-changes/driver-profile-changes';
+import { AuthGuard } from './core/services/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: UnregisteredHomeComponent },
@@ -31,7 +32,8 @@ export const routes: Routes = [
   { path: 'activate', component: AccountActivationComponent},
   {path: 'activate-driver', component: DriverActivationComponent},
   { path: 'map', component: MapComponent },
-  { path: 'user', component: RegisteredLayout, children: [
+
+  { path: 'user', component: RegisteredLayout, canActivate: [AuthGuard], children: [
       { path: 'profile', component: RegisteredProfileComponent },
       { path: 'dashboard', component: RegisteredDashboard },
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
@@ -42,9 +44,12 @@ export const routes: Routes = [
       { path: 'booked-rides', component: PassengerBookedRidesComponent },
       { path: 'favorite-routes', component: FavouriteRoutes }
   ] },
+
   { path: 'registerUser', component: UserRegistrationComponent },
   { path: 'signIn', component: SignInComponent },
-  { path: 'driver', component: DriverLayout, children: [
+
+
+  { path: 'driver', component: DriverLayout, canActivate: [AuthGuard], data:{roles: ['DRIVER']}, children: [
       { path: 'profile', component: DriverProfileComponent },
       { path: 'ride-history', component: DriverRideHistory },
       { path: 'dashboard', component: DriverDashboard },
@@ -52,7 +57,7 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
     ] },
 
-  { path: 'admin', component: AdminLayout, children: [
+  { path: 'admin', component: AdminLayout, canActivate: [AuthGuard], data:{roles: ['ADMIN']}, children: [
     { path: 'profile', component: RegisteredProfileComponent },
     { path: 'register-driver', component: DriverRegistration },
     { path: 'dashboard', component: RegisteredDashboard },

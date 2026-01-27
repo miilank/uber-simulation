@@ -6,5 +6,5 @@ public enum RideStatus {
     IN_PROGRESS,
     COMPLETED,
     CANCELLED,
-    STOPPED
+    STOPPED,
 }

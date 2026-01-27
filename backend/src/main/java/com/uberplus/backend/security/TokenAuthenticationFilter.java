@@ -35,8 +35,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 User user = userRepository.findByEmail(email).orElse(null);
                 if (user != null) {
                     List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+
                     UsernamePasswordAuthenticationToken auth =
                             new UsernamePasswordAuthenticationToken(email, null, authorities);
+
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             }

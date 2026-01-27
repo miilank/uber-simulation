@@ -25,13 +25,17 @@ import { VehicleMarker } from '../../../../shared/map/vehicle-marker';
 import { LatLng } from '../../../../shared/services/routing.service';
 import { interval, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { BookedRidesComponent } from "../../booked-rides/booked-rides";
+import { LocationDTO } from '../../../../shared/models/location';
+import { SuccessAlert } from '../../../../shared/components/success-alert';
+import { NominatimService } from '../../../../shared/services/nominatim.service';
 
 type Passenger = { name: string; email: string };
 
 @Component({
   selector: 'app-driver-dashboard',
   standalone: true,
-  imports: [CommonModule, MapComponent],
+  imports: [CommonModule, MapComponent, BookedRidesComponent, SuccessAlert],
   templateUrl: './driver-dashboard.html',
 })
 export class DriverDashboard implements OnInit, OnDestroy {
@@ -48,6 +52,7 @@ export class DriverDashboard implements OnInit, OnDestroy {
   userService = inject(UserService);
   rideState = inject(CurrentRideStateService);
   rideApi = inject(RideApiService);
+  nominatim = inject(NominatimService);
 
   private follow = inject(VehicleFollowService);
   private simRunner = inject(ActiveRideSimRunnerService);
@@ -56,6 +61,7 @@ export class DriverDashboard implements OnInit, OnDestroy {
   private driverEmail?: string;
   private etaPollSub?: Subscription;
   private currentRideId?: number;
+  showStopSuccess = false;
 
   // map inputs
   vehicles: VehicleMarker[] = [];
@@ -306,7 +312,7 @@ export class DriverDashboard implements OnInit, OnDestroy {
     IN_PROGRESS: 'bg-green-100 text-green-700',
     COMPLETED: 'bg-gray-100 text-slate-700',
     CANCELLED: 'bg-red-100 text-red-700',
-    STOPPED: 'bg-yellow-100 text-yellow-700'
+    STOPPED: 'bg-yellow-100 text-yellow-700',
   };
 
   requirementEmoji: Record<string, string> = {
@@ -340,7 +346,7 @@ export class DriverDashboard implements OnInit, OnDestroy {
   completeCurrentRide() {
     const r = this.currentRide();
 
-    if (!r || r.status !== 'IN_PROGRESS' || !this.simulationCompleted()) {
+    if (!r || r.status !== 'IN_PROGRESS') {
       return;
     }
 
@@ -393,5 +399,31 @@ export class DriverDashboard implements OnInit, OnDestroy {
     return requirements;
   }
 
-  openCancel() { }
+ stopRideEarly() {
+  const r = this.currentRide();
+  if (!r) return;
+
+  const result = this.simRunner.stopRideEarly(r.id);
+  
+  if (result.location) {
+    this.nominatim.getAddress(result.location.latitude, result.location.longitude)
+      .subscribe({
+        next: (address) => {
+          const dto: LocationDTO = { 
+              latitude: result.location!.latitude,
+              longitude: result.location!.longitude,
+              address: address
+          };
+          
+          this.rideApi.stopRideEarly(r.id, dto).subscribe({
+            next: () => {
+              this.ridesService.fetchRides().subscribe();
+              this.simulationCompleted.set(true);
+              this.showStopSuccess = true;
+            }
+          });
+        }
+      });
+}
+}
 }

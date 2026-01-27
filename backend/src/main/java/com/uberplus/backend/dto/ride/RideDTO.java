@@ -26,7 +26,7 @@ public class RideDTO {
     private List<PassengerDTO> passengers;
     private List<String> passengerEmails;
     private VehicleType vehicleType;
-    private double totalPrice;
+    private double basePrice;
     private boolean panicActivated;
     private String cancelledBy;
     private LocalDateTime scheduledTime;
@@ -66,7 +66,7 @@ public class RideDTO {
                 .toList();
 
         this.vehicleType = ride.getVehicleType();
-        this.totalPrice = ride.getTotalPrice() != null ? ride.getTotalPrice() : 0.0;
+        this.basePrice = ride.getBasePrice() != null ? ride.getBasePrice() : 0.0;
         this.panicActivated = ride.isPanicActivated();
         this.cancelledBy = ride.getCancelledBy();
         this.scheduledTime = ride.getScheduledTime();

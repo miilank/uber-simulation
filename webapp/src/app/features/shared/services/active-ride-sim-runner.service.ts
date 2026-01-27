@@ -6,6 +6,7 @@ import { VehicleMarker } from '../map/vehicle-marker';
 import { LatLng } from './routing.service';
 import { VehiclesApiService } from '../api/vehicles-api.service';
 import { RoutingService } from './routing.service';
+import { LocationDTO } from '../models/location';
 
 type RideLike = {
   id: number;
@@ -132,4 +133,20 @@ export class ActiveRideSimRunnerService {
   getSimulation(rideId: number): SimulationInstance | undefined {
     return this.simulations.get(rideId);
   }
+  requestStopAfterNextStep(rideId: number): void {
+    const instance = this.simulations.get(rideId);
+    if (instance) {
+      instance.simulator.stopAfterNextStep.set(true);
+      console.log(`Stop-after-next-step requested for ride ${rideId}`);
+    }
+  }
+  stopRideEarly(rideId: number): { location: LocationDTO | null } {
+    const instance = this.simulations.get(rideId);
+    if (!instance) return { location: null };
+
+    const location = instance.simulator.lastStopLocation;
+    instance.simulator.stop();
+    return { location };
+  }
 }
+

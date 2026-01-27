@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 
 export interface NominatimResult {
   place_id?: number;
@@ -23,7 +23,15 @@ export interface NominatimResult {
   boundingbox?: string[];
   formattedText: string;
 }
-
+export interface ReverseGeocodeResult {
+  display_name: string;
+  address: {
+    road?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+  };
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -86,5 +94,22 @@ export class NominatimService {
     }
 
     return parts.join(', ');
+  }
+  getAddress(lat: number, lng: number): Observable<string> {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+    
+    return this.http.get<ReverseGeocodeResult>(url).pipe(
+      map(result => {
+        const parts = [
+          result.address.road,
+          result.address.city,
+          result.address.state,
+          result.address.country
+        ].filter(Boolean);
+        
+        return parts.join(', ') || 'Unknown location';
+      }),
+      catchError(() => of('Address unavailable'))
+    );
   }
 }

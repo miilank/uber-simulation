@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.uberplus.backend.dto.report.RideHistoryFilterDTO;
@@ -32,7 +33,8 @@ public class RideController {
     // POST /api/rides/estimate
     @PostMapping("/estimate")
     public ResponseEntity<PriceEstimateResponseDTO> estimateRide(@Valid @RequestBody RideEstimateDTO request) {
-        double price = pricingService.calculatePrice(request);
+        double price = pricingService.calculatePrice(request.getEstimatedDistance()/1000.0,
+                                                                request.getVehicleType());
 
         return ResponseEntity.ok(new PriceEstimateResponseDTO(
                 price,
@@ -42,12 +44,15 @@ public class RideController {
     
     // POST /api/rides
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<RideDTO> createRide(Authentication auth, @Valid @RequestBody CreateRideRequestDTO request) {
         return ResponseEntity.ok(rideService.requestRide(auth.getName(), request));
     }
+
     // Za sad samo driver. Ne znam da li treba za druge.
     // GET /api/rides
     @GetMapping
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<List<RideDTO>> getRides(Authentication auth) {
         return ResponseEntity.ok(rideService.getRides(auth.getName()));
     }
@@ -87,6 +92,7 @@ public class RideController {
 
     // PUT /api/rides/{rideId}/start
     @PutMapping("/{rideId}/start")
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<RideDTO> startRide(@PathVariable Integer rideId) {
         return ResponseEntity.ok(rideService.startRide(rideId));
     }
@@ -110,8 +116,9 @@ public class RideController {
 
     // POST /api/rides/{rideId}/stop-early
     @PostMapping("/{rideId}/stop-early")
-    public ResponseEntity<RideDTO> stopEarly(@PathVariable Integer rideId, @Valid @RequestBody RideStopEarlyDTO request) {
-        return ResponseEntity.ok(new RideDTO());
+    public ResponseEntity<RideDTO> stopEarly(@PathVariable Integer rideId, @RequestBody LocationDTO request) {
+        RideDTO stopped = rideService.stopEarly(rideId,request);
+        return ResponseEntity.ok(stopped);
     }
 
     // GET /api/rides/current-in-progress

@@ -89,6 +89,7 @@ export class AuthService {
 
     return this.accessToken
   }
+  
   public activateAccount(token: string): Observable<ActivationResponse> {
     return this.http.get<ActivationResponse>(`${this.config.activateUrl}?token=${token}`);
   }

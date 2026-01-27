@@ -103,16 +103,24 @@ export class DriverDashboard implements OnInit, OnDestroy {
       this.rideState.loadPanic(r.id);
 
       if (r.status === 'IN_PROGRESS') {
-        this.simulationCompleted.set(false);
-
         // Stopuj follow jer simulacija preuzima
         if (this.driverEmail) {
           this.follow.stop(this.driverEmail);
         }
 
         // Pokreni simulaciju
-        this.simRunner.startForRide(r);
-
+        if (!this.simRunner.isRunning(r.id)) {
+          console.log(`Starting simulation for ride ${r.id}`);
+          this.simulationCompleted.set(false);
+          this.simRunner.startForRide(r);
+        } else {
+          console.log(`Simulation already exists for ride ${r.id}`);
+          const simulation = this.simRunner.getSimulation(r.id);
+          if (simulation?.completed) {
+            this.simulationCompleted.set(true);
+            console.log(`Simulation is completed, enabling button`);
+          }
+        }
         // Subscribe na vehicles i routePath iz simulacije
         const vehiclesSub = this.simRunner.getVehicles$(r.id);
         const routePathSub = this.simRunner.getRoutePath$(r.id);
@@ -204,41 +212,12 @@ export class DriverDashboard implements OnInit, OnDestroy {
 
   private startETAPolling(rideId: number): void {
     this.stopETAPolling();
-
-    this.subs.push(
-      this.simRunner.onSimulationComplete$.subscribe(rideId => {
-        const current = this.currentRide();
-        if (current && current.id === rideId) {
-          console.log('Simulation completed for ride', rideId);
-          this.simulationCompleted.set(true);
-          this.stopETAPolling();
-
-          this.rideApi.getRideETA(rideId).subscribe({
-            next: (eta) => {
-              this.currentETA.set(eta);
-              this.cdr.detectChanges();
-            },
-            error: () => {}
-          });
-
-          this.cdr.detectChanges();
-        }
-      })
-    );
-
     this.etaPollSub = interval(2000)
       .pipe(switchMap(() => this.rideApi.getRideETA(rideId)))
       .subscribe({
         next: (eta) => {
           this.currentETA.set(eta);
           this.ridePhase.set(eta.phase as any);
-
-          if (eta.etaToNextPointSeconds === 0 && eta.distanceToNextPointKm < 0.05) {
-            console.log('Vehicle arrived at destination (via ETA)');
-            this.simulationCompleted.set(true);
-            this.stopETAPolling();
-          }
-
           this.cdr.detectChanges();
         },
         error: (err) => {

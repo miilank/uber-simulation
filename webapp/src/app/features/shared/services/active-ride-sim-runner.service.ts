@@ -19,6 +19,7 @@ type RideLike = {
 interface SimulationInstance {
   rideId: number;
   simulator: RideSimulationService;
+  completed: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -41,7 +42,12 @@ export class ActiveRideSimRunnerService {
     if (!ride?.driverEmail) return;
 
     // Ako simulacija vec postoji za ovaj ride, ne pokreci ponovo
-    if (this.simulations.has(ride.id)) {
+    const existing = this.simulations.get(ride.id);
+    if (existing) {
+      if (existing.completed) {
+        console.log(`Simulation for ride ${ride.id} already completed`);
+        return;
+      }
       console.log(`Simulation already running for ride ${ride.id}`);
       return;
     }
@@ -52,6 +58,7 @@ export class ActiveRideSimRunnerService {
     const instance: SimulationInstance = {
       rideId: ride.id,
       simulator,
+      completed: false
     };
 
     this.simulations.set(ride.id, instance);
@@ -77,6 +84,11 @@ export class ActiveRideSimRunnerService {
       () => {
         // Stigli do destinacije - automatski stopuj simulaciju
         console.log(`Simulation completed for ride ${ride.id}`);
+        console.log(`Simulation completed for ride ${ride.id}`);
+        const inst = this.simulations.get(ride.id);
+        if (inst) {
+          inst.completed = true;
+        }
         this.completionSubject.next(ride.id);
       }
     );
@@ -115,5 +127,9 @@ export class ActiveRideSimRunnerService {
 
   stopAll(): void {
     this.simulations.forEach((_, rideId) => this.stopForRide(rideId));
+  }
+
+  getSimulation(rideId: number): SimulationInstance | undefined {
+    return this.simulations.get(rideId);
   }
 }

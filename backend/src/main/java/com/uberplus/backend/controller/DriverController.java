@@ -11,7 +11,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -29,6 +31,7 @@ public class DriverController {
 
     // POST /api/drivers
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> createDriver(@Valid @RequestPart(value="user") DriverCreationDTO request,
                                              @RequestPart(value="avatar", required = false) MultipartFile avatar) {
         Integer id = driverService.createDriver(request, avatar);
@@ -48,6 +51,7 @@ public class DriverController {
 
     // GET /api/drivers/{id}
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DriverDTO> getDriver(@PathVariable Integer id) {;
         Driver driver = driverService.getDriver(id);
         String avatarUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -59,6 +63,7 @@ public class DriverController {
 
     // GET /api/drivers/profile
     @GetMapping("/profile")
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<DriverDTO> getProfile(Authentication authentication) {
         Driver driver = driverService.getProfile(authentication.getName());
         String avatarUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -70,6 +75,7 @@ public class DriverController {
 
     // PUT /api/drivers/profile
     @PutMapping("/profile")
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<Void> updateProfile(Authentication authentication,
                                               @Valid @RequestPart(name="update") UserUpdateRequestDTO update,
                                               @RequestPart(name="avatar", required=false) MultipartFile avatar) {
@@ -79,7 +85,9 @@ public class DriverController {
 
     // GET /api/drivers/pending-updates
     @GetMapping("/pending-updates")
-    public ResponseEntity<List<DriverUpdateDTO>> getPendingUpdates() {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<DriverUpdateDTO>> getPendingUpdates(Authentication auth) {
+
         List<DriverUpdateDTO> pendingUpdates = driverService.getPendingUpdates();
         pendingUpdates.forEach(update -> {
             String oldAvatarUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -100,6 +108,7 @@ public class DriverController {
 
     // PUT /api/drivers/{driverId}/approve-update
     @PutMapping("/{driverId}/approve-update")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> approveUpdate(@PathVariable Integer driverId) {
         driverService.approveProfileUpdate(driverId);
         return ResponseEntity.noContent().build();
@@ -107,6 +116,7 @@ public class DriverController {
 
     // PUT /api/drivers/{driverId}/reject-update
     @PutMapping("/{driverId}/reject-update")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> rejectUpdate(@PathVariable Integer driverId) {
         driverService.rejectProfileUpdate(driverId);
         return ResponseEntity.noContent().build();

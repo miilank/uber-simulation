@@ -58,7 +58,6 @@ public class UserController {
     }
 
     // GET /api/users/{id}/avatar
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}/avatar")
     public ResponseEntity<Resource> getAvatar(@PathVariable Integer id) {
         Resource avatar = userService.getAvatar(id);

@@ -1,6 +1,11 @@
 package com.uberplus.backend.dto.driver;
 
 import com.uberplus.backend.dto.vehicle.VehicleCreationDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +14,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DriverCreationDTO {
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email")
     private String email;
+
+    @NotBlank(message = "First name is required")
     private String firstName;
+
+    @NotBlank(message = "Last name is required")
     private String lastName;
+
+    @NotBlank(message = "Address is required")
     private String address;
+
+    @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "^[+]?[0-9]\\d{0,15}$", message = "Invalid phone number")
     private String phoneNumber;
+
+    @NotNull(message = "Vehicle info is required")
+    @Valid
     private VehicleCreationDTO vehicle;
 }

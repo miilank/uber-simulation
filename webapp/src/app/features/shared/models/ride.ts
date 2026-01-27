@@ -2,7 +2,7 @@ import { LocationDTO } from "./location";
 import { VehicleType } from "./vehicle";
 import {PassengerDTO} from './passenger';
 
-export type RideStatus = 'PENDING' | 'ACCEPTED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type RideStatus = 'PENDING' | 'ACCEPTED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'STOPPED';
 
 export interface Ride {
     date: string;

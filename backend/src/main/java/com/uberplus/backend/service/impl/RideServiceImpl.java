@@ -9,6 +9,7 @@ import com.uberplus.backend.repository.DriverRepository;
 import com.uberplus.backend.repository.RideRepository;
 import com.uberplus.backend.repository.UserRepository;
 import com.uberplus.backend.service.OSRMService;
+import com.uberplus.backend.service.PricingService;
 import com.uberplus.backend.service.RideService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ public class RideServiceImpl implements RideService {
     private UserRepository userRepository;
     private DriverRepository driverRepository;
     private OSRMService osrmService;
+    private PricingService pricingService;
 
     @Override
     @Transactional
@@ -203,7 +205,7 @@ public class RideServiceImpl implements RideService {
         return rideRepository.findByDriver((Driver) user)
                 .stream()
                 .map(RideDTO::new)
-                .filter(rideDTO -> (rideDTO.getStatus() != RideStatus.CANCELLED && rideDTO.getStatus() != RideStatus.COMPLETED))
+                .filter(rideDTO -> (rideDTO.getStatus() != RideStatus.CANCELLED && rideDTO.getStatus() != RideStatus.COMPLETED && rideDTO.getStatus() != RideStatus.STOPPED))
                 .toList();
     }
     @Override
@@ -515,7 +517,26 @@ public class RideServiceImpl implements RideService {
         ride.setEndLocation(endLocation);
         ride.setStoppedLocation(endLocation);
         ride.setStatus(RideStatus.STOPPED);
+        double totalDistance = endLocation.distanceTo(ride.getStartLocation());
+        double actualPrice = pricingService.calculatePrice(new RideEstimateDTO((int)totalDistance,ride.getVehicleType()));
+        ride.setTotalPrice(actualPrice);
 
+        Driver driver = ride.getDriver();
+        if (driver.getVehicle() != null) {
+            driver.getVehicle().setStatus(VehicleStatus.AVAILABLE);
+        }
+
+        if (ride.getActualStartTime() != null) {
+            long minutesWorked = java.time.Duration.between(
+                    ride.getActualStartTime(),
+                    ride.getActualEndTime()
+            ).toMinutes();
+
+            driver.setWorkedMinutesLast24h(
+                    driver.getWorkedMinutesLast24h() + minutesWorked
+            );
+        }
+        driverRepository.save(driver);
         rideRepository.save(ride);
         return new RideDTO(ride);
     }

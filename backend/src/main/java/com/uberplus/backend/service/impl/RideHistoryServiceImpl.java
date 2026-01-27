@@ -50,7 +50,7 @@ public class RideHistoryServiceImpl implements RideHistoryService {
             to = null;
         }
 
-        List<RideStatus> statuses = List.of(RideStatus.COMPLETED, RideStatus.CANCELLED);
+        List<RideStatus> statuses = List.of(RideStatus.COMPLETED, RideStatus.CANCELLED, RideStatus.STOPPED);
 
         Specification<Ride> spec = (root, query, cb) -> {
             Predicate p = cb.equal(root.get("driver").get("id"), driverId);

@@ -1,5 +1,16 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnChanges,
+  SimpleChanges,
+  inject,
+  ChangeDetectorRef
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DriverRidesService } from '../../../../services/driver-rides.service';
+import { RideDetailDTO } from '../../../../../shared/models/ride';
 
 interface RideHistoryItem {
   id: number;
@@ -13,53 +24,147 @@ interface RideHistoryItem {
   price: string;
 }
 
-type Passenger = { name: string; phone: string };
-
 @Component({
   selector: 'app-ride-details-drawer',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './ride-details-drawer.html',
 })
-export class RideDetailsDrawer {
+export class RideDetailsDrawer implements OnChanges {
+  private driverService = inject(DriverRidesService);
+  private cdr = inject(ChangeDetectorRef);
+
   @Input() open = false;
   @Input() ride: RideHistoryItem | null = null;
   @Output() close = new EventEmitter<void>();
 
-  // mock details (later from db)
-  passengers: Passenger[] = [
-    { name: 'Ana Marković', phone: '+381 64 123 4567' },
-    { name: 'Marko Petrović', phone: '+381 65 234 5678' },
-  ];
+  rideDetails: RideDetailDTO | null = null;
 
-  // mock additional fields
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['ride'] && this.ride?.id) {
+      this.loadDetails();
+    }
+  }
+
+  loadDetails() {
+    if (!this.ride?.id) return;
+
+    this.driverService.getRideDetails(this.ride.id).subscribe({
+      next: (details) => {
+        this.rideDetails = details;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error loading ride details:', err)
+    });
+  }
+
+  get passengers() {
+    return this.rideDetails?.passengers.map(p => ({
+      name: `${p.firstName} ${p.lastName}`,
+      email: p.email
+    })) || [];
+  }
+
   get startDateTime() {
-    return this.ride ? `${this.ride.date}2025, ${this.ride.time.split(' - ')[0]}` : '';
+    const time = this.rideDetails?.actualStartTime || this.rideDetails?.estimatedStartTime;
+    if (!time) return 'N/A';
+
+    const date = new Date(time);
+    return date.toLocaleString('sr-RS', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
   get endDateTime() {
-    return this.ride ? `${this.ride.date}2025, ${this.ride.time.split(' - ')[1]}` : '';
+    const time = this.rideDetails?.actualEndTime || this.rideDetails?.estimatedEndTime;
+    if (!time) return 'N/A';
+
+    const date = new Date(time);
+    return date.toLocaleString('sr-RS', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
   get duration() {
-    return this.ride?.status ? '17 minutes' : '';
+    if (!this.rideDetails?.actualStartTime || !this.rideDetails?.actualEndTime) return '';
+
+    const start = new Date(this.rideDetails.actualStartTime).getTime();
+    const end = new Date(this.rideDetails.actualEndTime).getTime();
+    const diffMs = end - start;
+    const minutes = Math.floor(diffMs / 60000);
+
+    return `${minutes} minutes`;
   }
 
-  // panic details
   get panicYes() {
-    return !!this.ride?.panic;
+    return this.rideDetails?.panicActivated || false;
   }
 
   get panicTimestamp() {
-    return this.ride?.panic ? `${this.ride.date}2025, 09:15` : '';
+    if (!this.rideDetails?.panicActivatedAt) return '';
+    const date = new Date(this.rideDetails.panicActivatedAt);
+    return date.toLocaleString('sr-RS', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
   get cancelReason() {
-    return 'Changed plans';
+    return this.rideDetails?.cancellationReason || 'N/A';
   }
 
   get cancelTime() {
-    return this.ride ? `${this.ride.date}2025, 14:18` : '';
+    if (!this.rideDetails?.cancellationTime) return '';
+    const date = new Date(this.rideDetails.cancellationTime);
+    return date.toLocaleString('sr-RS', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  get inconsistencies() {
+    return this.rideDetails?.inconsistencies || [];
+  }
+
+  formatInconsistencyDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.toLocaleString('sr-RS', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  get stoppedLocation() {
+    return this.rideDetails?.stoppedLocation || 'N/A';
+  }
+
+  get stoppedTime() {
+    if (!this.rideDetails?.stoppedAt) return 'N/A';
+    const date = new Date(this.rideDetails.stoppedAt);
+    return date.toLocaleString('sr-RS', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
   onBackdropClick() {

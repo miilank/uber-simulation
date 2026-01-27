@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { computed, Injectable, signal, Signal, WritableSignal } from "@angular/core";
 import { ConfigService } from "../../../core/services/config.service";
-import { RideDTO } from "../../shared/models/ride";
+import {RideDetailDTO, RideDTO} from "../../shared/models/ride";
 import { Observable, tap } from "rxjs";
 
 
@@ -65,5 +65,9 @@ export class DriverRidesService {
           this.rides.set(ridesArr);
         })
       );
+    }
+
+    getRideDetails(rideId: number): Observable<RideDetailDTO> {
+      return this.http.get<RideDetailDTO>(`${this.config.baseUrl}/drivers/rides/${rideId}/details`);
     }
 }

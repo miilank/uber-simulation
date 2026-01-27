@@ -1,10 +1,15 @@
 package com.uberplus.backend.service.impl;
 
+import com.uberplus.backend.dto.passenger.PassengerDTO;
 import com.uberplus.backend.dto.report.RideHistoryFilterDTO;
 import com.uberplus.backend.dto.report.RideHistoryResponseDTO;
+import com.uberplus.backend.dto.ride.RideDetailDTO;
 import com.uberplus.backend.dto.ride.RideHistoryItemDTO;
+import com.uberplus.backend.dto.ride.RideInconsistencyDTO;
 import com.uberplus.backend.model.Ride;
+import com.uberplus.backend.model.RideInconsistency;
 import com.uberplus.backend.model.enums.RideStatus;
+import com.uberplus.backend.repository.RideInconsistencyRepository;
 import com.uberplus.backend.repository.RideRepository;
 import com.uberplus.backend.service.RideHistoryService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +30,7 @@ import java.util.List;
 public class RideHistoryServiceImpl implements RideHistoryService {
 
     private final RideRepository rideRepository;
+    private final RideInconsistencyRepository rideInconsistencyRepository;
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd.MM.");
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
@@ -50,7 +56,11 @@ public class RideHistoryServiceImpl implements RideHistoryService {
             to = null;
         }
 
-        List<RideStatus> statuses = List.of(RideStatus.COMPLETED, RideStatus.CANCELLED);
+        List<RideStatus> statuses = List.of(
+                RideStatus.COMPLETED,
+                RideStatus.CANCELLED,
+                RideStatus.STOPPED
+        );
 
         Specification<Ride> spec = (root, query, cb) -> {
             Predicate p = cb.equal(root.get("driver").get("id"), driverId);
@@ -91,6 +101,51 @@ public class RideHistoryServiceImpl implements RideHistoryService {
                 r.getCancelledBy(),
                 r.isPanicActivated(),
                 price
+        );
+    }
+
+    @Override
+    public RideDetailDTO getRideDetails(Integer rideId) {
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found"));
+
+        List<PassengerDTO> passengers = ride.getPassengers().stream()
+                .map(PassengerDTO::new)
+                .toList();
+
+        List<RideInconsistency> inconsistencies = rideInconsistencyRepository
+                .findByRideId(rideId);
+
+        List<RideInconsistencyDTO> inconsistencyDTOs = inconsistencies.stream()
+                .map(inc -> new RideInconsistencyDTO(
+                        inc.getRide().getId(),
+                        inc.getReportedBy().getId(),
+                        inc.getReportedBy().getFirstName() + " " + inc.getReportedBy().getLastName(),
+                        inc.getDescription(),
+                        inc.getCreatedAt()
+                ))
+                .toList();
+
+        return new RideDetailDTO(
+                ride.getId(),
+                ride.getStatus().name(),
+                ride.getStartLocation().getAddress(),
+                ride.getEndLocation().getAddress(),
+                ride.getActualStartTime(),
+                ride.getActualEndTime(),
+                ride.getEstimatedStartTime(),
+                ride.getEstimatedEndTime(),
+                passengers,
+                ride.getTotalPrice(),
+                ride.getCancelledBy(),
+                ride.getCancellationReason(),
+                ride.getCancellationTime(),
+                ride.isPanicActivated(),
+                ride.getPanicActivatedBy(),
+                ride.getPanicActivatedAt(),
+                ride.getStoppedLocation() != null ? ride.getStoppedLocation().getAddress() : null,
+                ride.getStoppedAt(),
+                inconsistencyDTOs
         );
     }
 }

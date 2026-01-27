@@ -1,9 +1,11 @@
 package com.uberplus.backend.controller;
 
 import com.uberplus.backend.dto.driver.*;
+import com.uberplus.backend.dto.ride.RideDetailDTO;
 import com.uberplus.backend.dto.user.UserUpdateRequestDTO;
 import com.uberplus.backend.model.Driver;
 import com.uberplus.backend.service.DriverService;
+import com.uberplus.backend.service.RideHistoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -26,6 +28,7 @@ import java.util.List;
 public class DriverController {
 
     private final DriverService driverService;
+    private final RideHistoryService rideHistoryService;
 
     // POST /api/drivers
     @PostMapping
@@ -133,5 +136,12 @@ public class DriverController {
     @PutMapping("/{driverId}/status")
     public ResponseEntity<DriverDTO> updateStatus(@PathVariable Integer driverId, @Valid @RequestBody DriverStatusUpdateDTO request) {
         return ResponseEntity.ok(new DriverDTO());
+    }
+
+    // GET /api/drivers/rides/{rideId}/details
+    @GetMapping("/rides/{rideId}/details")
+    public ResponseEntity<RideDetailDTO> getRideDetails(@PathVariable Integer rideId) {
+        RideDetailDTO details = rideHistoryService.getRideDetails(rideId);
+        return ResponseEntity.ok(details);
     }
 }

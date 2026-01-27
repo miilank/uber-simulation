@@ -96,7 +96,11 @@
             <span class="inline-flex items-center px-4 h-7 rounded-full bg-green-100 text-green-700 text-xs">
               Completed
             </span>
-          } @else {
+            } @else if (r.status === 'STOPPED') {
+              <span class="inline-flex items-center px-4 h-7 rounded-full bg-yellow-100 text-yellow-700 text-xs">
+              Stopped Early
+              </span>
+          } @else if (r.status === 'CANCELLED') {
             <div class="text-xs text-red-600 leading-4 pl-4">
               <div>Cancelled</div>
               <div class="text-[10px] text-gray-500">by: {{ r.cancelledBy }}</div>

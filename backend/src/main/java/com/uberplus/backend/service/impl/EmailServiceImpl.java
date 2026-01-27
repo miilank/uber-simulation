@@ -122,7 +122,7 @@ public class EmailServiceImpl implements EmailService {
         Mail mail = new Mail();
         mail.setFrom(from);
         mail.addPersonalization(personalization);
-        mail.setTemplateId("d-cfc193aca9e34d6998b0fff380c38d92"); // promijeni ID
+        mail.setTemplateId("d-3dc73d3eeafe4510897d5513833511ea");
 
         Request request = new Request();
         try {

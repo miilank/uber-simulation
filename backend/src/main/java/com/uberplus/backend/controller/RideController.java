@@ -76,6 +76,7 @@ public class RideController {
 
     // GET /api/rides/history?driverId=1&startDate=2026-01-01&endDate=2026-01-31&page=0&size=20
     @GetMapping("/history")
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<RideHistoryResponseDTO> getRideHistory(
             @RequestParam Integer driverId,
             @Valid RideHistoryFilterDTO filter

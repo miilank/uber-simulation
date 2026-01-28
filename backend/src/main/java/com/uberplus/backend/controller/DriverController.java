@@ -150,6 +150,7 @@ public class DriverController {
 
     // GET /api/drivers/rides/{rideId}/details
     @GetMapping("/rides/{rideId}/details")
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<RideDetailDTO> getRideDetails(@PathVariable Integer rideId) {
         RideDetailDTO details = rideHistoryService.getRideDetails(rideId);
         return ResponseEntity.ok(details);

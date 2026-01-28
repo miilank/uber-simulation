@@ -6,6 +6,7 @@ import com.uberplus.backend.service.RatingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ public class RatingController {
     private final RatingService ratingService;
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<RatingDTO> submitRating(
             @Valid @RequestBody RatingRequestDTO request,
             Authentication authentication) {
@@ -29,6 +31,7 @@ public class RatingController {
     }
 
     @GetMapping("/ride/{rideId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<RatingDTO>> getRideRatings(@PathVariable Integer rideId) {
         List<RatingDTO> ratings = ratingService.getRideRatings(rideId);
         return ResponseEntity.ok(ratings);

@@ -100,6 +100,7 @@ public class RideController {
 
     // PUT /api/rides/{rideId}/complete
     @PutMapping("/{rideId}/complete")
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<RideDTO> completeRide(
             Authentication auth,
             @PathVariable Integer rideId
@@ -124,6 +125,7 @@ public class RideController {
 
     // GET /api/rides/current-in-progress
     @GetMapping("/current-in-progress")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<RideDTO> getMyInProgress(Authentication auth) {
         return ResponseEntity.ok(rideService.getInProgressForPassenger(auth.getName()));
     }

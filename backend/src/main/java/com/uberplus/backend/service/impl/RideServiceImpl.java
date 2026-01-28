@@ -556,7 +556,7 @@ public class RideServiceImpl implements RideService {
         ride.setStoppedLocation(endLocation);
         ride.setStatus(RideStatus.STOPPED);
         double totalDistance = endLocation.distanceTo(ride.getStartLocation());
-        double actualPrice = pricingService.calculatePrice((int)totalDistance,ride.getVehicleType());
+        double actualPrice = pricingService.calculatePrice((int)(totalDistance/1000),ride.getVehicleType());
         ride.setTotalPrice(actualPrice);
 
         Driver driver = ride.getDriver();

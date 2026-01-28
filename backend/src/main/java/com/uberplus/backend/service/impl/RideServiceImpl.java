@@ -134,7 +134,7 @@ public class RideServiceImpl implements RideService {
         ride.setDistanceKm(request.getDistanceKm());
         ride.setBasePrice(pricingService.calculatePrice(request.getDistanceKm(),
                                                         selectedDriver.getVehicle().getType()));
-
+        ride.setTotalPrice(ride.getBasePrice());
         List<Location> waypoints = new ArrayList<>();
 
         for(LocationDTO dto : request.getWaypoints()) {

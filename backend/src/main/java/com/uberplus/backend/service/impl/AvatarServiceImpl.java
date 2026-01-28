@@ -71,7 +71,7 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public void deleteAvatar(String filename) throws IOException {
-        if(filename.equals("defaultprofile.png")) {
+        if(filename == null || filename.equals("defaultprofile.png")) {
             return;
         }
         Path file = avatarsDir().resolve(filename).normalize();

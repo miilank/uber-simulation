@@ -14,5 +14,4 @@ public class PricingConfigDTO {
     private VehicleType vehicleType;
     private double basePrice;
     private double pricePerKm;
-    private LocalDateTime updatedAt;
 }

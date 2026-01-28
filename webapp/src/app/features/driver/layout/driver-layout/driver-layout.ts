@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from '../../../shared/components/header.component';
-import { DriverSidebar } from '../../components/driver-sidebar/driver-sidebar';
+import { DriverSidebar } from '../../common/driver-sidebar/driver-sidebar';
 
 
 @Component({
@@ -11,6 +11,4 @@ import { DriverSidebar } from '../../components/driver-sidebar/driver-sidebar';
   templateUrl: './driver-layout.html',
 })
 export class DriverLayout {
-  firstName = 'John'
-  lastName = 'Doe'
 }

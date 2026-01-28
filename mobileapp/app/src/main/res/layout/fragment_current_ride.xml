@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/currentRideScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical">
+
+        <!-- Current ride -->
+        <LinearLayout
+            android:id="@+id/currentRideCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:padding="16dp"
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
+
+            <!-- Status + ETA row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="10dp">
+
+                <!-- Status -->
+                <TextView
+                    android:id="@+id/tvRideStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:gravity="center"
+                    android:text="@string/started"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="#065F46"
+                    android:background="@drawable/bg_started"/>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <!-- ETA -->
+                <TextView
+                    android:id="@+id/tvEta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/eta_7_min"
+                    android:textSize="13sp"
+                    android:textColor="#6B7280"/>
+            </LinearLayout>
+
+            <!-- Route -->
+            <TextView
+                android:id="@+id/tvRoute"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/bulevar_oslobo_enja_46_ulica_narodnih_heroja_14"
+                android:textColor="#111827"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_marginBottom="10dp"/>
+
+            <!-- Vehicle -->
+            <TextView
+                android:id="@+id/tvVehicle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/vehicle_skoda_octavia_ns_123_ab"
+                android:textColor="#6B7280"
+                android:textSize="13sp"
+                android:layout_marginBottom="14dp"/>
+
+            <!-- Passengers -->
+            <TextView
+                android:id="@+id/tvPassengersLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/passengers_dots"
+                android:textColor="#374151"
+                android:textStyle="bold"
+                android:textSize="13sp"
+                android:layout_marginBottom="8dp"/>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                android:backgroundTint="#FFFFFF"
+                android:layout_marginBottom="14dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPassengers"
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:overScrollMode="always"
+                    android:scrollbars="vertical"
+                    android:fadeScrollbars="false"
+                    android:scrollbarStyle="insideInset"
+                    android:nestedScrollingEnabled="true" />
+            </androidx.cardview.widget.CardView>
+
+            <!-- Guard: only during active ride -->
+            <TextView
+                android:id="@+id/tvGuard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tracking_and_reporting_are_available_only_during_an_active_ride"
+                android:textSize="12sp"
+                android:textColor="#DC2626"
+                android:visibility="gone"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Map -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="360dp"
+                android:layout_marginTop="2dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                android:backgroundTint="#F9FAFB"
+                android:layout_marginBottom="10dp">
+
+                <FrameLayout
+                    android:id="@+id/mapContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Report driver inconsistency -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardReport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                android:backgroundTint="#F9FAFB"
+                android:layout_marginBottom="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:id="@+id/tvReportTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/report_driver_inconsistency"
+                        android:textColor="#111827"
+                        android:textStyle="bold"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="6dp"/>
+
+                    <TextView
+                        android:id="@+id/tvReportHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/if_the_route_looks_unexpected_or_inadequate_leave_a_short_note"
+                        android:textColor="#6B7280"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="10dp"/>
+
+                    <EditText
+                        android:id="@+id/etReportNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="110dp"
+                        android:gravity="top"
+                        android:importantForAutofill="no"
+                        android:padding="12dp"
+                        android:hint="@string/write_a_short_note"
+                        android:inputType="textMultiLine"
+                        android:maxLength="300"
+                        android:background="@drawable/bg_input_outline"
+                        android:textSize="13sp"
+                        android:textColor="#111827"
+                        android:textColorHint="#9CA3AF"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp">
+
+                        <TextView
+                            android:id="@+id/tvCharCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/_0_300"
+                            android:textColor="#9CA3AF"
+                            android:textSize="12sp"/>
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"/>
+
+                        <TextView
+                            android:id="@+id/btnSubmitReport"
+                            android:layout_width="110dp"
+                            android:layout_height="40dp"
+                            android:gravity="center"
+                            android:text="@string/submit"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:textColor="#FFFFFF"
+                            android:background="@drawable/bg_btn_dark"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

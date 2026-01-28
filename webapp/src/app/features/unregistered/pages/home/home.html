@@ -1,0 +1,8 @@
+<div class="h-screen w-screen flex flex-col overflow-hidden">
+  <app-header [showUserProfile]="false"></app-header>
+
+  <div class="flex-1 flex flex-col relative">
+    <app-map [vehicles]="vehicles" class="flex-1"></app-map>
+    <app-estimate-panel></app-estimate-panel>  
+  </div>
+</div>

@@ -14,6 +14,11 @@
 }
 
 .input-base {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: none;
+
   background-color: var(--color-app-bg-darker);
   height: 3rem;
   padding-left: 0.75rem;
@@ -35,6 +40,27 @@
   border-color: transparent;
 }
 
+.input-estimate {
+  background-color: var(--color-app-bg-darker);
+  height: 3rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  border-width: 1.5px;
+  border-style: solid;
+  border-color: #D1D5DC;
+  border-radius: 3rem;
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: "Poppins", sans-serif;
+  color: #000000;
+  outline: none;
+}
+.input-estimate.ng-valid:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px rgb(163 230 53);
+  border-color: #C0EC4E;
+}
+
 @keyframes scale-out {
   from { transform: scale(1); opacity: 1; }
   to   { transform: scale(0.5); opacity: 0; }
@@ -45,7 +71,7 @@
   to   { transform: scale(1); opacity: 1; }
 }
 
-::view-transition-old(root) {
+/* ::view-transition-old(root) {
   animation-name: scale-out;
   animation-duration: 500ms;
 }
@@ -54,3 +80,4 @@
   animation-name: scale-in;
   animation-duration: 500ms;
 }
+  */

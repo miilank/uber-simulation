@@ -1,15 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, UrlTree } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
-type Item = { label: string; route: string; icon: string };
+type Item = { label: string; route: string | UrlTree; icon: string };
 
 @Component({
   selector: 'app-registered-sidebar',
   standalone: true,
   imports: [CommonModule, RouterLink, NgOptimizedImage],
   template: `
-    <nav class="mt-24 flex flex-col gap-3 font-poppins">
+    <nav class="mt-24 flex flex-col gap-3 font-poppins px-10">
     @for (it of items; track it.route) {
         <a
         [routerLink]="it.route"
@@ -29,7 +30,8 @@ type Item = { label: string; route: string; icon: string };
 
     <button
         type="button"
-        class="flex items-center gap-4 h-12 px-10 rounded-full text-white text-left hover:bg-white/5 cursor-pointer select-none transition-all duration-250">
+        class="flex items-center gap-4 h-12 px-10 rounded-full text-white text-left hover:bg-white/5 cursor-pointer select-none transition-all duration-250"
+        (click)="signOut()">
         <img ngSrc="/icons/signout-white.png" class="w-5 h-5" width="20" height="20" alt=""/>
         <span class="text-base">Sign out</span>
     </button>
@@ -37,24 +39,46 @@ type Item = { label: string; route: string; icon: string };
     `,
 })
 export class RegisteredSidebar {
-  constructor(private router: Router) {}
+  router = inject(Router);
+  authService = inject(AuthService);
 
-  items: Item[] = [
-    { label: 'Dashboard', route: '/user/dashboard', icon: 'dashboard' },
-    { label: 'Book a ride', route: '/user/book-ride', icon: 'car' },
-    { label: 'Ride history', route: '/user/ride-history', icon: 'history' },
-    { label: 'Booked rides', route: '/user/booked-rides', icon: 'bookedrides' },
-    { label: 'Reports', route: '/user/reports', icon: 'reports' },
-    { label: 'Profile', route: '/user/profile', icon: 'user' },
-    { label: 'Support', route: '/user/support', icon: 'support' },
-  ];
+  items: Item[] = [];
 
-  isActive(route: string) {
-    return this.router.url === route;
+  ngOnInit() {
+    const bookingUrl = this.router.createUrlTree(
+      ['/user', { outlets: { primary: ['booking'], aside: ['booking'] } }]
+    );
+
+    this.items = [
+      { label: 'Dashboard', route: '/user/dashboard', icon: 'dashboard' },
+      { label: 'Book a ride', route: bookingUrl, icon: 'car' },
+      { label: 'Current ride', route: '/user/current-ride', icon: 'current_ride' },
+      { label: 'Ride history', route: '/user/ride-history', icon: 'history' },
+      { label: 'Booked rides', route: '/user/booked-rides', icon: 'bookedrides' },
+      { label: 'Favorite routes', route: '/user/favorite-routes', icon: 'routes'},
+      { label: 'Reports', route: '/user/reports', icon: 'reports' },
+      { label: 'Profile', route: '/user/profile', icon: 'user' },
+      { label: 'Support', route: '/user/support', icon: 'support' },
+    ];
   }
 
-  iconSrc(icon: string, route: string) {
+  isActive(route: string | UrlTree) : boolean {
+    const currentUrl = this.router.url;
+
+    if (route instanceof UrlTree) {
+      return this.router.serializeUrl(route) === currentUrl;
+    }
+
+    return route === currentUrl;
+  }
+
+  iconSrc(icon: string, route: string | UrlTree) : string {
     const variant = this.isActive(route) ? 'black' : 'white';
     return `/icons/${icon}-${variant}.png`;
+  }
+
+  signOut() : void {
+    this.authService.logout();
+    this.router.navigateByUrl('/').catch(console.error);
   }
 }

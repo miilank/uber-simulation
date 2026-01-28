@@ -1,0 +1,114 @@
+<div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+    <div class="text-lg font-semibold text-gray-900 mb-4">Booked rides:</div>
+
+    <div class="grid grid-cols-[160px_1.55fr_90px_240px_140px_200px] text-xs text-gray-500 px-7 pb-2 border-b border-gray-100">
+      <div>Date/Time</div>
+      <div>Pickup → Destination</div>
+      <div>Passengers</div>
+      <div>Requirements</div>
+      <div>Status</div>
+      <div class="text-right">Actions</div>
+    </div>
+
+    <div class="divide-y divide-gray-100">
+      @for (r of bookedRides(); track r.id) {
+        <div class="grid grid-cols-[160px_1.55fr_90px_240px_140px_200px] items-center py-4 px-7">
+          <div class="text-sm text-gray-800">
+            <div>{{ r.date }}</div>
+            <div class="text-xs text-gray-500">{{ r.time }}</div>
+          </div>
+
+          <div class="text-sm text-gray-900 flex items-center gap-2 min-w-0">
+            <span class="truncate">{{ r.from }}</span>
+            <span class="text-gray-400">→</span>
+            <span class="truncate">{{ r.to }}</span>
+          </div>
+
+          <div class="text-sm text-gray-800">{{ r.passengers }}</div>
+
+          <div class="flex gap-2 flex-wrap">
+            @for (tag of r.requirements; track tag) {
+              <span
+                class="inline-flex items-center justify-center gap-2 h-7 w-28 rounded-full text-sm font-medium"
+                [ngClass]="requirementClasses[tag]">
+
+                <span class="text-base leading-none">{{ requirementEmoji[tag] }}</span>
+                <span class="truncate">{{ tag }}</span>
+              </span>
+            }
+          </div>
+
+          <div>
+            <span class="inline-flex items-center justify-center h-8 w-28 rounded-full text-sm"
+                  [ngClass]="statusPillClasses[r.status]">
+              {{ r.status }}
+            </span>
+          </div>
+
+          <div class="flex justify-end gap-3">
+            <div class="h-10 px-7 rounded-full bg-neutral-900 text-white text-sm flex items-center">
+              Details
+            </div>
+
+            <div class="h-10 px-7 rounded-full bg-red-600 text-white text-sm flex items-center"
+            (click)="openCancel()">
+              Cancel
+            </div>
+          </div>
+        </div>
+        @if (isCancelOpen) {
+        <div class="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 animate-fadeIn">
+            <div class="bg-white rounded-2xl p-8 max-w-1/3 w-full max-h-2/3 overflow-y-auto shadow-2xl border border-gray-200">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-gray-900 mb-2">Cancel Ride</h2>
+                <p class="text-gray-600 text-base">Please provide a reason for cancellation</p>
+                </div>
+
+                <!-- Reason Input -->
+                <div class="mb-8">
+                <label class="block text-sm text-gray-700 mb-3">Reason for cancellation</label>
+                <textarea 
+                    [(ngModel)]="cancelReason"
+                    rows="3"
+                    placeholder="Enter reason for cancelling this ride (e.g. changed plans, found cheaper option, traffic issues...)"
+                    class="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-app-accent focus:border-app-accent resize-none font-medium text-s placeholder-gray-400 min-h-30"
+                    [class.border-red-300]="!isValidReason()"
+                    [class.ring-2]="!isValidReason()"
+                    [class.ring-red-300]="!isValidReason()"
+                ></textarea>
+                @if (!isValidReason()) {
+                    <p class="mt-2 text-red-600 text-sm">Reason must be at least 10 characters</p>
+                }
+                <p class="text-xs text-gray-500 mt-1">
+                    {{ cancelReason.length }}/500 characters
+                </p>
+                </div>
+
+                <!-- Buttons (matches screenshot) -->
+                <div class="flex gap-3">
+                <button 
+                    type="button"
+                    (click)="closeCancel()"
+                    class="flex-1 px-8 py-4 rounded-3xl bg-gray-300 border-2 border-gray-300 text-gray-900 hover:bg-gray-100 text-balance transition-all h-14 shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+                    Back
+                </button>
+                <button 
+                    type="button"
+                    [disabled]="!isValidReason()"
+                    (click)="cancelRide(r.id)"
+                    class="flex-1 px-8 py-4 rounded-3xl bg-red-500 hover:bg-red-600 disabled:bg-red-300 disabled:cursor-not-allowed text-white text-balance transition-all h-14 shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+                    Submit Cancellation
+                </button>
+                </div>
+            </div>
+            </div>
+            }
+      }
+    </div>
+  </div>

@@ -1,6 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, signal } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
+import { Subscription } from 'rxjs';
+import { UserService } from '../../../core/services/user.service';
+import { User } from '../../../core/models/user';
 
 @Component({
   selector: 'app-header',
@@ -10,7 +13,8 @@ import { RouterLink } from '@angular/router';
     <header class="w-full bg-app-dark">
       <div class="flex items-center justify-between h-23.5 px-6 md:px-8">
         <!-- Logo Section -->
-        <div class="flex items-center gap-2.5">
+        <div class="flex items-center gap-2.5 cursor-pointer"
+             (click)="onLogoClick()">
           <img
             ngSrc="https://api.builder.io/api/v1/image/assets/TEMP/880510fa722bf78df9fb6fda1ee63b8ba1554443?width=112"
             width="56"
@@ -27,13 +31,14 @@ import { RouterLink } from '@angular/router';
         @if (showUserProfile) {
           <div class="flex items-center gap-2.5 bg-white rounded-full px-3 py-1.5 md:px-2 md:py-2 shadow-lg">
             <div class="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center shrink-0 ml-2"></div>
-            <span class="text-black text-base md:text-[18px] font-normal mr-1">{{firstName}} {{lastName}}</span>
+            <span class="text-black text-base md:text-[18px] font-normal mr-1">{{user.firstName}} {{user.lastName}}</span>
             <img
-              ngSrc="/defaultprofile.png"
+              [ngSrc]="displayedProfilePicture()"
               width="40"
               height="40"
               alt="Profile"
               class="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
+              (error)="onProfileImgError($event)"
             />
           </div>
         }
@@ -53,12 +58,55 @@ import { RouterLink } from '@angular/router';
   styles: []
 })
 export class HeaderComponent {
-  @Input()
-  firstName: string = '';
+  user: User = {
+    id: 0,
+    firstName: '',
+    lastName: '',
+    email: '',
+    address: '',
+    phoneNumber: '',
+    profilePicture: 'defaultprofile.png',
+    role: 'PASSENGER'
+  }
 
-  @Input()
-  lastName: string = '';
+  displayedProfilePicture = signal<string>('/defaultprofile.png');
 
-  @Input()
-  showUserProfile: boolean = true;
+  @Input() showUserProfile: boolean = true;
+
+  private sub?: Subscription;
+  isChangePasswordOpen: boolean = false;
+
+  ngOnInit(): void {
+    this.sub = this.userService.currentUser$.subscribe(current => {
+      if (current) {
+        this.displayedProfilePicture.set(current.profilePicture
+          ? `${current.profilePicture}?cb=${Date.now()}`
+          : '/defaultprofile.png');
+
+        this.user = {...current}
+        this.cdr.detectChanges();
+      }
+    });
+    this.userService.fetchMe().subscribe();
+  }
+
+  constructor(private router: Router, private userService: UserService, private cdr: ChangeDetectorRef) {}
+
+  onLogoClick(): void {
+    switch(this.user.role) {
+      case "ADMIN":
+        this.router.navigate(["/admin/dashboard"]); break;
+      case "DRIVER":
+        this.router.navigate(["/driver/dashboard"]); break;
+      case "PASSENGER":
+        this.router.navigate(["/user/dashboard"]); break;
+      default:
+        this.router.navigateByUrl("/");
+    }
+  }
+
+  onProfileImgError(ev: Event) {
+    const img = ev.target as HTMLImageElement;
+    img.src = '/defaultprofile.png';
+  }
 }

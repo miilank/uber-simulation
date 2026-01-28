@@ -1,0 +1,87 @@
+<div class="w-12/13 mx-auto bg-white mt-10 border-[1.5px] border-gray-200 rounded-3xl shadow-lg p-8">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Panic Alerts</h1>
+      <p class="text-gray-500 mt-1">{{ unresolvedPanics().length }} active</p>
+    </div>
+    <div class="text-2xl font-bold text-red-600">
+      {{ unresolvedPanics().length }}
+    </div>
+  </div>
+@if (unresolvedPanics().length === 0){
+  <!-- Empty state -->
+  <div 
+       class="text-center py-20 border-2 border-dashed border-gray-200 rounded-xl">
+    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <span class="text-2xl"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="fit" height="fit" viewBox="0 0 256 256" xml:space="preserve">
+<g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
+	<polygon points="37.95,64.44 23.78,50.27 30.85,43.2 37.95,50.3 59.15,29.1 66.22,36.17 " style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,158,4); fill-rule: nonzero; opacity: 1;" transform="  matrix(1 0 0 1 0 0) "/>
+	<path d="M 45 90 C 20.187 90 0 69.813 0 45 C 0 20.187 20.187 0 45 0 c 24.813 0 45 20.187 45 45 C 90 69.813 69.813 90 45 90 z M 45 10 c -19.299 0 -35 15.701 -35 35 s 15.701 35 35 35 s 35 -15.701 35 -35 S 64.299 10 45 10 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,158,4); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round"/>
+</g>
+</svg></span>
+    </div>
+    <h3 class="text-xl font-semibold text-gray-900 mb-2">No active panics</h3>
+    <p class="text-gray-500">All rides are safe</p>
+  </div>
+}
+@if (unresolvedPanics().length > 0) {
+  <!-- Panics list -->
+  <div class="space-y-4">
+    @for (panic of unresolvedPanics(); track panic.rideId) {
+    <div
+         class="group bg-linear-to-r from-red-50 to-orange-50 hover:from-red-100 hover:to-orange-100 
+                border border-red-200 rounded-xl p-6 transition-all duration-200 hover:shadow-md">
+      
+      <!-- Header row -->
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
+            <span class="text-2xl text-white"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="fit" height="fit" viewBox="0 0 256 256" xml:space="preserve">
+<g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
+	<path d="M 45 90 C 20.187 90 0 69.813 0 45 C 0 20.187 20.187 0 45 0 c 24.813 0 45 20.187 45 45 C 90 69.813 69.813 90 45 90 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(229,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round"/>
+	<path d="M 45 57.469 L 45 57.469 c -1.821 0 -3.319 -1.434 -3.399 -3.252 L 38.465 23.95 c -0.285 -3.802 2.722 -7.044 6.535 -7.044 h 0 c 3.813 0 6.82 3.242 6.535 7.044 l -3.137 30.267 C 48.319 56.036 46.821 57.469 45 57.469 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round"/>
+	<circle cx="45" cy="67.67" r="5.42" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" transform="  matrix(1 0 0 1 0 0) "/>
+</g>
+</svg></span>
+          </div>
+          <div>
+            <h3 class="font-bold text-xl text-gray-900">Ride #{{panic.rideId}}</h3>
+            <p class="text-sm text-gray-500">User Email: {{panic.activatedBy}}</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="px-3 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full">
+            ACTIVE
+          </span>
+          <button (click)="resolvePanic(panic.rideId)"
+                  class="px-4 py-2 bg-white border-2 border-red-500 text-red-600 font-semibold 
+                         rounded-lg hover:bg-red-50 hover:border-red-600 transition-all duration-200">
+            Resolve
+          </button>
+        </div>
+      </div>
+
+      <!-- Details -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div>
+          <span class="text-gray-500">Time:</span>
+          <span class="font-medium ml-2">{{panic.timestamp | date:'short'}}</span>
+        </div>
+        @if (panic.userType) {
+        <div>
+          <span class="text-gray-500">Type:</span>
+          <span class="font-medium ml-2">
+            @if (panic.userType === 'DRIVER') {
+            <span class="text-blue-600">Driver</span>}
+            @if (panic.userType === 'PASSENGER') {
+            <span class="text-green-600">Passenger</span>}
+          </span>
+        </div>
+    }
+      </div>
+    </div>
+}
+  </div>
+}
+</div>

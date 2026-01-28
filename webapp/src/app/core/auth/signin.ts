@@ -1,13 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../../features/shared/components/header.component';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { ResetPasswordComponent } from './reset-password';
 
 @Component({
   selector: 'app-signin',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderComponent],
+  imports: [CommonModule, FormsModule, HeaderComponent, ResetPasswordComponent],
   template: `
 <div class="min-h-screen flex flex-col bg-linear-to-b from-[#d6f4a2] to-[#f7f7f7] font-poppins">
   <!-- Header -->
@@ -76,6 +78,12 @@ import { Router } from '@angular/router';
                 }
               </p>
             }
+          
+            <!-- Ne ponasa se dobro. -->
+              <div *ngIf="errorMessage" class="text-red-400 text-xs">
+                  {{ errorMessage }}
+              </div>
+
           </div>
         </div>
 
@@ -101,146 +109,103 @@ import { Router } from '@angular/router';
       </form>
     </div>
     @if (isForgotOpen) {
-      <div class="fixed inset-0 z-50 flex items-center justify-center">
-        <!-- Backdrop -->
-        <div
-          class="absolute inset-0 bg-black/50"
-          (click)="closeForgot()"
-        ></div>
+  <div class="fixed inset-0 z-50 flex items-center justify-center">
+    <!-- Backdrop -->
+    <div
+      class="absolute inset-0 bg-black/50"
+      (click)="closeForgot()"
+    ></div>
 
-        <!-- Modal -->
-        <div class="relative z-10 w-full max-w-sm bg-white rounded-2xl shadow-xl p-6">
-          @if (forgotStep === 'email') {
-            <h2 class="text-lg font-semibold mb-2 text-gray-900">
-              Reset password
-            </h2>
-            <p class="text-sm text-gray-600 mb-4">
-              Enter your email and a reset link will be sent to you.
+    <!-- Modal -->
+    <div class="relative z-10 w-full max-w-sm bg-white rounded-2xl shadow-xl p-6">
+      
+      @if (isForgotOpen && forgotStep === "email") {
+        <h2 class="text-lg font-semibold mb-2 text-gray-900">
+          Reset password
+        </h2>
+        <p class="text-sm text-gray-600 mb-4">
+          Enter your email and a reset link will be sent to you.
+        </p>
+
+        <form #emailForm="ngForm" (ngSubmit)="emailForm.valid && sendResetEmail()">
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
+          <input
+            type="email"
+            [(ngModel)]="emailForReset"
+            name="resetEmail"
+            #resetEmailCtrl="ngModel"
+            required
+            email
+            class="input-base w-full mb-4"
+            placeholder="you@example.com"
+          />
+          @if (resetEmailCtrl.invalid && (resetEmailCtrl.dirty || resetEmailCtrl.touched)) {
+            <p class="text-red-400 text-xs mb-2">
+              @if (resetEmailCtrl.errors?.['required']) {
+                <span>Email is required.</span>
+              }
+              @if (resetEmailCtrl.errors?.['email']) {
+                <span>Enter a valid email address.</span>
+              }
             </p>
-
-            <form #emailForm="ngForm" (ngSubmit)="emailForm.valid && sendResetEmail()">
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
-              <input
-                type="email"
-                [(ngModel)]="emailForReset"
-                name="resetEmail"
-                #resetEmailCtrl="ngModel"
-                required
-                email
-                class="input-base w-full mb-4"
-                placeholder="you@example.com"
-              />
-              @if (resetEmailCtrl.invalid && (resetEmailCtrl.dirty || resetEmailCtrl.touched)) {
-                <p class="text-red-400 text-xs">
-                  @if (resetEmailCtrl.errors?.['required']) {
-                    <span>Email is required.</span>
-                  }
-                  @if (resetEmailCtrl.errors?.['email']) {
-                    <span>Enter a valid email address.</span>
-                  }
-                </p>
-              }
-              <div class="flex justify-end gap-2">
-                <button
-                  type="button"
-                  class="px-4 py-2 rounded-full text-sm border border-gray-300 text-gray-700 hover:bg-gray-100"
-                  (click)="closeForgot()"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  [disabled]="emailForm.invalid"
-                  class="px-4 py-2 rounded-full text-sm bg-app-accent text-app-dark hover:bg-app-accent-dark disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Send email
-                </button>
-              </div>
-            </form>
           }
-
-          @if (forgotStep === 'password') {
-            <h2 class="text-lg font-semibold mb-2 text-gray-900">
-              Set new password
-            </h2>
-            <p class="text-sm text-gray-600 mb-4">
-              Enter your new password and confirm it.
-            </p>
-
-            <form #newPasswordForm="ngForm" (ngSubmit)="newPasswordForm.valid && setNewPassword()">
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                New password
-              </label>
-              <input
-                type="password"
-                [(ngModel)]="newPassword"
-                name="newPassword"
-                #newPasswordCtrl="ngModel"
-                required
-                minlength="6"
-                class="input-base w-full mb-3"
-                placeholder="New password"
-              />
-              @if (newPasswordCtrl.invalid && (newPasswordCtrl.dirty || newPasswordCtrl.touched)) {
-                <p class="text-red-400 text-xs">
-                  @if (newPasswordCtrl.errors?.['required']) {
-                    <span>Password is required.</span>
-                  }
-                  @if (newPasswordCtrl.errors?.['minlength']) {
-                    <span>Password must be at least 6 characters.</span>
-                  }
-                </p>
-              }
-              <label class="block text-sm font-medium text-gray-700 mb-1 mt-2">
-                Confirm password
-              </label>
-              <input
-                type="password"
-                [(ngModel)]="confirmPassword"
-                name="confirmPassword"
-                #confirmPasswordCtrl="ngModel"
-                required
-                minlength="6"
-                class="input-base w-full mb-4"
-                placeholder="Confirm password"
-              />
-              @if (confirmPasswordCtrl.invalid && (confirmPasswordCtrl.dirty || confirmPasswordCtrl.touched)) {
-                <p class="text-red-400 text-xs">
-                  @if (confirmPasswordCtrl.errors?.['required']) {
-                    <span>Password is required.</span>
-                  } 
-                  @if (newPassword !== confirmPassword) {
-                    <span>Passwords do not match.</span>
-                  }
-                </p>
-              }
-              <div class="flex justify-end gap-2">
-                <button
-                  type="button"
-                  class="px-4 py-2 rounded-full text-sm border border-gray-300 text-gray-700 hover:bg-gray-100"
-                  (click)="closeForgot()"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  [disabled]="newPasswordForm.invalid || !newPassword || !confirmPassword || newPassword !== confirmPassword"
-                  class="px-4 py-2 rounded-full text-sm bg-app-accent text-app-dark hover:bg-app-accent-dark disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Save password
-                </button>
-              </div>
-            </form>
+          @if (resetError) {
+            <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-3">
+              <p class="text-red-800 text-sm">{{ resetError }}</p>
+            </div>
           }
+          <div class="flex justify-end gap-2">
+            <button
+              type="button"
+              class="px-4 py-2 rounded-full text-sm border border-gray-300 text-gray-700 hover:bg-gray-100"
+              (click)="closeForgot()"
+              [disabled]="sendingEmail"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="emailForm.invalid || sendingEmail"
+              class="px-4 py-2 rounded-full text-sm bg-app-accent text-app-dark hover:bg-app-accent-dark disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              @if (sendingEmail) {
+                <span>Sending...</span>
+              } @else {
+                <span>Send email</span>
+              }
+            </button>
+          </div>
+        </form>
+      }
+      @if (resetEmailSent) {
+        <div class="text-center space-y-4">
+          <div class="flex justify-center">
+            <svg class="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <h2 class="text-lg font-semibold text-gray-900">Email Sent!</h2>
+          <p class="text-sm text-gray-600">
+            Check your inbox at <span class="font-medium">{{ emailForReset }}</span> for the password reset link.
+          </p>
         </div>
-      </div>
+      }
+
+      @if (isForgotOpen && forgotStep === 'password') {
+      <app-reset-password 
+        [token]="resetToken" 
+        (closeModal)="closeForgot()">
+      </app-reset-password>
     }
+    </div>
+  </div>
+}
   </main>
 </div>
 `})
-export class SignInComponent {
+export class SignInComponent implements OnInit{
   email = '';
   password = '';
 
@@ -248,13 +213,51 @@ export class SignInComponent {
   forgotStep: 'email' | 'password' = 'email';
 
   emailForReset = '';
+  resetToken = '';
   newPassword = '';
   confirmPassword = '';
 
+  errorMessage: string | null = null;
+  resetError: string | null = null;
+  resetEmailSent = false;
+  sendingEmail = false;
+
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
+  constructor(public authService : AuthService, private cdr: ChangeDetectorRef) {
+  }
+  
+  ngOnInit() {
+    const tokenFromUrl = this.route.snapshot.queryParams['token'];
+    
+    if (tokenFromUrl) {
+      this.resetToken = tokenFromUrl;
+      this.isForgotOpen = true;
+      this.forgotStep = 'password';
+      this.cdr.detectChanges();
+    }
+  }
 
   onSubmit() {
-    this.router.navigate(['/user/profile']);
+    this.authService.login(this.email, this.password).subscribe({
+      next: user => {
+        switch (user.role) {
+          case 'ADMIN':
+            this.router.navigate(['/admin/profile']);
+            break;
+          case 'DRIVER':
+            this.router.navigate(['/driver/dashboard']);
+            break;
+          default:
+            this.router.navigate(['/user/dashboard']);
+        }
+      },
+      error: err => {
+        this.errorMessage = err["message"];
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   openForgot() {
@@ -263,18 +266,40 @@ export class SignInComponent {
     this.emailForReset = '';
     this.newPassword = '';
     this.confirmPassword = '';
+    this.resetError = null;
+    this.resetEmailSent = false;
   }
 
   closeForgot() {
     this.isForgotOpen = false;
+    this.router.navigate([], {
+      queryParams: { token: null },
+      queryParamsHandling: 'merge'
+    });
   }
 
   sendResetEmail() {
-    this.forgotStep = 'password';
-  }
-
-  setNewPassword() {
-    this.closeForgot();
+    this.resetError = null;
+    this.resetEmailSent = false;
+    this.sendingEmail = true;
+    
+    this.authService.forgotPassword(this.emailForReset).subscribe({
+      next: (response) => {
+        this.sendingEmail = false;
+        this.resetEmailSent = true;
+        this.resetToken = response.token;
+        this.cdr.detectChanges();
+        
+        setTimeout(() => {
+          this.closeForgot();
+        }, 3000);
+      },
+      error: (err) => {
+        this.sendingEmail = false;
+        this.resetError = err.error?.message || 'Failed to send reset email';
+        this.cdr.detectChanges();
+      }
+    });
   }
 }
 

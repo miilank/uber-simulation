@@ -10,6 +10,10 @@
             android:title="@string/book_a_ride"
             android:icon="@drawable/img_car_white"/>
         <item
+            android:id="@+id/nav_current_ride"
+            android:title="@string/_current_ride"
+            android:icon="@drawable/img_current_ride_white"/>
+        <item
             android:id="@+id/nav_booked_rides"
             android:title="@string/booked_rides"
             android:icon="@drawable/img_bookedrides_white"/>

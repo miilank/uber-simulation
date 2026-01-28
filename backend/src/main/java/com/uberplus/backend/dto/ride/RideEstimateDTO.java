@@ -9,9 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RideEstimateDTO {
-    private LocationDTO startLocation;
-    private LocationDTO endLocation;
+    private int estimatedDistance;
     private VehicleType vehicleType;
-    private int estimatedMinutes;
-    private double estimatedPrice;
 }

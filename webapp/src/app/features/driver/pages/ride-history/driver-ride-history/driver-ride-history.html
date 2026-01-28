@@ -31,7 +31,8 @@
       <!-- Buttons -->
       <button
         type="button"
-        class="h-11 px-6 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-800 active:scale-[0.99] cursor-pointer transition-colors duration-250">
+        class="h-11 px-6 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-800 active:scale-[0.99] cursor-pointer transition-colors duration-250"
+        (click)="apply()">
         Apply
       </button>
 
@@ -44,17 +45,24 @@
 
       <!-- Quick filters -->
       <div class="ml-auto flex gap-3">
-        <button type="button" class="h-9 px-4 rounded-lg bg-gray-100 text-xs hover:bg-gray-200 active:scale-[0.99] cursor-pointer transition-colors duration-250">
+        <button
+          type="button"
+          class="h-9 px-4 rounded-lg bg-gray-100 text-xs hover:bg-gray-200 active:scale-[0.99] cursor-pointer transition-colors duration-250"
+          (click)="lastDays(7)">
           Last 7 days
         </button>
-        <button type="button" class="h-9 px-4 rounded-lg bg-gray-100 text-xs hover:bg-gray-200 active:scale-[0.99] cursor-pointer transition-colors duration-250">
+
+        <button
+          type="button"
+          class="h-9 px-4 rounded-lg bg-gray-100 text-xs hover:bg-gray-200 active:scale-[0.99] cursor-pointer transition-colors duration-250"
+          (click)="lastDays(30)">
           Last 30 days
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Table header (optional, but makes it look cleaner) -->
+  <!-- Table header -->
   <div class="grid grid-cols-[80px_1fr_450px_1fr_1fr_1fr_1fr] text-xs text-gray-500 px-2 pb-2">
     <div>Date</div>
     <div>Time</div>
@@ -67,7 +75,7 @@
 
   <!-- Rows -->
   <div class="divide-y divide-gray-100">
-    @for (r of rides; track r.date + r.time + r.price) {
+    @for (r of rides; track r.id) {
       <div class="grid grid-cols-[80px_1fr_450px_1fr_1fr_1fr_1fr] items-center py-5 px-2">
         <!-- date -->
         <div class="text-sm text-gray-800">{{ r.date }}</div>
@@ -88,7 +96,11 @@
             <span class="inline-flex items-center px-4 h-7 rounded-full bg-green-100 text-green-700 text-xs">
               Completed
             </span>
-          } @else {
+            } @else if (r.status === 'STOPPED') {
+              <span class="inline-flex items-center px-4 h-7 rounded-full bg-yellow-100 text-yellow-700 text-xs">
+              Stopped Early
+              </span>
+          } @else if (r.status === 'CANCELLED') {
             <div class="text-xs text-red-600 leading-4 pl-4">
               <div>Cancelled</div>
               <div class="text-[10px] text-gray-500">by: {{ r.cancelledBy }}</div>
@@ -108,7 +120,6 @@
             </span>
           }
         </div>
-
 
         <!-- price -->
         <div class="text-sm text-gray-800">{{ r.price }}</div>
@@ -131,5 +142,4 @@
   [open]="isDetailsOpen"
   [ride]="selectedRide"
   (close)="closeDetails()">
-
 </app-ride-details-drawer>

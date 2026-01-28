@@ -24,15 +24,15 @@ public class FavoriteRoute {
     @JoinColumn(name = "user_id", nullable = false)
     private Passenger user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "start_location_id", nullable = false)
     private Location startLocation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "end_location_id", nullable = false)
     private Location endLocation;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "favorite_route_waypoints",
             joinColumns = @JoinColumn(name = "route_id"),
@@ -42,7 +42,7 @@ public class FavoriteRoute {
     private List<Location> waypoints = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column
     private VehicleType vehicleType;
 
     @Column(nullable = false)

@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RideCancellationDTO {
-    private Integer rideId;
+    private Integer userId;
     private String reason;
 }

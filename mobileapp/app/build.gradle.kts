@@ -42,4 +42,12 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    //noinspection UseTomlInstead
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    //noinspection UseTomlInstead
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    //noinspection UseTomlInstead
+    implementation("com.google.code.gson:gson:2.13.2")
+    //noinspection UseTomlInstead
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
 }

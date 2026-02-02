@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Mobileapp">
         <activity
-            android:name=".ui.UserMainActivity"
+            android:name=".DriverMainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,11 +21,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.AuthActivity"
+            android:name=".core.auth.AuthActivity"
             android:exported="false">
         </activity>
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".UserMainActivity"
             android:exported="false">
         </activity>
     </application>

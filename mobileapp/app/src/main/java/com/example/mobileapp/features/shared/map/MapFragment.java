@@ -28,6 +28,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MapFragment extends Fragment {
+    private long refreshIntervalMs = 5000L;
     private boolean pageReady = false;
     private List<MapFragment.RoutePoint> pendingRoute = null;
     private static final String ARG_ONLY_VEHICLE_ID = "onlyVehicleId";
@@ -52,7 +53,7 @@ public class MapFragment extends Fragment {
     private final Runnable refreshTask = new Runnable() {
         @Override public void run() {
             fetchVehicles();
-            handler.postDelayed(this, 5000);
+            handler.postDelayed(this, refreshIntervalMs);
         }
     };
 
@@ -75,6 +76,13 @@ public class MapFragment extends Fragment {
         webView.loadUrl("file:///android_asset/map/index.html");
 
         vehiclesApi = ApiClient.get().create(VehiclesApi.class);
+
+        Bundle args = getArguments();
+        if (args != null && args.containsKey(ARG_ONLY_VEHICLE_ID)) {
+            refreshIntervalMs = 1000L; // 1s za single vehicle
+        } else {
+            refreshIntervalMs = 5000L;
+        }
 
         webView.setOnTouchListener((view, event) -> {
             if (event.getActionMasked() == android.view.MotionEvent.ACTION_DOWN ||

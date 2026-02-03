@@ -20,6 +20,7 @@ import com.example.mobileapp.features.shared.api.dto.DriverRideDto;
 import com.example.mobileapp.features.shared.api.dto.LocationDto;
 import com.example.mobileapp.features.shared.api.dto.PassengerDto;
 import com.example.mobileapp.features.shared.map.MapFragment;
+import com.example.mobileapp.features.shared.services.RideSimulationService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,12 @@ public class DriverDashboardFragment extends Fragment {
     private DriverDashboardAdapter bookedAdapter;
     private DriverRidesService ridesService;
 
+    private TextView btnStartRide;
+
+    private com.example.mobileapp.features.shared.services.RideSimulationService sim;
+    private com.example.mobileapp.features.shared.api.RidesApi ridesApi;
+    private android.content.SharedPreferences prefs;
+
     private final int workMinutes = 265;
     private final int workLimitMinutes = 480;
 
@@ -78,6 +85,12 @@ public class DriverDashboardFragment extends Fragment {
 
         tvCurrentStatus = v.findViewById(R.id.tvCurrentRideStatus);
         tvCurrentRoute = v.findViewById(R.id.tvCurrentRideRoute);
+
+        btnStartRide = v.findViewById(R.id.btnStartRide);
+
+        prefs = requireContext().getSharedPreferences("auth", android.content.Context.MODE_PRIVATE);
+        ridesApi = com.example.mobileapp.core.network.ApiClient.get().create(com.example.mobileapp.features.shared.api.RidesApi.class);
+        sim = new com.example.mobileapp.features.shared.services.RideSimulationService();
 
         setupWorkingHours();
         setupWaypoints();
@@ -182,7 +195,7 @@ public class DriverDashboardFragment extends Fragment {
             tvCurrentStatus.setText("Started");
             tvCurrentStatus.setBackgroundResource(R.drawable.bg_started);
         } else if ("ACCEPTED".equals(r.status)) {
-            tvCurrentStatus.setText("Assigned");
+            tvCurrentStatus.setText("Accepted");
             tvCurrentStatus.setBackgroundResource(R.drawable.bg_assigned);
         } else {
             tvCurrentStatus.setText("Scheduled");
@@ -219,6 +232,66 @@ public class DriverDashboardFragment extends Fragment {
             }
         }
         passengerAdapter.setItems(ps);
+
+        btnStartRide.setOnClickListener(v -> {
+            if (r == null || r.id == null || r.vehicleId == null) return;
+
+            // start ima smisla samo kad je ASSIGNED
+            if (!"ACCEPTED".equals(r.status)) return;
+
+            String token = prefs.getString("jwt", null);
+            if (token == null || token.isEmpty()) return;
+
+            setBtnWaiting();
+
+            ridesApi.startRide("Bearer " + token, r.id).enqueue(new retrofit2.Callback<DriverRideDto>() {
+                @Override
+                public void onResponse(@NonNull retrofit2.Call<DriverRideDto> call,
+                                       @NonNull retrofit2.Response<DriverRideDto> response) {
+                    if (!response.isSuccessful()) {
+                        setBtnStartIdle();
+                        return;
+                    }
+
+                    // build points
+                    List<double[]> pts = new ArrayList<>();
+                    if (r.startLocation != null) pts.add(new double[]{r.startLocation.latitude, r.startLocation.longitude});
+                    if (r.waypoints != null) {
+                        for (LocationDto w : r.waypoints) {
+                            if (w == null) continue;
+                            pts.add(new double[]{w.latitude, w.longitude});
+                        }
+                    }
+                    if (r.endLocation != null) pts.add(new double[]{r.endLocation.latitude, r.endLocation.longitude});
+
+                    if (pts.size() < 2) {
+                        setBtnStartIdle();
+                        return;
+                    }
+
+                    List<double[]> stops = new ArrayList<>();
+                    stops.add(new double[]{r.startLocation.latitude, r.startLocation.longitude});
+                    for (LocationDto w : r.waypoints) stops.add(new double[]{w.latitude, w.longitude});
+                    stops.add(new double[]{r.endLocation.latitude, r.endLocation.longitude});
+
+                    sim.startByRoute(r.vehicleId, token, stops, new RideSimulationService.Listener() {
+                        @Override public void onTick(double lat, double lon) {}
+                        @Override public void onArrived() { setBtnStopNoOp(); }
+                    });
+
+
+                    tvCurrentStatus.setText("Started");
+                    tvCurrentStatus.setBackgroundResource(R.drawable.bg_started);
+                }
+
+                @Override
+                public void onFailure(@NonNull retrofit2.Call<DriverRideDto> call,
+                                      @NonNull Throwable t) {
+                    setBtnStartIdle();
+                }
+            });
+        });
+
 
         // show only assigned vehicle for this ride
         if (r.vehicleId != null) {
@@ -476,4 +549,28 @@ public class DriverDashboardFragment extends Fragment {
             }
         }
     }
+    private void setBtnStartIdle() {
+        if (btnStartRide == null) return;
+        btnStartRide.setText("Start Ride");
+        btnStartRide.setEnabled(true);
+        btnStartRide.setAlpha(1f);
+    }
+
+    private void setBtnWaiting() {
+        if (btnStartRide == null) return;
+        btnStartRide.setText("Waiting for arrival");
+        btnStartRide.setEnabled(false);
+        btnStartRide.setAlpha(0.6f);
+    }
+
+    private void setBtnStopNoOp() {
+        if (btnStartRide == null) return;
+        btnStartRide.setText("Stop ride");
+        btnStartRide.setEnabled(true);
+        btnStartRide.setAlpha(1f);
+        btnStartRide.setOnClickListener(v -> {
+            // stop nista ne radi
+        });
+    }
+
 }

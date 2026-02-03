@@ -18,6 +18,10 @@
             android:title="@string/booked_rides"
             android:icon="@drawable/img_bookedrides_white"/>
         <item
+            android:id="@+id/nav_favorite_routes"
+            android:title="@string/favorite_routes"
+            android:icon="@drawable/img_routes_white"/>
+        <item
             android:id="@+id/nav_ride_history"
             android:title="@string/rideHistory"
             android:icon="@drawable/img_history_white"/>

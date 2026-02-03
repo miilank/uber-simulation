@@ -98,4 +98,5 @@
     <string name="tracking_and_reporting_are_available_only_during_an_active_ride">Tracking and reporting are available only during an active ride.</string>
     <string name="passenger_name">Passenger Name</string>
     <string name="passenger">Passenger</string>
+    <string name="favorite_routes">Favorite Routes</string>
 </resources>

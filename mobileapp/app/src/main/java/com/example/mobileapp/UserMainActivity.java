@@ -16,6 +16,7 @@ import com.example.mobileapp.features.driver.ridehistory.RideHistoryFragment;
 import com.example.mobileapp.features.passenger.currentride.CurrentRideFragment;
 import com.example.mobileapp.features.passenger.dashboard.UserDashboardFragment;
 import com.example.mobileapp.features.driver.profile.ProfileFragment;
+import com.example.mobileapp.features.passenger.favoriteRoutes.FavoriteRoutesFragment;
 import com.google.android.material.navigation.NavigationView;
 
 import com.example.mobileapp.core.auth.AuthActivity;
@@ -105,6 +106,13 @@ public class UserMainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_booked_rides) {
             // TODO: open BookedRidesFragment
+
+        } else if (id == R.id.nav_favorite_routes) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new FavoriteRoutesFragment())
+                    .addToBackStack(null)
+                    .commit();
 
         } else if (id == R.id.nav_book_ride) {
             // TODO: open BookARideFragment

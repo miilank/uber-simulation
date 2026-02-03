@@ -49,9 +49,9 @@ public class FavoriteRoutesAdapter extends RecyclerView.Adapter<FavoriteRoutesAd
         if(route.isPetsFriendly()) requirements.add(Requirement.PETS);
         if(route.getVehicleType() != null) {
             switch (route.getVehicleType()) {
-                case STANDARD: requirements.add(Requirement.STANDARD);
-                case LUXURY: requirements.add(Requirement.LUXURY);
-                case VAN: requirements.add(Requirement.VAN);
+                case STANDARD: requirements.add(Requirement.STANDARD); break;
+                case LUXURY: requirements.add(Requirement.LUXURY); break;
+                case VAN: requirements.add(Requirement.VAN); break;
             }
         }
 

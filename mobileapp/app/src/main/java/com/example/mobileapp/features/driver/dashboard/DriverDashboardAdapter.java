@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mobileapp.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DriverDashboardAdapter extends RecyclerView.Adapter<DriverDashboardAdapter.BookedRideVH> {
@@ -42,7 +43,13 @@ public class DriverDashboardAdapter extends RecyclerView.Adapter<DriverDashboard
     private final List<BookedRide> items;
 
     public DriverDashboardAdapter(@NonNull List<BookedRide> items) {
-        this.items = items;
+        this.items = new ArrayList<>(items);
+    }
+
+    public void setItems(@NonNull List<BookedRide> newItems) {
+        items.clear();
+        items.addAll(newItems);
+        notifyDataSetChanged();
     }
 
     @NonNull

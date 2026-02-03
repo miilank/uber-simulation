@@ -100,4 +100,5 @@
     <string name="passenger">Passenger</string>
     <string name="stops_dots">Stops:</string>
     <string name="address">Address</string>
+    <string name="favorite_routes">Favorite Routes</string>
 </resources>

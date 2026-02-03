@@ -142,8 +142,8 @@ public class CurrentRideFragment extends Fragment {
 
         applyStartedStyle();
 
-        String from = (r.startLocation != null) ? safe(r.startLocation.address) : "";
-        String to = (r.endLocation != null) ? safe(r.endLocation.address) : "";
+        String from = (r.startLocation != null) ? safe(r.startLocation.getAddress()) : "";
+        String to = (r.endLocation != null) ? safe(r.endLocation.getAddress()) : "";
         tvRoute.setText(from + " → " + to);
 
         String vehicleText =
@@ -194,8 +194,8 @@ public class CurrentRideFragment extends Fragment {
 
                 if (r.startLocation != null) {
                     pts.add(new MapFragment.RoutePoint(
-                            r.startLocation.latitude,
-                            r.startLocation.longitude,
+                            r.startLocation.getLatitude(),
+                            r.startLocation.getLongitude(),
                             "Pickup"
                     ));
                 }
@@ -205,8 +205,8 @@ public class CurrentRideFragment extends Fragment {
                         LocationDto w = r.waypoints.get(i);
                         if (w == null) continue;
                         pts.add(new MapFragment.RoutePoint(
-                                w.latitude,
-                                w.longitude,
+                                w.getLatitude(),
+                                w.getLongitude(),
                                 "Stop " + (i + 1)
                         ));
                     }
@@ -214,8 +214,8 @@ public class CurrentRideFragment extends Fragment {
 
                 if (r.endLocation != null) {
                     pts.add(new MapFragment.RoutePoint(
-                            r.endLocation.latitude,
-                            r.endLocation.longitude,
+                            r.endLocation.getLatitude(),
+                            r.endLocation.getLongitude(),
                             "Destination"
                     ));
                 }

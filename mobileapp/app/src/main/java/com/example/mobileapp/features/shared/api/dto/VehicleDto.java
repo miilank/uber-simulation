@@ -8,7 +8,7 @@ public class VehicleDto {
     private String model;
     private VehicleType type;
     private String licensePlate;
-    private int seatCount;
+    private Integer seatCount;
     private boolean babyFriendly;
     private boolean petsFriendly;
     private VehicleStatus status;
@@ -38,11 +38,11 @@ public class VehicleDto {
         this.babyFriendly = babyFriendly;
     }
 
-    public int getSeatCount() {
+    public Integer getSeatCount() {
         return seatCount;
     }
 
-    public void setSeatCount(int seatCount) {
+    public void setSeatCount(Integer seatCount) {
         this.seatCount = seatCount;
     }
 

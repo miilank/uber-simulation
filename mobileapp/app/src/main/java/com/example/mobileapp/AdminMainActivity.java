@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.mobileapp.features.admin.driverRegistration.DriverRegisterFragment;
 import com.example.mobileapp.features.admin.profileChanges.ProfileChangesFragment;
 import com.example.mobileapp.features.driver.dashboard.DriverDashboardFragment;
 import com.example.mobileapp.features.driver.ridehistory.RideHistoryFragment;
@@ -100,7 +101,11 @@ public class AdminMainActivity extends AppCompatActivity
 
 
         } else if (id == R.id.nav_register_driver) {
-            // TODO: open DriverRegistrationFragment
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new DriverRegisterFragment())
+                    .addToBackStack(null)
+                    .commit();
 
         } else if (id == R.id.nav_review_profile_changes) {
             getSupportFragmentManager()

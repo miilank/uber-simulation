@@ -50,4 +50,5 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.2")
     //noinspection UseTomlInstead
     implementation("androidx.recyclerview:recyclerview:1.4.0")
+    implementation(libs.core.splashscreen)
 }

@@ -32,6 +32,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RideHistoryFragment extends Fragment {
+    private android.content.SharedPreferences prefs;
 
     // ---------------------------- FILTERS UI ----------------------------
     private boolean filtersOpen = false;
@@ -64,6 +65,8 @@ public class RideHistoryFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_ride_history, container, false);
+
+        prefs = requireContext().getSharedPreferences("auth", android.content.Context.MODE_PRIVATE);
 
         // ---------------------------- FILTERS ----------------------------
         View filtersHeader = v.findViewById(R.id.card_filters);
@@ -179,13 +182,23 @@ public class RideHistoryFragment extends Fragment {
     private void fetchRides(@Nullable String startDateIso, @Nullable String endDateIso) {
         if (ridesApi == null) return;
 
-        ridesApi.getRideHistory(driverId, startDateIso, endDateIso, null, null)
-                .enqueue(new Callback<>() {
+        String auth = bearer();
+        Integer dId = driverId();
+
+        if (auth == null || dId == null) {
+            Toast.makeText(getContext(), "Not logged in as driver.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ridesApi.getRideHistory(auth, dId, startDateIso, endDateIso, 0, 50)
+                .enqueue(new retrofit2.Callback<RideHistoryResponseDto>() {
                     @SuppressLint("NotifyDataSetChanged")
                     @Override
-                    public void onResponse(@NonNull Call<RideHistoryResponseDto> call,
-                                           @NonNull Response<RideHistoryResponseDto> response) {
+                    public void onResponse(@NonNull retrofit2.Call<RideHistoryResponseDto> call,
+                                           @NonNull retrofit2.Response<RideHistoryResponseDto> response) {
+
                         if (!response.isSuccessful() || response.body() == null || response.body().rides == null) {
+                            Toast.makeText(getContext(), "Failed to load rides: " + response.code(), Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -197,8 +210,8 @@ public class RideHistoryFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<RideHistoryResponseDto> call, @NonNull Throwable t) {
-                        // keep UI silent by default
+                    public void onFailure(@NonNull retrofit2.Call<RideHistoryResponseDto> call,
+                                          @NonNull Throwable t) {
                         Toast.makeText(getContext(), "Failed to load rides.", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -358,5 +371,24 @@ public class RideHistoryFragment extends Fragment {
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+    @Nullable
+    private String bearer() {
+        String token = prefs != null ? prefs.getString("jwt", null) : null;
+        if (token == null || token.trim().isEmpty()) return null;
+        return "Bearer " + token;
+    }
+
+    @Nullable
+    private Integer driverId() {
+        if (prefs != null && prefs.contains("driverId")) {
+            int id = prefs.getInt("driverId", -1);
+            return id > 0 ? id : null;
+        }
+        com.example.mobileapp.features.shared.models.User u =
+                com.example.mobileapp.features.shared.repositories.UserRepository.getInstance()
+                        .getCurrentUser().getValue();
+        if (u != null && u.getId() != null) return u.getId();
+        return null;
     }
 }

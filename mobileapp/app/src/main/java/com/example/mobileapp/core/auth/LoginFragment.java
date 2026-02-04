@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.mobileapp.AdminMainActivity;
 import com.example.mobileapp.DriverMainActivity;
 import com.example.mobileapp.R;
 import com.example.mobileapp.UserMainActivity;
@@ -125,7 +126,7 @@ public class LoginFragment extends Fragment {
             showError("No token found");
             return;
         }
-        userApi.fetchMe("Bearer " + token).enqueue(new Callback<User>() {
+        userApi.fetchMe().enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> meCall, Response<User> meResponse) {
                 if (meResponse.isSuccessful() && meResponse.body() != null) {
@@ -142,7 +143,7 @@ public class LoginFragment extends Fragment {
                     } else if (user.getRole() == UserRole.PASSENGER) {
                         goToPassengerMain();
                     } else {
-                        // goToAdminMain();
+                        goToAdminMain();
                     }
                 } else {
                     showError("Failed to load profile");
@@ -166,6 +167,12 @@ public class LoginFragment extends Fragment {
 
     private void goToPassengerMain() {
         Intent intent = new Intent(requireActivity(), UserMainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
+    private void goToAdminMain() {
+        Intent intent = new Intent(requireActivity(), AdminMainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }

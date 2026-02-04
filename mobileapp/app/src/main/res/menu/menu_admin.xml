@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_dashboard"
+            android:title="@string/dashboard"
+            android:icon="@drawable/img_dashboard_white"/>
+        <item
+            android:id="@+id/nav_register_driver"
+            android:title="@string/register_a_driver"
+            android:icon="@drawable/img_history_white"/>
+        <item
+            android:id="@+id/nav_review_profile_changes"
+            android:title="@string/review_profile_changes"
+            android:icon="@drawable/img_bookedrides_white"/>
+        <item
+            android:id="@+id/nav_panic_notifications"
+            android:title="@string/panic_notifications"
+            android:icon="@drawable/img_reports_white"/>
+        <item
+            android:id="@+id/nav_profile"
+            android:title="@string/profile"
+            android:icon="@drawable/img_user_white"/>
+        <item
+            android:id="@+id/nav_sign_out"
+            android:title="@string/sign_out"
+            android:icon="@drawable/img_signout_white"/>
+    </group>
 </menu>

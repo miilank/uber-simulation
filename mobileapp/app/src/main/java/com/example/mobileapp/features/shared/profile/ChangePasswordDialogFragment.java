@@ -14,12 +14,22 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.mobileapp.R;
+import com.example.mobileapp.core.network.ApiClient;
+import com.example.mobileapp.features.shared.api.UserApi;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChangePasswordDialogFragment extends DialogFragment {
     EditText etOldPassword, etNewPassword, etConfirmPassword;
     AppCompatButton btnCancel, btnConfirm;
     ImageButton btnClose;
 
+    UserApi userApi;
     TextView tvErrorMessage;
 
     @Override
@@ -42,9 +52,13 @@ public class ChangePasswordDialogFragment extends DialogFragment {
         btnConfirm.setOnClickListener(v -> submitPasswordChange());
         btnCancel.setOnClickListener(v -> dismiss());
         btnClose.setOnClickListener(v -> dismiss());
+
+        userApi = ApiClient.get().create(UserApi.class);
     }
 
     private void submitPasswordChange() {
+        String newPassword = etNewPassword.getText().toString();
+        String oldPassword = etOldPassword.getText().toString();
         String errorMsg = validatePasswords();
 
         if (errorMsg != null) {
@@ -54,8 +68,21 @@ public class ChangePasswordDialogFragment extends DialogFragment {
 
         tvErrorMessage.setText(null);
 
-        dismiss();
-        //TODO Backend
+        Map<String, String> body = new HashMap<>();
+        body.put("oldPassword", oldPassword);
+        body.put("newPassword", newPassword);
+
+        userApi.changePassword(body).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                tvErrorMessage.setText(t.getMessage());
+            }
+        });
     }
 
     private String validatePasswords() {

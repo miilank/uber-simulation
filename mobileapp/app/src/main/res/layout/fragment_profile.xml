@@ -29,7 +29,7 @@
             app:cardElevation="6dp"
             app:cardCornerRadius="16dp"
             app:cardUseCompatPadding="true"
-            android:visibility="visible">  <!-- default hidden for passenger -->
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -470,11 +470,13 @@
 
         <!-- Vehicle Info Card -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/card_vehicle_information"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardElevation="6dp"
             app:cardCornerRadius="24dp"
-            app:cardUseCompatPadding="true">
+            app:cardUseCompatPadding="true"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"

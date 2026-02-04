@@ -79,7 +79,7 @@ public class UserRepository {
         user.setLastName(prefs.getString("last_name", null));
         user.setAddress(prefs.getString("address", null));
         user.setPhoneNumber(prefs.getString("phone_number", null));
-        user.setProfilePicture(prefs.getString("profile_picture", null));
+        user.setProfilePicture(prefs.getString("profile_picture_url", null));
 
         String roleStr = prefs.getString("role", null);
         if (roleStr != null) {

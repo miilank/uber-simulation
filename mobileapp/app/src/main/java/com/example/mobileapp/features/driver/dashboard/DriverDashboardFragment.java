@@ -57,6 +57,9 @@ public class DriverDashboardFragment extends Fragment {
     private com.example.mobileapp.features.shared.services.RideSimulationService sim;
     private com.example.mobileapp.features.shared.api.RidesApi ridesApi;
     private android.content.SharedPreferences prefs;
+    private final android.os.Handler arrivalH = new android.os.Handler(android.os.Looper.getMainLooper());
+    private Runnable arrivalRunnable;
+    private Integer watchingRideId = null;
 
     private final int workMinutes = 265;
     private final int workLimitMinutes = 480;
@@ -158,6 +161,8 @@ public class DriverDashboardFragment extends Fragment {
         if (waypointAdapter == null || passengerAdapter == null) return;
 
         if (r == null) {
+            stopArrivalWatch();
+            if (sim != null) sim.stop();
             tvCurrentRideTitle.setText("No Current Ride");
             tvPassengersTitle.setVisibility(View.GONE);
             currentRideContent.setVisibility(View.GONE);
@@ -192,14 +197,22 @@ public class DriverDashboardFragment extends Fragment {
         tvCurrentRoute.setVisibility(View.VISIBLE);
 
         if ("IN_PROGRESS".equals(r.status)) {
+            startArrivalWatch(r);
             tvCurrentStatus.setText("Started");
             tvCurrentStatus.setBackgroundResource(R.drawable.bg_started);
+            setBtnWaiting();
         } else if ("ACCEPTED".equals(r.status)) {
+            stopArrivalWatch();
             tvCurrentStatus.setText("Accepted");
             tvCurrentStatus.setBackgroundResource(R.drawable.bg_assigned);
+            setBtnStartIdle();
         } else {
+            stopArrivalWatch();
             tvCurrentStatus.setText("Scheduled");
             tvCurrentStatus.setBackgroundResource(R.drawable.bg_scheduled);
+            setBtnStartIdle();
+            btnStartRide.setEnabled(false);
+            btnStartRide.setAlpha(0.6f);
         }
 
         String from = (r.startLocation != null) ? safe(r.startLocation.getAddress()) : "";
@@ -236,7 +249,7 @@ public class DriverDashboardFragment extends Fragment {
         btnStartRide.setOnClickListener(v -> {
             if (r == null || r.id == null || r.vehicleId == null) return;
 
-            // start ima smisla samo kad je ASSIGNED
+            // Start ima smisla samo kad je ACCEPTED
             if (!"ACCEPTED".equals(r.status)) return;
 
             String token = prefs.getString("jwt", null);
@@ -253,32 +266,71 @@ public class DriverDashboardFragment extends Fragment {
                         return;
                     }
 
-                    // build points
-                    List<double[]> pts = new ArrayList<>();
-                    if (r.startLocation != null) pts.add(new double[]{r.startLocation.getLatitude(), r.startLocation.getLongitude()});
-                    if (r.waypoints != null) {
-                        for (LocationDto w : r.waypoints) {
-                            if (w == null) continue;
-                            pts.add(new double[]{w.getLatitude(), w.getLongitude()});
-                        }
-                    }
-                    if (r.endLocation != null) pts.add(new double[]{r.endLocation.getLatitude(), r.endLocation.getLongitude()});
-
-                    if (pts.size() < 2) {
+                    // baseStops: pickup - waypoints - destination
+                    if (r.startLocation == null || r.endLocation == null) {
                         setBtnStartIdle();
                         return;
                     }
 
-                    List<double[]> stops = new ArrayList<>();
-                    stops.add(new double[]{r.startLocation.getLatitude(), r.startLocation.getLongitude()});
-                    for (LocationDto w : r.waypoints) stops.add(new double[]{w.getLatitude(), w.getLongitude()});
-                    stops.add(new double[]{r.endLocation.getLatitude(), r.endLocation.getLongitude()});
+                    final List<double[]> baseStops = new ArrayList<>();
+                    baseStops.add(new double[]{r.startLocation.getLatitude(), r.startLocation.getLongitude()});
 
-                    sim.startByRoute(r.vehicleId, token, stops, new RideSimulationService.Listener() {
-                        @Override public void onTick(double lat, double lon) {}
-                        @Override public void onArrived() { setBtnStopNoOp(); }
+                    if (r.waypoints != null) {
+                        for (LocationDto w : r.waypoints) {
+                            if (w == null) continue;
+                            baseStops.add(new double[]{w.getLatitude(), w.getLongitude()});
+                        }
+                    }
+
+                    baseStops.add(new double[]{r.endLocation.getLatitude(), r.endLocation.getLongitude()});
+
+                    if (baseStops.size() < 2) {
+                        setBtnStartIdle();
+                        return;
+                    }
+
+                    // prvo uzeti poslkednju poznatu poziciju iz MapFragment
+                    double[] vehiclePos = null;
+                    Fragment mf = getChildFragmentManager().findFragmentById(R.id.mapContainer);
+                    if (mf instanceof MapFragment) {
+                        vehiclePos = ((MapFragment) mf).getLastOnlyVehicleLatLon();
+                    }
+
+                    // ako imamo vehiclePos: extendedStops = vehicle -> pickup -> ... -> dest
+                    if (vehiclePos != null) {
+                        final List<double[]> extendedStops = new ArrayList<>();
+                        extendedStops.add(vehiclePos);
+                        extendedStops.addAll(baseStops);
+
+                        // nacrtaj vehicle-pickup-...-dest
+                        drawRoutePoints(extendedStops, true);
+
+                        sim.startByRoute(r.vehicleId, token, extendedStops, new RideSimulationService.Listener() {
+                            @Override public void onTick(double lat, double lon) { }
+
+                            @Override public void onPickupArrived() {
+                                // kad stigne do pickupa, ostavi samo pickup-...-dest
+                                drawRoutePoints(baseStops, false);
+                            }
+
+                            @Override public void onArrived() {
+                                setBtnCompleteRide(r);
+                            }
+                        });
+
+                        tvCurrentStatus.setText("Started");
+                        tvCurrentStatus.setBackgroundResource(R.drawable.bg_started);
+                        return;
+                    }
+
+                    // nemamo vehiclePos - kreni od pickupa
+                    drawRoutePoints(baseStops, false);
+
+                    sim.startByRoute(r.vehicleId, token, baseStops, new RideSimulationService.Listener() {
+                        @Override public void onTick(double lat, double lon) { }
+                        @Override public void onPickupArrived() { }
+                        @Override public void onArrived() { setBtnCompleteRide(r); }
                     });
-
 
                     tvCurrentStatus.setText("Started");
                     tvCurrentStatus.setBackgroundResource(R.drawable.bg_started);
@@ -312,8 +364,10 @@ public class DriverDashboardFragment extends Fragment {
                     .replace(R.id.mapContainer, new MapFragment())
                     .commit();
         }
-        // always draw route when ride exists
-        if (lastRouteRideId == null || !lastRouteRideId.equals(r.id)) {
+        boolean simActive = sim != null && sim.isRunning();
+
+        // always draw route when ride exists (ali NE dok simulacija radi)
+        if (!simActive && (lastRouteRideId == null || !lastRouteRideId.equals(r.id))) {
             lastRouteRideId = r.id;
 
             Fragment mf = getChildFragmentManager().findFragmentById(R.id.mapContainer);
@@ -563,14 +617,132 @@ public class DriverDashboardFragment extends Fragment {
         btnStartRide.setAlpha(0.6f);
     }
 
-    private void setBtnStopNoOp() {
+    private void setBtnCompleteRide(@NonNull DriverRideDto r) {
         if (btnStartRide == null) return;
-        btnStartRide.setText("Stop ride");
+
+        btnStartRide.setText("Complete Ride");
         btnStartRide.setEnabled(true);
         btnStartRide.setAlpha(1f);
+
         btnStartRide.setOnClickListener(v -> {
-            // stop nista ne radi
+            if (r.id == null) return;
+
+            String token = prefs.getString("jwt", null);
+            if (token == null || token.isEmpty()) return;
+
+            btnStartRide.setEnabled(false);
+            btnStartRide.setAlpha(0.6f);
+            btnStartRide.setText("Completing...");
+
+            if (sim != null) sim.stop();
+
+            ridesApi.completeRide("Bearer " + token, r.id).enqueue(new retrofit2.Callback<DriverRideDto>() {
+                @Override
+                public void onResponse(@NonNull retrofit2.Call<DriverRideDto> call,
+                                       @NonNull retrofit2.Response<DriverRideDto> response) {
+                    if (!response.isSuccessful()) {
+                        btnStartRide.setEnabled(true);
+                        btnStartRide.setAlpha(1f);
+                        btnStartRide.setText("Complete Ride");
+                        return;
+                    }
+                    btnStartRide.setText("Refreshing...");
+                    btnStartRide.setEnabled(false);
+                    btnStartRide.setAlpha(0.6f);
+                    if (ridesService != null) ridesService.fetchRides();
+                }
+
+                @Override
+                public void onFailure(@NonNull retrofit2.Call<DriverRideDto> call,
+                                      @NonNull Throwable t) {
+                    btnStartRide.setEnabled(true);
+                    btnStartRide.setAlpha(1f);
+                    btnStartRide.setText("Complete Ride");
+                }
+            });
         });
     }
 
+
+    private void drawRoutePoints(@NonNull List<double[]> stopsLatLon, boolean hasVehicle) {
+        if (!isAdded() || isDetached() || getActivity() == null) return;
+        if (getView() == null) return;
+        Fragment mf = getChildFragmentManager().findFragmentById(R.id.mapContainer);
+        if (!(mf instanceof MapFragment)) return;
+
+        MapFragment mapF = (MapFragment) mf;
+
+        ArrayList<MapFragment.RoutePoint> pts = new ArrayList<>();
+
+        for (int i = 0; i < stopsLatLon.size(); i++) {
+            double[] p = stopsLatLon.get(i);
+
+            String label;
+            if (hasVehicle) {
+                if (i == 0) label = "Vehicle";
+                else if (i == 1) label = "Pickup";
+                else if (i == stopsLatLon.size() - 1) label = "Destination";
+                else label = "Stop " + (i - 1);
+            } else {
+                if (i == 0) label = "Pickup";
+                else if (i == stopsLatLon.size() - 1) label = "Destination";
+                else label = "Stop " + i;
+            }
+
+            pts.add(new MapFragment.RoutePoint(p[0], p[1], label));
+        }
+
+        if (pts.size() >= 2) mapF.setRoutePoints(pts);
+    }
+    private void stopArrivalWatch() {
+        if (arrivalRunnable != null) arrivalH.removeCallbacks(arrivalRunnable);
+        arrivalRunnable = null;
+        watchingRideId = null;
+    }
+
+    private void startArrivalWatch(@NonNull DriverRideDto r) {
+        if (r.id == null || r.endLocation == null) return;
+        if (watchingRideId != null && watchingRideId.equals(r.id)) return;
+
+        stopArrivalWatch();
+        watchingRideId = r.id;
+
+        arrivalRunnable = new Runnable() {
+            @Override public void run() {
+                if (!isAdded()) return;
+                // ako je voznja promijenjena u medjuvremenu, prekini
+                DriverRideDto cur = ridesService != null ? ridesService.currentRide().getValue() : null;
+                if (cur == null || cur.id == null || !cur.id.equals(r.id) || !"IN_PROGRESS".equals(cur.status)) {
+                    stopArrivalWatch();
+                    return;
+                }
+
+                Fragment mf = getChildFragmentManager().findFragmentById(R.id.mapContainer);
+                double[] pos = (mf instanceof MapFragment) ? ((MapFragment) mf).getLastOnlyVehicleLatLon() : null;
+
+                if (pos != null) {
+                    double dist = RideSimulationService.distanceMeters(pos[0], pos[1],
+                            cur.endLocation.getLatitude(), cur.endLocation.getLongitude());
+                    if (dist <= 30.0) {
+                        setBtnCompleteRide(cur);
+                        stopArrivalWatch();
+                        return;
+                    } else {
+                        // dok se ne stigne, mozemo prikazati waiting
+                        setBtnWaiting();
+                    }
+                }
+
+                arrivalH.postDelayed(this, 800);
+            }
+        };
+
+        arrivalH.post(arrivalRunnable);
+    }
+
+    @Override
+    public void onDestroyView() {
+        stopArrivalWatch();
+        super.onDestroyView();
+    }
 }

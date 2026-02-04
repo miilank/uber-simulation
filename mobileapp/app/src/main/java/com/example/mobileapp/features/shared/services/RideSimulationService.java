@@ -23,9 +23,10 @@ public class RideSimulationService {
 
     public interface Listener {
         void onTick(double lat, double lon);
+        void onPickupArrived();
         void onArrived();
     }
-
+    private boolean pickupNotified = false;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final VehiclesApi vehiclesApi = ApiClient.get().create(VehiclesApi.class);
 
@@ -45,7 +46,7 @@ public class RideSimulationService {
 
     private long lastBackendSendMs = 0L;
 
-    private final long pauseAtStopMs = 10_000L;
+    private final long pauseAtStopMs = 3_000L;
     private final long backendTickMs = 1000L;
     private final long uiTickMs = 200L;         // smooth
     private final long stepEveryMs = 300L;      // pomjeri se na sljedecu path tacku svakih X ms
@@ -75,6 +76,7 @@ public class RideSimulationService {
     }
 
     public void stop() {
+        pickupNotified = false;
         running = false;
         handler.removeCallbacksAndMessages(null);
         path.clear();
@@ -190,6 +192,7 @@ public class RideSimulationService {
             }
 
             if (now < pausedUntilMs) {
+                emitCurrentPoint(now);
                 handler.postDelayed(this, uiTickMs);
                 return;
             }
@@ -209,6 +212,12 @@ public class RideSimulationService {
                 lastStepMs = now;
                 idx++;
 
+                // pickup je prvi stopIndex
+                if (!pickupNotified && !stopIndices.isEmpty() && idx == stopIndices.get(0)) {
+                    pickupNotified = true;
+                    if (listener != null) listener.onPickupArrived();
+                }
+
                 if (isStopIndex(idx)) {
                     pausedUntilMs = now + pauseAtStopMs;
                 }
@@ -226,6 +235,23 @@ public class RideSimulationService {
             handler.postDelayed(this, uiTickMs);
         }
     };
+
+    private void emitCurrentPoint(long now) {
+        if (idx < 0 || idx >= path.size()) return;
+
+        double[] p = path.get(idx);
+        double lat = p[0];
+        double lon = p[1];
+
+        if (listener != null) listener.onTick(lat, lon);
+
+        // dok stojimo, dovoljno je da backend dobije poziciju povremeno
+        if (now - lastBackendSendMs >= backendTickMs) {
+            lastBackendSendMs = now;
+            sendPosition(lat, lon);
+        }
+    }
+
 
     private boolean isStopIndex(int i) {
         for (int s : stopIndices) {
@@ -292,7 +318,7 @@ public class RideSimulationService {
         return best;
     }
 
-    private double distanceMeters(double lat1, double lon1, double lat2, double lon2) {
+    public static double distanceMeters(double lat1, double lon1, double lat2, double lon2) {
         double R = 6371000.0;
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);

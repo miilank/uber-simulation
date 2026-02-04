@@ -28,6 +28,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MapFragment extends Fragment {
+    private VehicleMarker lastOnlyVehicle = null;
     private long refreshIntervalMs = 5000L;
     private boolean pageReady = false;
     private List<MapFragment.RoutePoint> pendingRoute = null;
@@ -133,12 +134,16 @@ public class MapFragment extends Fragment {
 
                 List<VehicleMarker> vehicles = response.body();
 
-                // ako je postavljen onlyVehicleId, ostavi samo taj marker
+                // ako je postavljen onlyVehicleId, postavlajm samo taj marker
                 Bundle args = getArguments();
                 if (args != null && args.containsKey(ARG_ONLY_VEHICLE_ID)) {
                     int onlyId = args.getInt(ARG_ONLY_VEHICLE_ID);
 
                     vehicles.removeIf(v -> v == null || v.id != onlyId);
+
+                    if (!vehicles.isEmpty()) {
+                        lastOnlyVehicle = vehicles.get(0);
+                    }
                 }
 
                 String json = gson.toJson(vehicles);
@@ -157,9 +162,14 @@ public class MapFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<List<VehicleMarker>> call, @NonNull Throwable t) {
-                // optional: log
             }
         });
+    }
+
+    @Nullable
+    public double[] getLastOnlyVehicleLatLon() {
+        if (lastOnlyVehicle == null) return null;
+        return new double[]{ lastOnlyVehicle.lat, lastOnlyVehicle.lng };
     }
 
     public static class RoutePoint {

@@ -12,6 +12,7 @@ import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.mobileapp.AdminMainActivity;
 import com.example.mobileapp.DriverMainActivity;
 import com.example.mobileapp.R;
 import com.example.mobileapp.UserMainActivity;
@@ -38,7 +39,7 @@ public class AuthActivity extends AppCompatActivity {
         UserRepository.getInstance().getCurrentUser().observe(this, user -> {
             if (user != null) {
                 if (user.getRole() == UserRole.ADMIN) {
-                    // goToAdminMain();
+                    goToAdminMain();
                 } else if (user.getRole() == UserRole.DRIVER) {
                     goToDriverMain();
                 } else {
@@ -113,6 +114,12 @@ public class AuthActivity extends AppCompatActivity {
 
     private void goToPassengerMain() {
         Intent intent = new Intent(this, UserMainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
+    private void goToAdminMain() {
+        Intent intent = new Intent(this, AdminMainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }

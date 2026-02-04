@@ -101,4 +101,7 @@
     <string name="stops_dots">Stops:</string>
     <string name="address">Address</string>
     <string name="favorite_routes">Favorite Routes</string>
+    <string name="register_a_driver">Register a driver</string>
+    <string name="review_profile_changes">Review profile changes</string>
+    <string name="panic_notifications">PANIC notifications</string>
 </resources>

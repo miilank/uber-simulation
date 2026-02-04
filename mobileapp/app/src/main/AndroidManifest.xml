@@ -32,6 +32,11 @@
             android:exported="false"
             android:theme="@style/Base.Theme.Mobileapp">
         </activity>
+        <activity
+            android:name=".AdminMainActivity"
+            android:exported="false"
+            android:theme="@style/Base.Theme.Mobileapp">
+        </activity>
     </application>
 
 </manifest>

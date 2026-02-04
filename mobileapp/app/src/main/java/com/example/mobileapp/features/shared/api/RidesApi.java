@@ -2,11 +2,14 @@ package com.example.mobileapp.features.shared.api;
 
 import com.example.mobileapp.features.shared.api.dto.DriverRideDto;
 import com.example.mobileapp.features.shared.api.dto.PassengerRideDto;
+import com.example.mobileapp.features.shared.api.dto.PriceEstimateResponse;
+import com.example.mobileapp.features.shared.api.dto.RideEstimateRequest;
 import com.example.mobileapp.features.shared.api.dto.RideHistoryResponseDto;
 
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -43,5 +46,8 @@ public interface RidesApi {
     Call<DriverRideDto> completeRide(
             @Header("Authorization") String bearer,
             @Path("rideId") Integer rideId);
+
+    @POST("api/rides/estimate")
+    Call<PriceEstimateResponse> estimateRide(@Body RideEstimateRequest request);
 
 }

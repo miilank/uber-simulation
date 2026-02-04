@@ -17,7 +17,7 @@ public interface AuthApi {
     Call<LoginResponse> login(@Body LoginRequest request);
 
     @Multipart
-    @POST("api/auth/register") // adjust path
+    @POST("api/auth/register")
     Call<Void> register(@Part("user") RegisterRequest user,
                         @Part MultipartBody.Part profileImage);
 }

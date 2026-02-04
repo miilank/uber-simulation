@@ -9,15 +9,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.mobileapp.R;
-import com.example.mobileapp.features.shared.models.VehicleMarker;
 import com.example.mobileapp.core.network.ApiClient;
 import com.example.mobileapp.features.shared.api.VehiclesApi;
+import com.example.mobileapp.features.shared.models.User;
+import com.example.mobileapp.features.shared.models.VehicleMarker;
+import com.example.mobileapp.features.shared.repositories.UserRepository;
+import com.example.mobileapp.features.unregistered.rideEstimate.EstimateBottomSheetFragment;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -48,6 +52,7 @@ public class MapFragment extends Fragment {
 
     private WebView webView;
     private VehiclesApi vehiclesApi;
+    private Button getEstimateButton;
     private final Gson gson = new Gson();
 
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -66,6 +71,8 @@ public class MapFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_map, container, false);
         webView = v.findViewById(R.id.mapWebView);
+        getEstimateButton = v.findViewById(R.id.get_estimate_button);
+
 
         WebSettings s = webView.getSettings();
         s.setJavaScriptEnabled(true);
@@ -109,6 +116,18 @@ public class MapFragment extends Fragment {
                 }
             }
         });
+        UserRepository userRepo = UserRepository.getInstance();
+        User currentUser = userRepo.getCurrentUser().getValue();
+        if (currentUser == null) {
+            getEstimateButton.setVisibility(View.VISIBLE);
+
+            getEstimateButton.setOnClickListener(view -> {
+                EstimateBottomSheetFragment estimateSheet = new EstimateBottomSheetFragment();
+                estimateSheet.show(getParentFragmentManager(), "estimate");
+            });
+        } else {
+            getEstimateButton.setVisibility(View.GONE);
+        }
 
         return v;
     }
@@ -207,5 +226,6 @@ public class MapFragment extends Fragment {
         if (!pageReady || webView == null) return;
         webView.evaluateJavascript("window.clearRoute && window.clearRoute();", null);
     }
+
 
 }

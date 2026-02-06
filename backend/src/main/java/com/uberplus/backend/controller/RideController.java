@@ -147,10 +147,13 @@ public class RideController {
 
     // POST /api/rides/{rideId}/inconsistency
     @PostMapping("/{rideId}/inconsistency")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<MessageDTO> reportInconsistency(
+            Authentication auth,
             @PathVariable Integer rideId,
-            @Valid @RequestBody RideInconsistencyDTO request) {
-        rideService.reportInconsistency(rideId, request.getPassengerId(), request.getDescription());
+            @Valid @RequestBody RideInconsistencyCreateDto request
+    ) {
+        rideService.reportInconsistency(rideId, auth.getName(), request.getDescription());
         return ResponseEntity.ok(new MessageDTO());
     }
 }

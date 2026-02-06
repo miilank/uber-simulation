@@ -27,10 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class RideHistoryFragment extends Fragment {
     private android.content.SharedPreferences prefs;
 
@@ -228,6 +224,7 @@ public class RideHistoryFragment extends Fragment {
         boolean panic = dto.panic != null && dto.panic;
 
         return new Ride(
+                dto.id,
                 dto.date,
                 dto.time,
                 dto.from,

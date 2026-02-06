@@ -326,18 +326,43 @@ public class CurrentRideFragment extends Fragment {
         String note = (etReportNote.getText() == null) ? "" : etReportNote.getText().toString().trim();
         if (note.isEmpty()) return;
 
+        if (currentRideId == null) {
+            Toast.makeText(requireContext(), "No active ride.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         submitting = true;
         btnSubmit.setText("Sending...");
         updateSubmitState(true);
 
-        handler.postDelayed(() -> {
-            submitting = false;
-            if (etReportNote.getText() != null) etReportNote.getText().clear();
-            btnSubmit.setText("Submit");
-            updateCharCount();
-            updateSubmitState(true);
-        }, 600);
+        rideService.reportInconsistency(currentRideId, note, new PassengerCurrentRideService.SimpleCallback() {
+            @Override
+            public void onSuccess() {
+                if (!isAdded()) return;
+
+                submitting = false;
+                if (etReportNote.getText() != null) etReportNote.getText().clear();
+                btnSubmit.setText("Submit");
+                updateCharCount();
+                updateSubmitState(true);
+
+                Toast.makeText(requireContext(), "Report sent.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(@NonNull String message) {
+                if (!isAdded()) return;
+
+                submitting = false;
+                btnSubmit.setText("Submit");
+                updateCharCount();
+                updateSubmitState(true);
+
+                Toast.makeText(requireContext(), "Failed: " + message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
 
     private String safe(String s) {
         return s == null ? "" : s;

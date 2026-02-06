@@ -255,17 +255,15 @@ export class CurrentRideComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const userId = this.userService.getCurrentUserId();
     const rideId = this.ride?.id;
-
-    if (!userId || !rideId) {
-      console.error('Missing userId or rideId');
+    if (!rideId) {
+      console.error('Missing rideId');
       return;
     }
 
     this.submittingReport = true;
 
-    this.rideApi.reportInconsistency(rideId, userId, this.reportNote.trim()).subscribe({
+    this.rideApi.reportInconsistency(rideId, this.reportNote.trim()).subscribe({
       next: () => {
         console.log('Inconsistency reported successfully');
         this.reportNote = '';

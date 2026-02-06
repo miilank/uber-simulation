@@ -5,6 +5,7 @@ import com.example.mobileapp.features.shared.api.dto.PassengerRideDto;
 import com.example.mobileapp.features.shared.api.dto.PriceEstimateResponse;
 import com.example.mobileapp.features.shared.api.dto.RideEstimateRequest;
 import com.example.mobileapp.features.shared.api.dto.RideHistoryResponseDto;
+import com.example.mobileapp.features.shared.api.dto.RideInconsistencyRequestDto;
 
 import java.util.List;
 
@@ -51,4 +52,10 @@ public interface RidesApi {
     @POST("api/rides/estimate")
     Call<PriceEstimateResponse> estimateRide(@Body RideEstimateRequest request);
 
+    @POST("api/rides/{rideId}/inconsistency")
+    Call<Void> reportInconsistency(
+            @Header("Authorization") String bearerToken,
+            @Path("rideId") int rideId,
+            @Body RideInconsistencyRequestDto request
+    );
 }

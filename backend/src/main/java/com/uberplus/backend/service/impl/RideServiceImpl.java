@@ -5,10 +5,7 @@ import com.uberplus.backend.dto.ride.*;
 import com.uberplus.backend.model.*;
 import com.uberplus.backend.model.enums.RideStatus;
 import com.uberplus.backend.model.enums.VehicleStatus;
-import com.uberplus.backend.repository.DriverRepository;
-import com.uberplus.backend.repository.RideInconsistencyRepository;
-import com.uberplus.backend.repository.RideRepository;
-import com.uberplus.backend.repository.UserRepository;
+import com.uberplus.backend.repository.*;
 import com.uberplus.backend.service.EmailService;
 import com.uberplus.backend.service.OSRMService;
 import com.uberplus.backend.service.PricingService;
@@ -32,6 +29,7 @@ public class RideServiceImpl implements RideService {
     private RideRepository rideRepository;
     private UserRepository userRepository;
     private DriverRepository driverRepository;
+    private PassengerRepository passengerRepository;
     private OSRMService osrmService;
     private RideInconsistencyRepository rideInconsistencyRepository;
     private final EmailService emailService;
@@ -511,19 +509,19 @@ public class RideServiceImpl implements RideService {
 
     @Override
     @Transactional
-    public void reportInconsistency(Integer rideId, Integer passengerId, String description) {
+    public void reportInconsistency(Integer rideId, String passengerEmail, String description) {
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Ride not found."
                 ));
 
-        Passenger passenger = (Passenger) userRepository.findById(passengerId)
+        Passenger passenger = passengerRepository.findByUserEmail(passengerEmail)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Passenger not found."
                 ));
 
         boolean isPassengerInRide = ride.getPassengers().stream()
-                .anyMatch(p -> p.getId().equals(passengerId));
+                .anyMatch(p -> p.getId().equals(passenger.getId()));
 
         if (!isPassengerInRide) {
             throw new ResponseStatusException(
@@ -539,6 +537,7 @@ public class RideServiceImpl implements RideService {
 
         rideInconsistencyRepository.save(inconsistency);
     }
+
     @Override
     @Transactional
     public RideDTO stopEarly(Integer rideId, LocationDTO dto){

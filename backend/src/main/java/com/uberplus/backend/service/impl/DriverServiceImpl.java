@@ -261,4 +261,14 @@ public class DriverServiceImpl implements DriverService {
 
         return avatar;
     }
+
+    @Override
+    public List<Driver> getAllDrivers() {
+        return driverRepository.findAll();
+    }
+
+    @Override
+    public Driver getDriverByEmail(String email) {
+        return driverRepository.findByEmail(email).orElse(null);
+    }
 }

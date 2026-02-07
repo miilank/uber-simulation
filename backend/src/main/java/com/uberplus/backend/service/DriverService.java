@@ -26,4 +26,6 @@ public interface DriverService {
     List<DriverUpdateDTO> getPendingUpdates();
 
     Resource getNewAvatar(Integer driverId);
+    List<Driver> getAllDrivers();
+    Driver getDriverByEmail(String email);
 }

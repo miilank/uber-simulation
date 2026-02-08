@@ -6,6 +6,10 @@
             android:title="@string/dashboard"
             android:icon="@drawable/img_dashboard_white"/>
         <item
+            android:id="@+id/nav_ride_tracking"
+            android:title="@string/ride_tracking"
+            android:icon="@drawable/img_ridetracking_white"/>
+        <item
             android:id="@+id/nav_register_driver"
             android:title="@string/register_a_driver"
             android:icon="@drawable/img_history_white"/>

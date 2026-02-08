@@ -12,10 +12,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.mobileapp.features.admin.driverMonitoring.AdminDriverMonitorFragment;
 import com.example.mobileapp.features.admin.driverRegistration.DriverRegisterFragment;
 import com.example.mobileapp.features.admin.profileChanges.ProfileChangesFragment;
-import com.example.mobileapp.features.driver.dashboard.DriverDashboardFragment;
-import com.example.mobileapp.features.driver.ridehistory.RideHistoryFragment;
 import com.example.mobileapp.features.passenger.dashboard.UserDashboardFragment;
 import com.example.mobileapp.features.shared.map.MapFragment;
 import com.example.mobileapp.features.shared.profile.ProfileFragment;
@@ -99,6 +98,14 @@ public class AdminMainActivity extends AppCompatActivity
                     .addToBackStack(null)
                     .commit();
 
+
+        }
+        if (id == R.id.nav_ride_tracking) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new AdminDriverMonitorFragment())
+                    .addToBackStack(null)
+                    .commit();
 
         } else if (id == R.id.nav_register_driver) {
             getSupportFragmentManager()

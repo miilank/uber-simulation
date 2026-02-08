@@ -119,4 +119,11 @@
     <string name="review_profile_changes">Review profile changes</string>
     <string name="panic_notifications">PANIC notifications</string>
     <string name="passenger_reports">Passenger Reports</string>
+    <string name="ride_tracking">Ride tracking</string>
+    <string name="search_drivers">Search Drivers</string>
+    <string name="search_driver">Search Driver</string>
+    <string name="search_by_driver_name_or_email">Search by driver name or email...</string>
+    <string name="clear">Clear</string>
+    <string name="found_0_driver_s">Found 0 driver(s)</string>
+    <string name="monitoring_driver_name">Monitoring: Driver Name</string>
 </resources>

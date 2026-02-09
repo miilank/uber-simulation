@@ -1,5 +1,6 @@
 package com.uberplus.backend.dto.pricing;
 
+import com.uberplus.backend.model.PricingConfig;
 import com.uberplus.backend.model.enums.VehicleType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +12,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PricingConfigDTO {
+    private Integer id;
     private VehicleType vehicleType;
-    private double basePrice;
-    private double pricePerKm;
+    private Double basePrice;
+    private Double pricePerKm;
+    private LocalDateTime lastUpdated;
+    private String updatedBy;
+
+    public PricingConfigDTO(PricingConfig config) {
+        this.id = config.getId();
+        this.vehicleType = config.getVehicleType();
+        this.basePrice = config.getBasePrice();
+        this.pricePerKm = config.getPricePerKm();
+        this.lastUpdated = config.getLastUpdated();
+        this.updatedBy = config.getUpdatedBy();
+    }
 }

@@ -1,0 +1,147 @@
+<section class="w-full bg-white rounded-[28px] shadow-xl p-10">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-poppins font-semibold text-gray-900">Pricing Management</h2>
+      <p class="text-sm text-gray-500 mt-1">Configure base prices and per-kilometer rates for each vehicle type</p>
+    </div>
+  </div>
+
+  <!-- Pricing Cards Grid -->
+  @if (!loading || pricingConfigs.length > 0) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (config of pricingConfigs; track config.vehicleType) {
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 transition-all hover:shadow-xl">
+
+          <!-- Header -->
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <span class="text-4xl">{{ vehicleTypeIcons[config.vehicleType] }}</span>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900">
+                  {{ vehicleTypeLabels[config.vehicleType] }}
+                </h3>
+                <p class="text-xs text-gray-500">{{ vehicleTypeDescriptions[config.vehicleType] }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Form -->
+          @if (editingType === config.vehicleType) {
+            <form [formGroup]="editForm" class="space-y-4">
+
+              <!-- Base Price Input -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  Base Price (€)
+                </label>
+                <input
+                  type="number"
+                  formControlName="basePrice"
+                  step="0.1"
+                  placeholder="e.g., 2.50"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  [class.border-red-500]="basePriceError"
+                />
+                @if (basePriceError) {
+                  <p class="text-xs text-red-600 mt-1">{{ basePriceError }}</p>
+                }
+              </div>
+
+              <!-- Price Per Km Input -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  Price per Km (€)
+                </label>
+                <input
+                  type="number"
+                  formControlName="pricePerKm"
+                  step="0.01"
+                  placeholder="e.g., 1.20"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  [class.border-red-500]="pricePerKmError"
+                />
+                @if (pricePerKmError) {
+                  <p class="text-xs text-red-600 mt-1">{{ pricePerKmError }}</p>
+                }
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  (click)="saveEdit(config.vehicleType)"
+                  [disabled]="editForm.invalid || loading"
+                  class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed font-medium text-sm">
+                  @if (loading) {
+                    <span>Saving...</span>
+                  } @else {
+                    <span>Save Changes</span>
+                  }
+                </button>
+                <button
+                  type="button"
+                  (click)="cancelEdit()"
+                  [disabled]="loading"
+                  class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 font-medium text-sm">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          }
+
+          <!-- Display Mode -->
+          @if (editingType !== config.vehicleType) {
+            <div class="space-y-3">
+
+              <!-- Price Display -->
+              <div class="bg-gradient-to-r from-white-50 to-blue-50 rounded-xl p-4 space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600">Base Price:</span>
+                  <span class="text-xl font-bold text-gray-900">€{{ config.basePrice.toFixed(2) }}</span>
+                </div>
+
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600">Per Kilometer:</span>
+                  <span class="text-xl font-bold text-gray-900">€{{ config.pricePerKm.toFixed(2) }}</span>
+                </div>
+              </div>
+
+              <!-- Example Calculation -->
+              <div class="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                <p class="text-xs text-gray-500 mb-1">Example: 10 km ride</p>
+                <p class="text-sm font-semibold text-gray-900">
+                  €{{ (config.basePrice + (10 * config.pricePerKm)).toFixed(2) }}
+                </p>
+              </div>
+
+              <!-- Metadata -->
+              <div class="pt-3 border-t border-gray-200">
+                <p class="text-xs text-gray-500 mb-1">Last updated:</p>
+                <p class="text-xs text-gray-700 font-medium">{{ formatDateTime(config.lastUpdated) }}</p>
+                <p class="text-xs text-gray-500">by {{ config.updatedBy }}</p>
+              </div>
+
+              <!-- Edit Button -->
+              <button
+                (click)="startEdit(config)"
+                class="w-full mt-4 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm">
+                Edit Pricing
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Info Box -->
+  <div class="mt-8 bg-gray-50 border border-gray-300 rounded-xl p-4">
+    <h4 class="text-sm font-semibold text-gray-900 mb-1">How pricing works</h4>
+    <p class="text-xs text-gray-600">
+      Total ride cost = <strong>Base Price</strong> + (<strong>Distance in km</strong> × <strong>Price per km</strong>)
+    </p>
+    <p class="text-xs text-gray-500 mt-1">
+      Changes apply to new rides only. Existing rides keep their original pricing.
+    </p>
+  </div>
+</section>

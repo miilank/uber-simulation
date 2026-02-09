@@ -6,6 +6,7 @@ import com.uberplus.backend.dto.ride.*;
 import jakarta.validation.Valid;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface RideService {

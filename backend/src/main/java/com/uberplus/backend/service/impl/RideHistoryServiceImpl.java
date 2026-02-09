@@ -3,28 +3,31 @@ package com.uberplus.backend.service.impl;
 import com.uberplus.backend.dto.passenger.PassengerDTO;
 import com.uberplus.backend.dto.report.RideHistoryFilterDTO;
 import com.uberplus.backend.dto.report.RideHistoryResponseDTO;
-import com.uberplus.backend.dto.ride.LocationDTO;
-import com.uberplus.backend.dto.ride.RideDetailDTO;
-import com.uberplus.backend.dto.ride.RideHistoryItemDTO;
-import com.uberplus.backend.dto.ride.RideInconsistencyDTO;
+import com.uberplus.backend.dto.ride.*;
 import com.uberplus.backend.model.Ride;
 import com.uberplus.backend.model.RideInconsistency;
+import com.uberplus.backend.model.User;
 import com.uberplus.backend.model.enums.RideStatus;
+import com.uberplus.backend.model.enums.UserRole;
 import com.uberplus.backend.repository.RideInconsistencyRepository;
 import com.uberplus.backend.repository.RideRepository;
+import com.uberplus.backend.repository.UserRepository;
 import com.uberplus.backend.service.RideHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.criteria.Predicate;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +35,7 @@ public class RideHistoryServiceImpl implements RideHistoryService {
 
     private final RideRepository rideRepository;
     private final RideInconsistencyRepository rideInconsistencyRepository;
+    private final UserRepository userRepository;
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd.MM.");
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
@@ -153,5 +157,106 @@ public class RideHistoryServiceImpl implements RideHistoryService {
                 ride.getStoppedAt(),
                 inconsistencyDTOs
         );
+    }
+
+    @Override
+    public HistoryReportDTO getRideHistoryReport(String name, LocalDate from, LocalDate to, Integer uuid) {
+        User subject;
+        User user = userRepository.findByEmail(name).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));;
+        UserRole role;
+
+        if (uuid == null) {
+            subject = user;
+            role = user.getRole();
+        } else {
+            if(user.getRole() != UserRole.ADMIN) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have the authorization for this activity.");
+            }
+            subject = userRepository.findById(uuid).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+            role = subject.getRole();
+        }
+
+        Specification<Ride> spec = (root, query, cb) -> {
+            Predicate p;
+            if (role == UserRole.DRIVER) {
+                p = cb.equal(root.get("driver").get("id"), subject.getId());
+            } else if (role == UserRole.PASSENGER) {
+                p = cb.equal(root.get("creator").get("id"), subject.getId());
+            } else if (role == UserRole.ADMIN) {
+                p = cb.conjunction();
+            } else {
+                p = cb.disjunction();
+            }
+            p = cb.and(p, cb.greaterThanOrEqualTo(root.get("createdAt"), from));
+            p = cb.and(p, cb.lessThanOrEqualTo(root.get("createdAt"), to));
+            return p;
+        };
+
+        List<Ride> rides = rideRepository.findAll(spec);
+
+        Map<LocalDate, HistoryReportDTO.RowElementDTO> map = new TreeMap<>();
+
+        for(Ride ride : rides) {
+            LocalDate date = LocalDate.from(ride.getActualStartTime() == null? ride.getEstimatedStartTime() : ride.getActualStartTime());
+            map.merge(date, createRow(date, ride), (existing, newRow) -> {
+                existing.setNumberOfRides(existing.getNumberOfRides() + 1);
+                existing.setKms(existing.getKms() + getDoubleOrZero(ride.getDistanceKm()));
+                existing.setMoney(existing.getMoney() + getDoubleOrZero(ride.getTotalPrice()));
+                return existing;
+            });
+        }
+
+        List<HistoryReportDTO.RowElementDTO> rows = new ArrayList<>(map.values());
+
+        ArrayList<Double> cumulativeMoney = new ArrayList<>(rows.size());
+        ArrayList<Double> cumulativeKms = new ArrayList<>(rows.size());
+        ArrayList<Integer> cumulativeRides = new ArrayList<>(rows.size());
+
+        double runningMoney = 0.0;
+        double runningKms = 0.0;
+        int runningRides = 0;
+
+        double totalMoney = 0.0;
+        double totalKms = 0.0;
+        int totalRides = 0;
+
+        for (HistoryReportDTO.RowElementDTO r : rows) {
+            totalMoney += r.getMoney();
+            totalKms += r.getKms();
+            totalRides += r.getNumberOfRides();
+
+            runningMoney += r.getMoney();
+            runningKms += r.getKms();
+            runningRides += r.getNumberOfRides();
+
+            cumulativeMoney.add(runningMoney);
+            cumulativeKms.add(runningKms);
+            cumulativeRides.add(runningRides);
+        }
+
+
+        HistoryReportDTO dto = new HistoryReportDTO();
+        dto.setRows(rows);
+        dto.setCumulativeMoney(cumulativeMoney);
+        dto.setCumulativeKms(cumulativeKms);
+        dto.setCumulativeRides(cumulativeRides);
+        dto.setTotalMoney(totalMoney);
+        dto.setTotalKms(totalKms);
+        dto.setTotalRides(totalRides);
+
+        return dto;
+    }
+
+    private HistoryReportDTO.RowElementDTO createRow(LocalDate date, Ride ride) {
+        HistoryReportDTO.RowElementDTO row = new HistoryReportDTO.RowElementDTO();
+        row.setDate(date);
+        row.setNumberOfRides(1);
+        row.setKms(getDoubleOrZero(ride.getDistanceKm()));
+        row.setMoney(getDoubleOrZero(ride.getTotalPrice()));
+        return row;
+    }
+
+    private double getDoubleOrZero(Double value) {
+        return value != null ? value : 0.0;
     }
 }

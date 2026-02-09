@@ -117,9 +117,7 @@ public class FavoriteRoutesFragment extends Fragment {
                     return;
                 }
 
-                routes = routes.stream().filter(route -> {
-                    return route.getId() != id;
-                }).collect(Collectors.toList());
+                routes.removeIf(route -> route.getId() == id);
 
                 if (adapter != null) adapter.notifyDataSetChanged();
             }

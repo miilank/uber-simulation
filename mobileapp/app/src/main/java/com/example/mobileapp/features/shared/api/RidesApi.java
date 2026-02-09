@@ -6,8 +6,10 @@ import com.example.mobileapp.features.shared.api.dto.PassengerRideDto;
 import com.example.mobileapp.features.shared.api.dto.PriceEstimateResponse;
 import com.example.mobileapp.features.shared.api.dto.RideDto;
 import com.example.mobileapp.features.shared.api.dto.RideHistoryDto;
+import com.example.mobileapp.features.shared.api.dto.RideDetailDto;
 import com.example.mobileapp.features.shared.api.dto.RideEstimateRequest;
 import com.example.mobileapp.features.shared.api.dto.RideHistoryResponseDto;
+import com.example.mobileapp.features.shared.api.dto.RideInconsistencyRequestDto;
 
 import java.util.List;
 
@@ -36,6 +38,12 @@ public interface RidesApi {
             @Query("size") Integer size
     );
 
+    @GET("api/drivers/rides/{rideId}/details")
+    Call<RideDetailDto> getRideDetails(
+            @Header("Authorization") String authHeader,
+            @Path("rideId") int rideId
+    );
+
     @GET("api/rides")
     Call<List<DriverRideDto>> getDriverRides(
             @Header("Authorization") String authHeader
@@ -58,4 +66,22 @@ public interface RidesApi {
     @POST("api/rides/estimate")
     Call<PriceEstimateResponse> estimateRide(@Body RideEstimateRequest request);
 
+    @POST("api/rides/{rideId}/inconsistency")
+    Call<Void> reportInconsistency(
+            @Header("Authorization") String bearerToken,
+            @Path("rideId") int rideId,
+            @Body RideInconsistencyRequestDto request
+    );
+
+    @GET("api/rides/{id}/eta")
+    Call<com.example.mobileapp.features.shared.api.dto.RideEtaDto> getRideEta(
+            @Header("Authorization") String bearerToken,
+            @Path("id") int rideId
+    );
+
+    @PUT("api/rides/{id}/arrived-pickup")
+    Call<Void> arrivedAtPickup(
+            @Header("Authorization") String bearerToken,
+            @Path("id") int rideId
+    );
 }

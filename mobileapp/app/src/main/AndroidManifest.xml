@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
     <application
-        android:usesCleartextTraffic="true"
+        android:name=".core.UberPlusApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -12,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Starting"
-        android:name=".core.UberPlusApp">
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".core.auth.AuthActivity"
             android:exported="true">
@@ -25,18 +27,15 @@
         <activity
             android:name=".DriverMainActivity"
             android:exported="false"
-            android:theme="@style/Base.Theme.Mobileapp">
-        </activity>
+            android:theme="@style/Base.Theme.Mobileapp" />
         <activity
             android:name=".UserMainActivity"
             android:exported="false"
-            android:theme="@style/Base.Theme.Mobileapp">
-        </activity>
+            android:theme="@style/Base.Theme.Mobileapp" />
         <activity
             android:name=".AdminMainActivity"
             android:exported="false"
-            android:theme="@style/Base.Theme.Mobileapp">
-        </activity>
+            android:theme="@style/Base.Theme.Mobileapp" />
     </application>
 
 </manifest>

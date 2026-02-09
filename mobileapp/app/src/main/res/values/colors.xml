@@ -20,4 +20,21 @@
     <color name="neutral">#4A5565</color>
     <color name="cancel_ride_bckg">#FFE2E2</color>
     <color name="cancel_ride">#E7000B</color>
+
+    <color name="blue_50">#E3F2FD</color>
+    <color name="blue_100">#BBDEFB</color>
+    <color name="blue_500">#2196F3</color>
+    <color name="blue_600">#1E88E5</color>
+    <color name="blue_700">#1976D2</color>
+
+    <color name="green_100">#C8E6C9</color>
+    <color name="green_700">#388E3C</color>
+
+    <color name="gray_50">#FAFAFA</color>
+    <color name="gray_100">#F5F5F5</color>
+    <color name="gray_200">#EEEEEE</color>
+    <color name="gray_600">#757575</color>
+    <color name="gray_900">#212121</color>
+
+    <color name="yellow_600">#FDD835</color>
 </resources>

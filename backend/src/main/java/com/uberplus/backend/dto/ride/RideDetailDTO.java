@@ -22,7 +22,7 @@ public class RideDetailDTO {
     private LocalDateTime actualEndTime;
     private LocalDateTime estimatedStartTime;
     private LocalDateTime estimatedEndTime;
-
+    private List<LocationDTO> waypoints;
     private List<PassengerDTO> passengers;
 
     private Double totalPrice;

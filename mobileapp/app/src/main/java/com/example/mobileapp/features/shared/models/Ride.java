@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.example.mobileapp.features.shared.models.enums.RideStatus;
 
 public class Ride implements Parcelable {
+    @Nullable private final Integer id;
     private final String date;
     private final String time;
     private final String from;
@@ -18,8 +19,9 @@ public class Ride implements Parcelable {
     private final String price;
     @Nullable private final String cancelledBy;
 
-    public Ride(String date, String time, String from, String to,
+    public Ride(@Nullable Integer id, String date, String time, String from, String to,
                 RideStatus status, boolean panic, String price, @Nullable String cancelledBy) {
+        this.id = id;
         this.date = date;
         this.time = time;
         this.from = from;
@@ -31,6 +33,11 @@ public class Ride implements Parcelable {
     }
 
     protected Ride(Parcel in) {
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readInt();
+        }
         date = in.readString();
         time = in.readString();
         from = in.readString();
@@ -61,6 +68,12 @@ public class Ride implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(id);
+        }
         dest.writeString(date);
         dest.writeString(time);
         dest.writeString(from);
@@ -71,6 +84,7 @@ public class Ride implements Parcelable {
         dest.writeString(cancelledBy);
     }
 
+    @Nullable public Integer getId() { return id; }
     public String getDate() { return date; }
     public String getTime() { return time; }
     public String getFrom() { return from; }

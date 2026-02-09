@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/gray_200"
+    app:strokeWidth="2dp"
+    app:cardUseCompatPadding="true"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvDriverName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Driver Name"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/gray_900"/>
+
+            <TextView
+                android:id="@+id/tvDriverEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="driver@email.com"
+                android:textSize="14sp"
+                android:textColor="@color/gray_600"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvDriverStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Active Ride"
+            android:textSize="12sp"
+            android:padding="8dp"
+            android:background="@drawable/bg_status_active_ride"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

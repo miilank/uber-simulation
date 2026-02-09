@@ -224,6 +224,7 @@ public class RideHistoryFragment extends Fragment {
         boolean panic = dto.panic != null && dto.panic;
 
         return new Ride(
+                dto.id,
                 dto.date,
                 dto.time,
                 dto.from,

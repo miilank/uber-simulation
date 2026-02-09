@@ -64,6 +64,12 @@ public class DriverDashboardFragment extends Fragment {
     private final int workMinutes = 265;
     private final int workLimitMinutes = 480;
 
+    private TextView tvCurrentRideEta;
+    private final android.os.Handler etaH = new android.os.Handler(android.os.Looper.getMainLooper());
+    private Runnable etaRunnable;
+    private Integer watchingEtaRideId = null;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -90,6 +96,8 @@ public class DriverDashboardFragment extends Fragment {
         tvCurrentRoute = v.findViewById(R.id.tvCurrentRideRoute);
 
         btnStartRide = v.findViewById(R.id.btnStartRide);
+
+        tvCurrentRideEta = v.findViewById(R.id.tvCurrentRideEta);
 
         prefs = requireContext().getSharedPreferences("auth", android.content.Context.MODE_PRIVATE);
         ridesApi = com.example.mobileapp.core.network.ApiClient.get().create(com.example.mobileapp.features.shared.api.RidesApi.class);
@@ -198,6 +206,7 @@ public class DriverDashboardFragment extends Fragment {
 
         if ("IN_PROGRESS".equals(r.status)) {
             startArrivalWatch(r);
+            startEtaPolling(r.id);
             tvCurrentStatus.setText("Started");
             tvCurrentStatus.setBackgroundResource(R.drawable.bg_started);
             setBtnWaiting();
@@ -207,6 +216,7 @@ public class DriverDashboardFragment extends Fragment {
             tvCurrentStatus.setBackgroundResource(R.drawable.bg_assigned);
             setBtnStartIdle();
         } else {
+            stopEtaPolling();
             stopArrivalWatch();
             tvCurrentStatus.setText("Scheduled");
             tvCurrentStatus.setBackgroundResource(R.drawable.bg_scheduled);
@@ -311,6 +321,15 @@ public class DriverDashboardFragment extends Fragment {
                             @Override public void onPickupArrived() {
                                 // kad stigne do pickupa, ostavi samo pickup-...-dest
                                 drawRoutePoints(baseStops, false);
+                                String token = prefs.getString("jwt", null);
+                                if (token != null && !token.isEmpty() && r.id != null) {
+                                    ridesApi.arrivedAtPickup("Bearer " + token, r.id).enqueue(new retrofit2.Callback<>() {
+                                        @Override public void onResponse(@NonNull retrofit2.Call<Void> call,
+                                                                         @NonNull retrofit2.Response<Void> response) { }
+                                        @Override public void onFailure(@NonNull retrofit2.Call<Void> call,
+                                                                        @NonNull Throwable t) { }
+                                    });
+                                }
                             }
 
                             @Override public void onArrived() {
@@ -320,6 +339,9 @@ public class DriverDashboardFragment extends Fragment {
 
                         tvCurrentStatus.setText("Started");
                         tvCurrentStatus.setBackgroundResource(R.drawable.bg_started);
+                        if (ridesService != null) {
+                            ridesService.fetchRides();
+                        }
                         return;
                     }
 
@@ -334,6 +356,9 @@ public class DriverDashboardFragment extends Fragment {
 
                     tvCurrentStatus.setText("Started");
                     tvCurrentStatus.setBackgroundResource(R.drawable.bg_started);
+                    if (ridesService != null) {
+                        ridesService.fetchRides();
+                    }
                 }
 
                 @Override
@@ -740,8 +765,78 @@ public class DriverDashboardFragment extends Fragment {
         arrivalH.post(arrivalRunnable);
     }
 
+    private static String formatEta(Integer seconds) {
+        if (seconds == null) return "--";
+        int s = Math.max(0, seconds);
+        int min = s / 60;
+        if (min <= 0) return "< 1 min";
+        return min + " min";
+    }
+
+    private void stopEtaPolling() {
+        if (etaRunnable != null) etaH.removeCallbacks(etaRunnable);
+        etaRunnable = null;
+        watchingEtaRideId = null;
+    }
+
+    private void startEtaPolling(int rideId) {
+        if (watchingEtaRideId != null && watchingEtaRideId.equals(rideId)) return;
+        stopEtaPolling();
+        watchingEtaRideId = rideId;
+
+        etaRunnable = new Runnable() {
+            @Override public void run() {
+                if (!isAdded()) return;
+
+                DriverRideDto cur = ridesService != null ? ridesService.currentRide().getValue() : null;
+                if (cur == null || cur.id == null || !cur.id.equals(rideId) || !"IN_PROGRESS".equals(cur.status)) {
+                    stopEtaPolling();
+                    return;
+                }
+
+                String token = prefs.getString("jwt", null);
+                if (token == null || token.isEmpty()) { stopEtaPolling(); return; }
+
+                ridesApi.getRideEta("Bearer " + token, rideId).enqueue(new retrofit2.Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull retrofit2.Call<com.example.mobileapp.features.shared.api.dto.RideEtaDto> call,
+                                           @NonNull retrofit2.Response<com.example.mobileapp.features.shared.api.dto.RideEtaDto> resp) {
+                        if (!isAdded()) return;
+
+                        if (!resp.isSuccessful() || resp.body() == null) {
+                            if (tvCurrentRideEta != null) tvCurrentRideEta.setText("ETA: --");
+                            etaH.postDelayed(etaRunnable, 2000);
+                            return;
+                        }
+
+                        var eta = resp.body();
+
+                        String label;
+                        if ("TO_PICKUP".equals(eta.phase)) label = "ETA to pickup: " + formatEta(eta.etaToNextPointSeconds);
+                        else label = "ETA to destination: " + formatEta(eta.etaToNextPointSeconds);
+
+                        if (tvCurrentRideEta != null) tvCurrentRideEta.setText(label);
+
+                        etaH.postDelayed(etaRunnable, 2000);
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull retrofit2.Call<com.example.mobileapp.features.shared.api.dto.RideEtaDto> call,
+                                          @NonNull Throwable t) {
+                        if (!isAdded()) return;
+                        if (tvCurrentRideEta != null) tvCurrentRideEta.setText("ETA: --");
+                        etaH.postDelayed(etaRunnable, 2000);
+                    }
+                });
+            }
+        };
+
+        etaH.post(etaRunnable);
+    }
+
     @Override
     public void onDestroyView() {
+        stopEtaPolling();
         stopArrivalWatch();
         super.onDestroyView();
     }

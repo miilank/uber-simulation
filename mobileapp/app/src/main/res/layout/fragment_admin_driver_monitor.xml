@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:background="@color/gray_50">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Filters Card Header -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_filters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            android:layout_marginBottom="8dp"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="14dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_search"
+                    app:tint="@color/dark_grey" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/search_drivers"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="16sp"/>
+
+                <ImageView
+                    android:id="@+id/iv_filters_arrow"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_right"
+                    app:tint="@color/dark_grey" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Filters Panel -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_filters_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="450dp"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Search Input -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
+
+                    <EditText
+                        android:id="@+id/etSearchDriver"
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_weight="1"
+                        android:autofillHints=""
+                        android:hint="@string/search_by_driver_name_or_email"
+                        android:padding="12dp"
+                        android:background="@drawable/bg_input_outline"
+                        android:inputType="text"
+                        android:textSize="15sp"
+                        android:textColor="@color/gray_600"
+                        android:textColorHint="@color/neutral"/>
+
+                    <Button
+                        android:id="@+id/btnClearSearch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:text="@string/clear"
+                        android:layout_marginStart="8dp"
+                        android:visibility="gone"
+                        android:textAllCaps="false"
+                        android:backgroundTint="@color/gray_200"
+                        android:textColor="@color/dark_grey"/>
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/pbLoadingDrivers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/tvResultCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/found_0_driver_s"
+                    android:textSize="14sp"
+                    android:textColor="@color/gray_600"
+                    android:layout_marginBottom="8dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvDriverList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="true"
+                    android:scrollbars="vertical" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Dashboard Section -->
+        <LinearLayout
+            android:id="@+id/layoutDashboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tvMonitoringTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/monitoring_driver_name"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/dark_grey"/>
+
+                <Button
+                    android:id="@+id/btnCloseMonitor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/close"
+                    android:textAllCaps="false"
+                    android:backgroundTint="@color/gray_200"
+                    android:textColor="@color/dark_grey"/>
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/dashboardContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

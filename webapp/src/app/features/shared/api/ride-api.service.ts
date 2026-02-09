@@ -52,10 +52,8 @@ export class RideApiService {
     return this.http.put(`${this.baseUrl}/${rideId}/complete`, {});
   }
 
-  reportInconsistency(rideId: number, passengerId: number, description: string): Observable<any> {
+  reportInconsistency(rideId: number, description: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/${rideId}/inconsistency`, {
-      rideId,
-      passengerId,
       description
     });
   }

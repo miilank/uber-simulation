@@ -24,6 +24,7 @@ import { BookedRidesComponent } from './features/driver/pages/booked-rides/booke
 import { PassengerBookedRidesComponent } from './features/registered/pages/booked-rides/booked-rides';
 import { DriverProfileChanges } from './features/admin/pages/driver-profile-changes/driver-profile-changes';
 import { AuthGuard } from './core/services/auth.guard';
+import {AdminDriverMonitor} from './features/admin/pages/driver-monitor/admin-driver-monitor/admin-driver-monitor';
 
 export const routes: Routes = [
   { path: '', component: UnregisteredHomeComponent },
@@ -59,6 +60,7 @@ export const routes: Routes = [
 
   { path: 'admin', component: AdminLayout, canActivate: [AuthGuard], data:{roles: ['ADMIN']}, children: [
     { path: 'profile', component: RegisteredProfileComponent },
+    {path: 'ride-tracking', component: AdminDriverMonitor},
     { path: 'register-driver', component: DriverRegistration },
     { path: 'dashboard', component: RegisteredDashboard },
     { path: 'panic-notifications', component: PanicResponseComponent },

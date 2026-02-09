@@ -1,6 +1,7 @@
 package com.example.mobileapp.features.passenger.currentride;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -57,6 +58,14 @@ public class CurrentRideFragment extends Fragment {
     private Integer lastMapVehicleId = null;
     private Integer lastRouteRideId = null;
 
+    private TextView tvEta;
+    private final Handler etaH = new Handler(Looper.getMainLooper());
+    private Runnable etaRunnable;
+    private com.example.mobileapp.features.shared.api.RidesApi ridesApi;
+    private SharedPreferences prefs;
+    private Integer watchingEtaRideId = null;
+
+
     public CurrentRideFragment() {}
 
     @Nullable
@@ -82,6 +91,9 @@ public class CurrentRideFragment extends Fragment {
 
         rideService = new PassengerCurrentRideService(requireContext());
         rideService.currentRide().observe(getViewLifecycleOwner(), this::renderRide);
+        prefs = requireContext().getSharedPreferences("auth", android.content.Context.MODE_PRIVATE);
+        ridesApi = com.example.mobileapp.core.network.ApiClient.get()
+                .create(com.example.mobileapp.features.shared.api.RidesApi.class);
 
         rideService.fetchCurrentRide();
     }
@@ -101,6 +113,8 @@ public class CurrentRideFragment extends Fragment {
 
         rvPassengers = view.findViewById(R.id.rvPassengers);
         btnOpenRating = view.findViewById(R.id.btnOpenRating);
+
+        tvEta = view.findViewById(R.id.tvEta);
     }
 
     private void setupPassengers() {
@@ -151,6 +165,8 @@ public class CurrentRideFragment extends Fragment {
         showRideContent();
 
         applyStartedStyle();
+
+        tvEta.setText("--");
 
         String from = (r.startLocation != null) ? safe(r.startLocation.getAddress()) : "";
         String to = (r.endLocation != null) ? safe(r.endLocation.getAddress()) : "";
@@ -236,6 +252,7 @@ public class CurrentRideFragment extends Fragment {
         }
 
         currentRideId = r.id;
+        startEtaPolling(r.id);
         if (btnOpenRating != null) {
             btnOpenRating.setEnabled(true);
             btnOpenRating.setAlpha(1f);
@@ -259,6 +276,7 @@ public class CurrentRideFragment extends Fragment {
             btnOpenRating.setEnabled(false);
             btnOpenRating.setAlpha(0.6f);
         }
+        stopEtaPolling();
         refreshActiveGuard(false);
     }
 
@@ -326,18 +344,43 @@ public class CurrentRideFragment extends Fragment {
         String note = (etReportNote.getText() == null) ? "" : etReportNote.getText().toString().trim();
         if (note.isEmpty()) return;
 
+        if (currentRideId == null) {
+            Toast.makeText(requireContext(), "No active ride.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         submitting = true;
         btnSubmit.setText("Sending...");
         updateSubmitState(true);
 
-        handler.postDelayed(() -> {
-            submitting = false;
-            if (etReportNote.getText() != null) etReportNote.getText().clear();
-            btnSubmit.setText("Submit");
-            updateCharCount();
-            updateSubmitState(true);
-        }, 600);
+        rideService.reportInconsistency(currentRideId, note, new PassengerCurrentRideService.SimpleCallback() {
+            @Override
+            public void onSuccess() {
+                if (!isAdded()) return;
+
+                submitting = false;
+                if (etReportNote.getText() != null) etReportNote.getText().clear();
+                btnSubmit.setText("Submit");
+                updateCharCount();
+                updateSubmitState(true);
+
+                Toast.makeText(requireContext(), "Report sent.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(@NonNull String message) {
+                if (!isAdded()) return;
+
+                submitting = false;
+                btnSubmit.setText("Submit");
+                updateCharCount();
+                updateSubmitState(true);
+
+                Toast.makeText(requireContext(), "Failed: " + message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
 
     private String safe(String s) {
         return s == null ? "" : s;
@@ -353,5 +396,70 @@ public class CurrentRideFragment extends Fragment {
             }
         });
         dialog.show(getChildFragmentManager(), "rating_dialog");
+    }
+
+    private static String formatEta(Integer seconds) {
+        if (seconds == null) return "--";
+        int s = Math.max(0, seconds);
+        int min = s / 60;
+        if (min <= 0) return "< 1 min";
+        return min + " min";
+    }
+
+    private void stopEtaPolling() {
+        if (etaRunnable != null) etaH.removeCallbacks(etaRunnable);
+        etaRunnable = null;
+        watchingEtaRideId = null;
+    }
+
+    private void startEtaPolling(int rideId) {
+        if (watchingEtaRideId != null && watchingEtaRideId == rideId) return;
+        stopEtaPolling();
+        watchingEtaRideId = rideId;
+
+        etaRunnable = new Runnable() {
+            @Override public void run() {
+                if (!isAdded()) return;
+
+                String token = prefs.getString("jwt", null);
+                if (token == null || token.isEmpty()) { stopEtaPolling(); return; }
+
+                if (currentRideId == null || currentRideId != rideId) { stopEtaPolling(); return; }
+
+                ridesApi.getRideEta("Bearer " + token, rideId).enqueue(new retrofit2.Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull retrofit2.Call<com.example.mobileapp.features.shared.api.dto.RideEtaDto> call,
+                                           @NonNull retrofit2.Response<com.example.mobileapp.features.shared.api.dto.RideEtaDto> resp) {
+                        if (!isAdded()) return;
+
+                        if (!resp.isSuccessful() || resp.body() == null) {
+                            tvEta.setText("--");
+                            etaH.postDelayed(etaRunnable, 2000);
+                            return;
+                        }
+
+                        var eta = resp.body();
+                        String label = "ETA: " + formatEta(eta.etaToNextPointSeconds);
+
+                        if ("TO_PICKUP".equals(eta.phase)) label = "ETA to pickup: " + formatEta(eta.etaToNextPointSeconds);
+                        else if ("IN_PROGRESS".equals(eta.phase)) label = "ETA to destination: " + formatEta(eta.etaToNextPointSeconds);
+
+                        tvEta.setText(label);
+
+                        etaH.postDelayed(etaRunnable, 2000);
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull retrofit2.Call<com.example.mobileapp.features.shared.api.dto.RideEtaDto> call,
+                                          @NonNull Throwable t) {
+                        if (!isAdded()) return;
+                        tvEta.setText("--");
+                        etaH.postDelayed(etaRunnable, 2000);
+                    }
+                });
+            }
+        };
+
+        etaH.post(etaRunnable);
     }
 }

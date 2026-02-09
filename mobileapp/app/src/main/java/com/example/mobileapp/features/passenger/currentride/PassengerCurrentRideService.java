@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.mobileapp.core.network.ApiClient;
 import com.example.mobileapp.features.shared.api.RidesApi;
 import com.example.mobileapp.features.shared.api.dto.PassengerRideDto;
+import com.example.mobileapp.features.shared.api.dto.RideInconsistencyRequestDto;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -64,4 +65,35 @@ public class PassengerCurrentRideService {
             }
         });
     }
+    public interface SimpleCallback {
+        void onSuccess();
+        void onError(@NonNull String message);
+    }
+
+    public void reportInconsistency(int rideId, @NonNull String description, @NonNull SimpleCallback cb) {
+        String token = prefs.getString("jwt", null);
+        if (token == null || token.isEmpty()) {
+            cb.onError("Not authenticated");
+            return;
+        }
+
+        RideInconsistencyRequestDto req = new RideInconsistencyRequestDto(description);
+
+        ridesApi.reportInconsistency("Bearer " + token, rideId, req).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (!response.isSuccessful()) {
+                    cb.onError("Failed (" + response.code() + ")");
+                    return;
+                }
+                cb.onSuccess();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                cb.onError("Network error");
+            }
+        });
+    }
+
 }

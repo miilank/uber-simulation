@@ -67,7 +67,7 @@
             android:layout_marginBottom="12dp"
             android:background="#E7E7E7" />
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -129,7 +129,17 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="8dp" />
+                        android:layout_height="4dp" />
+
+                    <LinearLayout
+                        android:id="@+id/layout_waypoints"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -266,33 +276,10 @@
                     android:layout_marginBottom="8dp" />
 
                 <LinearLayout
-                    android:id="@+id/layout_passenger"
+                    android:id="@+id/layout_passengers"
                     android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:gravity="center_vertical"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tv_passenger_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/dark_grey"
-                        tools:text="Jelena Nikolić" />
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-
-                    <TextView
-                        android:id="@+id/tv_passenger_phone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/neutral"
-                        tools:text="+381 63 345 6789" />
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
 
                 <!-- PAYMENT -->
                 <TextView
@@ -506,11 +493,32 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/tv_reports_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/passenger_reports"
+                    android:textColor="@color/dark_grey"
+                    android:textStyle="bold"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_inconsistencies"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:overScrollMode="never"
+                    android:nestedScrollingEnabled="false"
+                    android:visibility="gone"/>
+
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="16dp" />
             </LinearLayout>
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_close_bottom"

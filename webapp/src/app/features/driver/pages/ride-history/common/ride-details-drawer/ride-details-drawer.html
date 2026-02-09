@@ -54,6 +54,16 @@
           </div>
         </div>
 
+        @for (s of routeStops; track s.label) {
+          <div class="flex items-start gap-3 mb-3">
+            <div class="w-2.5 h-2.5 rounded-full bg-white mt-1"></div>
+            <div>
+              <div class="text-[11px] text-gray-500">{{ s.label }}</div>
+              <div class="text-sm text-gray-900">{{ s.address }}</div>
+            </div>
+          </div>
+        }
+
         <div class="flex items-start gap-3">
           <div class="w-2.5 h-2.5 rounded-full bg-red-600 mt-1"></div>
           <div>

@@ -55,7 +55,7 @@ public class DriverController {
     // GET /api/drivers/{id}
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<DriverDTO> getDriver(@PathVariable Integer id) {;
+    public ResponseEntity<DriverDTO> getDriver(@PathVariable Integer id) {
         Driver driver = driverService.getDriver(id);
         String avatarUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/users/{id}/avatar")

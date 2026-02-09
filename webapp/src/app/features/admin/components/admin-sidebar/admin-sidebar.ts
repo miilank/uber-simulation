@@ -18,6 +18,7 @@ export class AdminSidebar {
   ngOnInit() {
     this.items = [
       { label: 'Dashboard', route: '/admin/dashboard', icon: 'dashboard' },
+      { label: 'Ride tracking', route: '/admin/ride-tracking', icon: 'ridetracking' },
       { label: 'Register a driver', route: '/admin/register-driver', icon: 'car' },
       { label: 'Review profile changes', route: '/admin/driver-profile-changes', icon: 'pencil' },
       { label: 'Profile', route: '/admin/profile', icon: 'user' },

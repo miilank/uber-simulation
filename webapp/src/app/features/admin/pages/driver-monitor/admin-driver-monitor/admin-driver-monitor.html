@@ -1,0 +1,104 @@
+<section class="w-full bg-white rounded-[28px] shadow-xl p-10 relative pointer-events-auto">
+  <h2 class="text-2xl font-poppins mb-6">Monitor Driver Rides</h2>
+
+  <!-- Search Section -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6">
+    <div class="text-lg font-semibold text-gray-900 mb-4">Search Driver</div>
+
+    <!-- Search Input -->
+    <div class="flex gap-4 mb-4">
+      <input
+        type="text"
+        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+        placeholder="Search by driver name..."
+        [(ngModel)]="searchQuery"
+        (input)="filterDrivers()"
+      />
+
+      @if (searchQuery) {
+        <button
+          (click)="clearSearch()"
+          class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+          Clear
+        </button>
+      }
+    </div>
+
+    <!-- Driver List -->
+    @if (filteredDrivers.length > 0) {
+      <div class="space-y-2 max-h-80 overflow-y-auto">
+        <div class="text-sm text-gray-600 mb-2">
+          Found {{ filteredDrivers.length }} driver(s)
+        </div>
+
+        @for (driver of filteredDrivers; track driver.id) {
+          <div
+            (click)="selectDriver(driver)"
+            class="p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors"
+            [ngClass]="{'bg-blue-100 border-blue-500': selectedDriver?.id === driver.id}">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-semibold text-gray-900">
+                  {{ driver.firstName }} {{ driver.lastName }}
+                </div>
+                <div class="text-sm text-gray-600">{{ driver.email }}</div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <!-- Current Ride Status -->
+                @if (driver.hasActiveRide) {
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                    Active Ride
+                  </span>
+                } @else {
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                    No Active Ride
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (searchQuery) {
+      <div class="text-center py-8 text-gray-500">
+        No drivers found matching "{{ searchQuery }}"
+      </div>
+    } @else {
+      <div class="text-center py-8 text-gray-500">
+        Start typing to search for drivers
+      </div>
+    }
+  </div>
+
+  <!-- Driver Dashboard Display -->
+  @if (selectedDriver) {
+    <div>
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-semibold text-gray-900">
+          Monitoring: {{ selectedDriver.firstName }} {{ selectedDriver.lastName }}
+        </h3>
+
+        <button
+          (click)="deselectDriver()"
+          class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+          Close Monitor
+        </button>
+      </div>
+
+      @if (selectedDriver.hasActiveRide) {
+        <!-- Embed Driver Dashboard Component -->
+        <app-admin-driver-dashboard-wrapper
+          [driverEmail]="selectedDriver.email">
+        </app-admin-driver-dashboard-wrapper>
+      } @else {
+        <div class="bg-yellow-50 rounded-2xl border border-yellow-200 p-8 text-center">
+          <div class="text-yellow-600 font-semibold mb-2">No Active Ride</div>
+          <div class="text-gray-600">
+            This driver currently has no ride in progress to monitor.
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

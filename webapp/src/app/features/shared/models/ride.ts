@@ -43,6 +43,7 @@ export interface RideDetailDTO {
   actualEndTime: string;
   estimatedStartTime: string;
   estimatedEndTime: string;
+  waypoints: LocationDTO[];
   passengers: Array<{
     firstName: string;
     lastName: string;

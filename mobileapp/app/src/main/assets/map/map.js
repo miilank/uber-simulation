@@ -66,3 +66,87 @@ window.setVehiclesJson = function (vehiclesJson) {
     }
   }
 };
+
+// ROUTE LAYER
+let routeLayer = L.layerGroup().addTo(map);
+const OSRM_BASE = "https://router.project-osrm.org";
+
+let routeAbort = null;
+
+async function fetchRouteSegment(from, to, signal) {
+  const url =
+    `${OSRM_BASE}/route/v1/driving/` +
+    `${from[1]},${from[0]};${to[1]},${to[0]}` +
+    `?overview=full&geometries=geojson`;
+
+  const res = await fetch(url, { signal });
+  const data = await res.json();
+
+  const route = data?.routes?.[0];
+  if (!route?.geometry?.coordinates) return [];
+
+  // osrm lonlat to leaflet latlon
+  return route.geometry.coordinates.map((c) => [c[1], c[0]]);
+}
+
+async function buildFullRoute(points, signal) {
+  let full = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    const coords = await fetchRouteSegment(points[i], points[i + 1], signal);
+    if (i > 0 && coords.length) coords.shift(); // avoid duplicates
+    full = full.concat(coords);
+  }
+  return full;
+}
+
+window.setRoutePointsJson = async function (routePointsJson) {
+  let pts;
+  try {
+    pts = JSON.parse(routePointsJson);
+  } catch (e) {
+    console.error("Invalid routePoints JSON:", e);
+    return;
+  }
+
+  routeLayer.clearLayers();
+  if (routeAbort) routeAbort.abort();
+  routeAbort = new AbortController();
+  const signal = routeAbort.signal;
+
+  const points = (pts ?? [])
+    .filter((p) => p && typeof p.lat === "number" && typeof p.lon === "number")
+    .map((p) => [p.lat, p.lon]);
+
+  if (points.length < 2) return;
+
+  // draw point markers
+  pts.forEach((p, i) => {
+    if (!p) return;
+    const isEnd = i === 0 || i === pts.length - 1;
+    const radius = isEnd ? 7 : 6;
+    const label =
+      p.label ??
+      (i === 0 ? "Pickup" : i === pts.length - 1 ? "Destination" : `Stop ${i}`);
+
+    L.circleMarker([p.lat, p.lon], { radius })
+      .addTo(routeLayer)
+      .bindTooltip(label, { direction: "top" });
+  });
+
+  try {
+    const routeCoords = await buildFullRoute(points, signal);
+    if (routeCoords.length) {
+      L.polyline(routeCoords).addTo(routeLayer);
+      // fit so user sees full route
+      map.fitBounds(L.latLngBounds(routeCoords), { padding: [20, 20] });
+    }
+  } catch (e) {
+    if (e?.name === "AbortError") return;
+    console.error("Route draw failed:", e);
+  }
+};
+
+window.clearRoute = function () {
+  routeLayer.clearLayers();
+  if (routeAbort) routeAbort.abort();
+};

@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background">
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="64dp"
+            android:id="@+id/cardContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/app_dark"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="32dp"
+                android:minHeight="600dp"
+                android:fontFamily="@font/poppins"
+                android:orientation="vertical">
+
+                <!-- Profile Image with Edit Button -->
+                <ImageView
+                    android:id="@+id/ivProfile"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/circle_accent"
+                    android:src="@drawable/img_defaultprofile"
+                    android:scaleType="centerCrop"
+                    android:layout_gravity="center"/>
+
+                <!-- Name Input -->
+                <LinearLayout
+                    android:id="@+id/nameContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Name"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="8dp"
+                        app:fontFamily="@font/poppins" />
+
+                    <EditText
+                        android:id="@+id/etName"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/input_white_background"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:inputType="textPersonName"
+                        android:textColor="@color/app_dark"
+                        android:textColorHint="@color/app_text_secondary"
+                        android:hint="Enter the driver's name"
+                        android:textSize="16sp"
+                        app:fontFamily="@font/poppins_medium" />
+                </LinearLayout>
+
+                <!-- Surname Input -->
+                <LinearLayout
+                    android:id="@+id/surnameContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Surname"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="8dp"
+                        app:fontFamily="@font/poppins" />
+
+                    <EditText
+                        android:id="@+id/etSurname"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/input_white_background"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:inputType="textPersonName"
+                        android:textColor="@color/app_dark"
+                        android:textColorHint="@color/app_text_secondary"
+                        android:hint="Enter the driver's surname"
+                        android:textSize="16sp"
+                        app:fontFamily="@font/poppins_medium" />
+                </LinearLayout>
+
+                <!-- Email Input -->
+                <LinearLayout
+                    android:id="@+id/emailContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Email"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="8dp"
+                        app:fontFamily="@font/poppins" />
+
+                    <EditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/input_white_background"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/app_dark"
+                        android:textColorHint="@color/app_text_secondary"
+                        android:hint="Enter the driver's email"
+                        android:textSize="16sp"
+                        app:fontFamily="@font/poppins_medium" />
+                </LinearLayout>
+
+                <!-- Phone Input -->
+                <LinearLayout
+                    android:id="@+id/phoneContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Phone Number"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="8dp"
+                        app:fontFamily="@font/poppins" />
+
+                    <EditText
+                        android:id="@+id/etPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/input_white_background"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:inputType="phone"
+                        android:textColor="@color/app_dark"
+                        android:textColorHint="@color/app_text_secondary"
+                        android:hint="Enter the driver's phone"
+                        android:textSize="16sp"
+                        app:fontFamily="@font/poppins_medium" />
+                </LinearLayout>
+
+                <!-- Address Input -->
+                <LinearLayout
+                    android:id="@+id/addressContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Address"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="8dp"
+                        app:fontFamily="@font/poppins" />
+
+                    <EditText
+                        android:id="@+id/etAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/input_white_background"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:inputType="textPostalAddress"
+                        android:textColor="@color/app_dark"
+                        android:textColorHint="@color/app_text_secondary"
+                        android:hint="Enter the driver's address"
+                        android:textSize="16sp"
+                        app:fontFamily="@font/poppins_medium" />
+                </LinearLayout>
+
+                <!-- Model Input -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vehicle Model"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="8dp"
+                        app:fontFamily="@font/poppins" />
+
+                    <EditText
+                        android:id="@+id/etModel"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/input_white_background"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:inputType="textPostalAddress"
+                        android:textColor="@color/app_dark"
+                        android:textColorHint="@color/app_text_secondary"
+                        android:hint="Enter the vehicle's model"
+                        android:textSize="16sp"
+                        app:fontFamily="@font/poppins_medium" />
+                </LinearLayout>
+
+                <!-- Type Input -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vehicle Type"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="8dp"
+                        app:fontFamily="@font/poppins" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Vehicle Type"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_marginBottom="0dp">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/actvVehicleType"
+                            android:layout_width="match_parent"
+                            android:layout_height="56dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:background="@drawable/input_white_background"
+                            android:textColor="@color/app_dark"
+                            android:textColorHint="@color/app_text_secondary"
+                            android:textSize="16sp"
+                            android:inputType="none"
+                            android:importantForAutofill="no"
+                            app:fontFamily="@font/poppins_medium"
+                            android:contentDescription="Select vehicle type" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <!-- License Input -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="License Plate"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="8dp"
+                        app:fontFamily="@font/poppins" />
+
+                    <EditText
+                        android:id="@+id/etPlate"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/input_white_background"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:inputType="textPostalAddress"
+                        android:textColor="@color/app_dark"
+                        android:textColorHint="@color/app_text_secondary"
+                        android:hint="Enter the vehicle's license plate"
+                        android:textSize="16sp"
+                        app:fontFamily="@font/poppins_medium" />
+                </LinearLayout>
+
+                <!-- Seat Input -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Seat Count"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="8dp"
+                        app:fontFamily="@font/poppins" />
+
+                    <EditText
+                        android:id="@+id/etSeats"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/input_white_background"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:inputType="number"
+                        android:textColor="@color/app_dark"
+                        android:textColorHint="@color/app_text_secondary"
+                        android:hint="Enter the vehicle's seat count"
+                        android:textSize="16sp"
+                        app:fontFamily="@font/poppins_medium" />
+                </LinearLayout>
+
+                <!-- Transport Options -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/cbCanTransportPets"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Can transport pets?"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        app:fontFamily="@font/poppins"
+                        app:useMaterialThemeColors="true"
+                        android:contentDescription="Can transport pets" />
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/cbCanTransportInfants"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Can transport infants?"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        app:fontFamily="@font/poppins"
+                        app:useMaterialThemeColors="true"
+                        android:contentDescription="Can transport infants" />
+
+                </LinearLayout>
+
+
+                <!-- Register Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRegister"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="Create Account"
+                    android:textColor="@color/app_dark"
+                    android:textSize="16sp"
+                    app:backgroundTint="@color/app_accent"
+                    app:cornerRadius="28dp" />
+
+                <!-- Progress Bar -->
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone" />
+
+
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+</androidx.core.widget.NestedScrollView>

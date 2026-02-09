@@ -3,6 +3,7 @@ package com.uberplus.backend.service.impl;
 import com.uberplus.backend.dto.passenger.PassengerDTO;
 import com.uberplus.backend.dto.report.RideHistoryFilterDTO;
 import com.uberplus.backend.dto.report.RideHistoryResponseDTO;
+import com.uberplus.backend.dto.ride.LocationDTO;
 import com.uberplus.backend.dto.ride.RideDetailDTO;
 import com.uberplus.backend.dto.ride.RideHistoryItemDTO;
 import com.uberplus.backend.dto.ride.RideInconsistencyDTO;
@@ -109,6 +110,10 @@ public class RideHistoryServiceImpl implements RideHistoryService {
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new RuntimeException("Ride not found"));
 
+        List<LocationDTO> waypoints = ride.getWaypoints().stream()
+                .map(LocationDTO::new)
+                .toList();
+
         List<PassengerDTO> passengers = ride.getPassengers().stream()
                 .map(PassengerDTO::new)
                 .toList();
@@ -135,6 +140,7 @@ public class RideHistoryServiceImpl implements RideHistoryService {
                 ride.getActualEndTime(),
                 ride.getEstimatedStartTime(),
                 ride.getEstimatedEndTime(),
+                waypoints,
                 passengers,
                 ride.getTotalPrice(),
                 ride.getCancelledBy(),

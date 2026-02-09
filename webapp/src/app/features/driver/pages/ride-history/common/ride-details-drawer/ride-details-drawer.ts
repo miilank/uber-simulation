@@ -167,6 +167,13 @@ export class RideDetailsDrawer implements OnChanges {
     });
   }
 
+  get routeStops(): { label: string; address: string }[] {
+    const wps = this.rideDetails?.waypoints ?? [];
+    return wps
+      .map((w, i) => ({ label: `Stop ${i + 1}`, address: w.address }))
+      .filter(x => x.address.trim().length > 0);
+  }
+
   onBackdropClick() {
     this.close.emit();
   }

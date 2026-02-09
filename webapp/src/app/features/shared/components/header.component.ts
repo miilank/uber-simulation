@@ -99,7 +99,8 @@ export class HeaderComponent {
       case "DRIVER":
         this.router.navigate(["/driver/dashboard"]); break;
       case "PASSENGER":
-        this.router.navigate(["/user/dashboard"]); break;
+        // this.router.navigate(["/user/dashboard"]); break;
+        this.router.navigateByUrl("/user/dashboard"); break;
       default:
         this.router.navigateByUrl("/");
     }

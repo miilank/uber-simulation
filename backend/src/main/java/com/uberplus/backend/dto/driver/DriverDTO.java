@@ -34,7 +34,7 @@ public class DriverDTO extends UserProfileDTO {
         this.available = driver.isAvailable();
         this.active = driver.isActive();
         this.workedMinutesLast24h = driver.getWorkedMinutesLast24h();
-        this. averageRating = driver.getAverageRating();
+        this.averageRating = driver.getAverageRating();
         this.vehicle = new VehicleDTO(driver.getVehicle());
     }
 }

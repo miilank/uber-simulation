@@ -12,6 +12,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.uberplus.backend.dto.admin.DriverListItemDTO;
+import com.uberplus.backend.model.Driver;
+import com.uberplus.backend.model.Ride;
+import com.uberplus.backend.model.enums.RideStatus;
+import com.uberplus.backend.service.DriverService;
+import java.util.stream.Collectors;
 
 import java.util.List;
 
@@ -20,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminController {
 
+    private final DriverService driverService;
     private final DriverRepository driverRepository;
     private final RideService rideService;
 
@@ -66,4 +73,36 @@ public class AdminController {
         return ResponseEntity.ok(new RideDTO());
     }
 
+    // GET /api/admin/drivers/all-with-status
+    @GetMapping("/drivers/all-with-status")
+    public ResponseEntity<List<DriverListItemDTO>> getAllDriversWithStatus() {
+        List<Driver> drivers = driverService.getAllDrivers();
+
+        List<DriverListItemDTO> driverList = drivers.stream()
+                .map(DriverListItemDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(driverList);
+    }
+
+    // GET /api/admin/drivers/{driverEmail}/rides
+    @GetMapping("/drivers/{driverEmail}/rides")
+    public ResponseEntity<List<RideDTO>> getDriverRides(@PathVariable String driverEmail) {
+        Driver driver = driverService.getDriverByEmail(driverEmail);
+
+        if (driver == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<Ride> activeRides = driver.getRides().stream()
+                .filter(ride -> ride.getStatus() == RideStatus.ACCEPTED ||
+                        ride.getStatus() == RideStatus.IN_PROGRESS)
+                .toList();
+
+        List<RideDTO> rideDTOs = activeRides.stream()
+                .map(RideDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(rideDTOs);
+    }
 }

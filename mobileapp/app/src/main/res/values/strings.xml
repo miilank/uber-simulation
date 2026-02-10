@@ -126,4 +126,18 @@
     <string name="clear">Clear</string>
     <string name="found_0_driver_s">Found 0 driver(s)</string>
     <string name="monitoring_driver_name">Monitoring: Driver Name</string>
+    <string name="Pricing" />
+    <string name="pricing">Pricing</string>
+    <string name="total_base_price_distance_price_per_km">Total = Base Price + (Distance × Price per km)</string>
+    <string name="how_pricing_works">How pricing works</string>
+    <string name="configure_base_prices_and_per_kilometer_rates">Configure base prices and per-kilometer rates</string>
+    <string name="pricing_management">Pricing Management</string>
+    <string name="edit_pricing">Edit Pricing</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="price_per_km">Price per Km (€)</string>
+    <string name="base_price">Base Price (€):</string>
+    <string name="last_updated">Last updated:</string>
+    <string name="example_10_km_ride">Example: 10 km ride</string>
+    <string name="per_kilometer">Per Kilometer:</string>
 </resources>

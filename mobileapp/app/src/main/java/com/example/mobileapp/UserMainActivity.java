@@ -91,7 +91,7 @@ public class UserMainActivity extends AppCompatActivity
         // Set pfp
         ImageButton profileImage = toolbar.findViewById(R.id.btn_profile);
         UserRepository.getInstance().getCurrentUser().observe(this, user -> {
-            if (user.getProfilePicture() != null && !user.getProfilePicture().isEmpty()) {
+            if (user != null && user.getProfilePicture() != null && !user.getProfilePicture().isEmpty()) {
                 Glide.with(this)
                         .load(user.getProfilePicture() + "?cb=" + LocalDateTime.now().toString())
                         .placeholder(R.drawable.img_defaultprofile)

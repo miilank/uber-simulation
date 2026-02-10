@@ -44,10 +44,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Continue to Login"
-            android:textColor="@drawable/bg_btn_dark"
+            android:textColor="@color/app_dark"
             android:visibility="gone"
             android:paddingHorizontal="32dp"
-            android:background="@drawable/btn_accent"/>
+            android:backgroundTint="@color/app_accent"/>
 
     </LinearLayout>
 

@@ -26,6 +26,8 @@ import { DriverProfileChanges } from './features/admin/pages/driver-profile-chan
 import { AuthGuard } from './core/services/auth.guard';
 import {AdminDriverMonitor} from './features/admin/pages/driver-monitor/admin-driver-monitor/admin-driver-monitor';
 import { PricingManagement } from './features/admin/pages/pricing-management/pricing-management';
+import { SupportChatComponent } from './features/shared/components/support-chat/support-chat';
+import { AdminSupportChatComponent} from './features/admin/pages/admin-support-chat/admin-support-chat';
 
 export const routes: Routes = [
   { path: '', component: UnregisteredHomeComponent },
@@ -44,7 +46,8 @@ export const routes: Routes = [
       { path: 'booking', outlet: 'aside', component: RideBookingSidebar },
       { path: '', outlet: 'aside', component: RegisteredSidebar },
       { path: 'booked-rides', component: PassengerBookedRidesComponent },
-      { path: 'favorite-routes', component: FavouriteRoutes }
+      { path: 'favorite-routes', component: FavouriteRoutes },
+      { path: 'support', component: SupportChatComponent }
   ] },
 
   { path: 'registerUser', component: UserRegistrationComponent },
@@ -57,6 +60,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: DriverDashboard },
       { path: 'booked-rides', component: BookedRidesComponent },
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+      { path: 'support', component: SupportChatComponent }
     ] },
 
   { path: 'admin', component: AdminLayout, canActivate: [AuthGuard], data:{roles: ['ADMIN']}, children: [
@@ -68,5 +72,6 @@ export const routes: Routes = [
     { path: 'panic-notifications', component: PanicResponseComponent },
     { path: 'driver-profile-changes', component: DriverProfileChanges},
     { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+    { path: 'support', component: AdminSupportChatComponent }
   ] }
 ];

@@ -27,7 +27,7 @@ export class ConfigService {
   public favouriteRoutesUrl = this.baseUrl + '/favorite-routes'
 
   public historyReportUrl = this.ridesUrl + '/history-report';
-  
+
   searchUsersUrl(searchString:string, pageSize:number, pageNumber:number) : string {
     return `${this.baseUrl}/users?search=${searchString}&pageSize=${pageSize}&pageNumber=${pageNumber}`;
   }
@@ -38,4 +38,6 @@ export class ConfigService {
   completeRideUrl(rideId: number): string {
     return `${this.baseUrl}/rides/${rideId}/complete`;
   }
+
+  readonly chatUrl = `${this.baseUrl}/chat`;
 }

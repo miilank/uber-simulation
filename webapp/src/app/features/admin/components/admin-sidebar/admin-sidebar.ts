@@ -24,6 +24,7 @@ export class AdminSidebar {
       { label: 'Review profile changes', route: '/admin/driver-profile-changes', icon: 'pencil' },
       { label: 'Profile', route: '/admin/profile', icon: 'user' },
       { label: 'PANIC notifications', route: '/admin/panic-notifications', icon: 'panic' },
+      { label: 'Support', route: '/admin/support', icon: 'support' },
     ];
   }
 

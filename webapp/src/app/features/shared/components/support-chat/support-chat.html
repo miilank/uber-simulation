@@ -1,0 +1,79 @@
+<div class="flex flex-col h-full max-h-[calc(100vh-100px)] bg-white rounded-xl overflow-hidden shadow-md">
+
+  <!-- Header -->
+  <div class="p-5 bg-white border-b border-gray-200 flex-shrink-0">
+    <h3 class="text-base font-semibold text-gray-800">
+      {{ chatHistory?.otherUserName || 'Admin Support' }}
+    </h3>
+  </div>
+
+  <!-- Messages -->
+  <div #messagesContainer class="flex-1 overflow-y-auto p-5 bg-gray-50">
+    <div *ngIf="chatHistory">
+      <div *ngFor="let group of groupMessagesByDate(chatHistory.messages)" class="mb-4">
+
+        <div class="text-center my-5">
+          <span class="bg-gray-300 px-3 py-1 rounded-xl text-xs text-gray-600">
+            {{ group.date }}
+          </span>
+        </div>
+
+        <div *ngFor="let message of group.messages"
+             [ngClass]="isMyMessage(message) ? 'justify-end' : 'justify-start'"
+             class="flex mb-3">
+
+          <div [ngClass]="{
+                 'bg-[#a4d96c] rounded-br': isMyMessage(message),
+                 'bg-white shadow-sm rounded-bl': !isMyMessage(message)
+               }"
+               class="max-w-[60%] px-4 py-3 rounded-2xl text-gray-800">
+
+            <p class="text-sm leading-relaxed break-words">
+              {{ message.message }}
+            </p>
+
+            <span class="block text-xs text-right mt-1"
+                  [ngClass]="isMyMessage(message) ? 'text-gray-600' : 'text-gray-500'">
+              {{ formatTime(message.createdAt) }}
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <div *ngIf="chatHistory.messages.length === 0" class="flex justify-center items-center h-full">
+        <div class="text-center text-gray-400">
+          <p>No messages yet</p>
+          <p class="text-sm mt-1">Start the conversation!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="flex items-center gap-3 p-4 bg-white border-t border-gray-200 flex-shrink-0">
+    <input
+      type="text"
+      [(ngModel)]="newMessage"
+      (keyup.enter)="sendMessage()"
+      placeholder="Type your message..."
+      [disabled]="!chatHistory"
+      class="flex-1 px-4 py-3 border border-gray-300 rounded-3xl text-sm outline-none
+             focus:border-[#a4d96c] transition-colors disabled:bg-gray-100"
+    />
+
+    <button
+      type="button"
+      (click)="sendMessage()"
+      [disabled]="!newMessage.trim() || !chatHistory"
+      class="bg-[#a4d96c] hover:bg-[#8bc34a] disabled:bg-gray-300
+             text-white w-10 h-10 rounded-full flex items-center justify-center
+             transition-colors disabled:cursor-not-allowed"
+      aria-label="Send message">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+      </svg>
+    </button>
+  </div>
+
+</div>

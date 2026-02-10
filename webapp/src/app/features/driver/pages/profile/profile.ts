@@ -181,7 +181,9 @@ export class DriverProfileComponent {
     email: '',
     address: '',
     phoneNumber: '',
-    profilePicture: "defaultprofile.png"
+    profilePicture: "defaultprofile.png",
+    blocked: false,
+    blockReason: ''
   }
 
   private sub?: Subscription;

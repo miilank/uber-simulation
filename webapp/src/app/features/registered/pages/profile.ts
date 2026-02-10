@@ -54,7 +54,9 @@ export class RegisteredProfileComponent {
     address: '',
     phoneNumber: '',
     role: 'PASSENGER',
-    profilePicture: 'defaultprofile.png'
+    profilePicture: 'defaultprofile.png',
+    blocked: false,
+    blockReason: ''
   };
 
   private sub?: Subscription;

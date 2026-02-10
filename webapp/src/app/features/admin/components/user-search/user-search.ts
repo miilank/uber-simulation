@@ -13,7 +13,7 @@ import { catchError, debounceTime, distinctUntilChanged, filter, map, of, startW
 export class UserSearch {
   userService: UserService = inject(UserService);
 
-  selectedOutput = output<User>();
+  onSelected = output<User>();
   selectedUser = signal<User | null>(null);
 
   searchControl = new FormControl('');
@@ -28,7 +28,7 @@ export class UserSearch {
       debounceTime(400),
       distinctUntilChanged(),
       switchMap(v =>
-        this.userService.searchUsers(v, 15).pipe(
+        this.userService.searchUsers(v, 15, 0).pipe(
           catchError(err => {
             console.log("Search error.")
             return of([] as User[])
@@ -49,7 +49,7 @@ export class UserSearch {
   }
 
   selectUser(user: User) {
-    this.selectedOutput.emit(user);
+    this.onSelected.emit(user);
     this.selectedUser.set(user);
   }
 }

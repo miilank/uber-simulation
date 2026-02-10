@@ -13,7 +13,7 @@ export class UserService {
         private config: ConfigService
     ) {}
 
-    searchUsers(searchString: string, limit: number) : Observable<User[]> {
-        return this.http.get<User[]>(this.config.searchUsersUrl(searchString, limit));
+    searchUsers(searchString: string, pageSize: number, pageNumber: number) : Observable<User[]> {
+        return this.http.get<User[]>(this.config.searchUsersUrl(searchString, pageSize, pageNumber));
     }
 }

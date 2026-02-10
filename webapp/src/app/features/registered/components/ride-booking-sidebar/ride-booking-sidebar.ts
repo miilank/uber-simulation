@@ -67,7 +67,9 @@ export class RideBookingSidebar {
     address: '',
     phoneNumber: '',
     role: 'PASSENGER',
-    profilePicture: 'defaultprofile.png'
+    profilePicture: 'defaultprofile.png',
+    blocked: false,
+    blockReason: ''
   });
 
   // ---- Favorite routes ----

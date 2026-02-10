@@ -14,4 +14,6 @@ public class UserSearchResultDTO {
     private String firstName;
     private String lastName;
     private boolean blocked;
+    private String blockReason;
+    private String role;
 }

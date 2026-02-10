@@ -30,15 +30,24 @@ public class UserController {
 
     private final UserService userService;
 
-    // GET /api/users?search={search}&limit={limit}
+    // GET /api/users?search={search}&pageSize={size}&pageNumber={number}
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<List<UserSearchResultDTO>> getUsers(
-            @RequestParam("search") String searchString,
-            @RequestParam("limit") int limit
+    public ResponseEntity<List<UserProfileDTO>> getUsers(
+            @RequestParam(value = "search", required = false) String searchString,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber
     ) {
-        List<UserSearchResultDTO> found = userService.searchUsers(searchString, limit);
-        return ResponseEntity.ok(found);
+        List<User> found = userService.searchUsers(searchString, pageSize, pageNumber);
+        List<UserProfileDTO> dtos = found.stream().map(user -> {
+            String avatarUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/api/users/{id}/avatar")
+                    .buildAndExpand(user.getId())
+                    .toUriString();
+            return new UserProfileDTO(user, avatarUrl);
+        }).toList();
+
+        return ResponseEntity.ok(dtos);
     }
 
     // GET /api/users/profile

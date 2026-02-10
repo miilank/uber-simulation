@@ -66,7 +66,9 @@ export class HeaderComponent {
     address: '',
     phoneNumber: '',
     profilePicture: 'defaultprofile.png',
-    role: 'PASSENGER'
+    role: 'PASSENGER',
+    blocked: false,
+    blockReason: ''
   }
 
   displayedProfilePicture = signal<string>('/defaultprofile.png');

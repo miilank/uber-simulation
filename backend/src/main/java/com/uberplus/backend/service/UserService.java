@@ -19,5 +19,5 @@ public interface UserService {
 
     Resource getAvatar(Integer id);
 
-    List<UserSearchResultDTO> searchUsers(String searchString, int limit);
+    List<User> searchUsers(String searchString, Integer pageSize, Integer pageNumber);
 }

@@ -13,6 +13,9 @@ import com.uberplus.backend.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -117,7 +120,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserSearchResultDTO> searchUsers(String searchString, int limit) {
-        return userRepository.searchUsers(searchString, limit);
+    public List<User> searchUsers(String searchString, Integer pageSize, Integer pageNumber) {
+        pageNumber = pageNumber == null ? 0 : pageNumber;
+
+        // No search
+        if (searchString == null || searchString.isBlank()) {
+            if (pageSize == null) {
+                return userRepository.findAll(Sort.by("firstName").ascending());
+            } else {
+                Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("firstName").ascending());
+                return userRepository.findAll(pageable).getContent();
+            }
+        }
+        // Search
+        else if (pageSize == null) {
+            return userRepository
+                    .findByFirstNameIgnoreCaseContainingOrLastNameIgnoreCaseContainingOrEmailIgnoreCaseContaining(
+                            searchString, searchString, searchString, Pageable.unpaged()
+                    ).getContent();
+        } else {
+            Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("firstName").ascending());
+            return userRepository
+                    .findByFirstNameIgnoreCaseContainingOrLastNameIgnoreCaseContainingOrEmailIgnoreCaseContaining(
+                            searchString, searchString, searchString, pageable
+                    ).getContent();
+        }
     }
 }

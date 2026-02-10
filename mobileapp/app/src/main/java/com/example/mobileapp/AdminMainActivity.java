@@ -15,6 +15,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.bumptech.glide.Glide;
 import com.example.mobileapp.features.admin.driverMonitoring.AdminDriverMonitorFragment;
 import com.example.mobileapp.features.admin.driverRegistration.DriverRegisterFragment;
+import com.example.mobileapp.features.admin.pricingManagement.PricingManagementFragment;
 import com.example.mobileapp.features.admin.profileChanges.ProfileChangesFragment;
 import com.example.mobileapp.features.passenger.dashboard.UserDashboardFragment;
 import com.example.mobileapp.features.shared.map.MapFragment;
@@ -91,7 +92,7 @@ public class AdminMainActivity extends AppCompatActivity
         // Set pfp
         ImageButton profileImage = toolbar.findViewById(R.id.btn_profile);
         UserRepository.getInstance().getCurrentUser().observe(this, user -> {
-            if (user.getProfilePicture() != null && !user.getProfilePicture().isEmpty()) {
+            if (user != null && user.getProfilePicture() != null && !user.getProfilePicture().isEmpty()) {
                 Glide.with(this)
                         .load(user.getProfilePicture() + "?cb=" + LocalDateTime.now().toString())
                         .placeholder(R.drawable.img_defaultprofile)
@@ -122,6 +123,14 @@ public class AdminMainActivity extends AppCompatActivity
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_container, new AdminDriverMonitorFragment())
+                    .addToBackStack(null)
+                    .commit();
+
+        }
+        if (id == R.id.nav_pricing) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new PricingManagementFragment())
                     .addToBackStack(null)
                     .commit();
 

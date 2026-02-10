@@ -5,7 +5,7 @@ import { ProfileInfoCard } from '../../../shared/components/profile-info-card';
 import { Vehicle } from '../../../shared/models/vehicle';
 import { ChangePasswordModal } from "../../../shared/components/profile-change-pswd-modal";
 import { Subscription } from 'rxjs';
-import { UserService } from '../../../../core/services/user.service';
+import { CurrentUserService } from '../../../../core/services/current-user.service';
 import { Driver } from '../../../shared/models/driver';
 import { DriverService } from '../../../shared/services/driver.service';
 import { SuccessAlert } from "../../../shared/components/success-alert";
@@ -181,7 +181,9 @@ export class DriverProfileComponent {
     email: '',
     address: '',
     phoneNumber: '',
-    profilePicture: "defaultprofile.png"
+    profilePicture: "defaultprofile.png",
+    blocked: false,
+    blockReason: ''
   }
 
   private sub?: Subscription;
@@ -190,7 +192,7 @@ export class DriverProfileComponent {
   successTitle: string = "Success";
   successMessage: string = "Profile successfully updated!";
 
-  constructor(private userService: UserService,
+  constructor(private userService: CurrentUserService,
               private cdr: ChangeDetectorRef,
               private driverService: DriverService) {}
 

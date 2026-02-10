@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, CanActivateChild, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { take, switchMap, catchError, map } from 'rxjs/operators';
-import { UserService } from '../services/user.service';
+import { CurrentUserService } from './current-user.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate, CanActivateChild {
@@ -13,7 +13,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     'PASSENGER': []
   };
 
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(private userService: CurrentUserService, private router: Router) {}
 
   private roleSatisfies(userRole: string | undefined, requiredRole: string): boolean {
     if (!userRole) return false;

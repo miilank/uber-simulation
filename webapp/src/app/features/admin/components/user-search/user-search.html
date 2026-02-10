@@ -1,0 +1,73 @@
+<div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6">
+    <div class="text-lg font-semibold text-gray-900 mb-4">Search Users</div>
+
+    <!-- Search Input -->
+    <div class="flex gap-4 mb-4">
+        <input
+        type="text"
+        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+        placeholder="Search by user's name or email..."
+        [formControl]="searchControl"
+        />
+
+        @if (searchControl.value) {
+        <button
+            (click)="clearSearch()"
+            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+            Clear
+        </button>
+        }
+    </div>
+
+    <!-- Users List -->
+    @if (searchResults().length > 0) {
+      <div class="space-y-2 max-h-80 overflow-y-auto">
+        <div class="text-sm text-gray-600 mb-2">
+          Found {{ searchResults().length }} user(s)
+        </div>
+
+        @for (user of searchResults(); track user.id) {
+          <div
+            (click)="selectUser(user)"
+            class="p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors"
+            [ngClass]="{
+              'bg-red-100 border-red-500': user.blocked && selectedUser()?.id !== user.id,
+              'bg-blue-100 border-blue-500': selectedUser()?.id === user.id
+            }">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-semibold text-gray-900">
+                  {{ user.firstName }} {{ user.lastName }}
+                </div>
+                <div class="text-sm text-gray-600">{{ user.email }}</div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                @if (user.role === 'ADMIN') {
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                    Admin
+                  </span>
+                } @else if (user.role === 'DRIVER') {
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                    Driver
+                  </span>
+                } @else if (user.role === 'PASSENGER') {
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                    Passenger
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (searchControl.value) {
+      <div class="text-center py-8 text-gray-500">
+        No users found matching "{{ searchControl.value }}"
+      </div>
+    } @else {
+      <div class="text-center py-8 text-gray-500">
+        Start typing to search for users
+      </div>
+    }
+</div>

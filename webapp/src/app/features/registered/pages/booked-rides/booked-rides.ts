@@ -1,7 +1,7 @@
 import { Component, computed, EventEmitter, inject, OnInit, Output, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserService } from '../../../../core/services/user.service';
+import { CurrentUserService } from '../../../../core/services/current-user.service';
 import { RideService } from '../../../../core/services/ride.service';
 import { RideDTO, RideStatus } from '../../../shared/models/ride';
 
@@ -23,7 +23,7 @@ type BookedRide = {
 })
 export class PassengerBookedRidesComponent implements OnInit {
   ridesService = inject(RideService);
-  userService = inject(UserService);
+  userService = inject(CurrentUserService);
   readonly rides = this.ridesService.rides;
 
   cancelReason = '';

@@ -6,7 +6,7 @@ import { VehicleMarker } from '../../../shared/map/vehicle-marker';
 import { MapComponent } from '../../../shared/map/map';
 
 import { CurrentRideStateService } from '../../services/current-ride-state.service';
-import { UserService } from '../../../../core/services/user.service';
+import { CurrentUserService } from '../../../../core/services/current-user.service';
 import { UserRideDTO, RideService } from '../../../../core/services/ride.service';
 
 import { LatLng } from '../../../shared/services/routing.service';
@@ -30,7 +30,7 @@ type PassengerItem = { id: number; name: string; email: string; role: 'You' | 'P
 })
 export class CurrentRideComponent implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
-  private userService = inject(UserService);
+  private userService = inject(CurrentUserService);
   private rideService = inject(RideService);
   public rideState = inject(CurrentRideStateService);
   private notificationService = inject(NotificationService);

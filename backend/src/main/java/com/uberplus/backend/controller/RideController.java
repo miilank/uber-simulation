@@ -7,6 +7,7 @@ import com.uberplus.backend.service.PricingService;
 import com.uberplus.backend.service.RideService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -155,5 +157,22 @@ public class RideController {
     ) {
         rideService.reportInconsistency(rideId, auth.getName(), request.getDescription());
         return ResponseEntity.ok(new MessageDTO());
+    }
+
+    // GET /api/rides/history-report?from={yyyy-mm-dd}&to={yyyy-mm-dd}&uuid={uuid}
+    @GetMapping("/history-report")
+    public ResponseEntity<HistoryReportDTO> getHistoryReport(
+            Authentication auth,
+            @RequestParam("from")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate from,
+            @RequestParam("to")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate to,
+            @RequestParam(value = "uuid", required = false)
+            Integer uuid
+    ) {
+        HistoryReportDTO dto = rideHistoryService.getRideHistoryReport(auth.getName(), from, to, uuid);
+        return ResponseEntity.ok(dto);
     }
 }

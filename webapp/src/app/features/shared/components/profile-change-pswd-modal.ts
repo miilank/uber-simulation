@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, input, Input, Output, SimpleChange, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserService } from '../../../core/services/user.service';
+import { CurrentUserService } from '../../../core/services/current-user.service';
 
 @Component({
   selector: 'change-password-modal',
@@ -98,7 +98,7 @@ export class ChangePasswordModal {
   confirmPassword: string = '';
   errorMessage: string | null = null;
 
-  constructor(private userService: UserService, private cdr: ChangeDetectorRef) {}
+  constructor(private userService: CurrentUserService, private cdr: ChangeDetectorRef) {}
 
   onClose(updated: boolean): void {
     this.clearPasswordFields();

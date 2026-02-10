@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { RideDetailsDrawer } from '../common/ride-details-drawer/ride-details-drawer';
-import { UserService } from '../../../../../core/services/user.service';
+import { CurrentUserService } from '../../../../../core/services/current-user.service';
 import { Subscription } from 'rxjs';
 
 interface RideHistoryItem {
@@ -33,7 +33,7 @@ type RideHistoryResponse = {
 })
 export class DriverRideHistory implements OnInit, OnDestroy {
   private http = inject(HttpClient);
-  private userService = inject(UserService);
+  private userService = inject(CurrentUserService);
   private cdr = inject(ChangeDetectorRef);
 
   fromDate = '';

@@ -25,7 +25,13 @@ export class ConfigService {
   public getPanicsUrl = this.baseUrl + '/admin/panic-notifications';
 
   public favouriteRoutesUrl = this.baseUrl + '/favorite-routes'
+
+  public historyReportUrl = this.ridesUrl + '/history-report';
   
+  searchUsersUrl(searchString:string, pageSize:number, pageNumber:number) : string {
+    return `${this.baseUrl}/users?search=${searchString}&pageSize=${pageSize}&pageNumber=${pageNumber}`;
+  }
+
   startRideUrl(rideId: number): string {
       return this.ridesUrl + '/' + rideId.toString() + '/start';
   }

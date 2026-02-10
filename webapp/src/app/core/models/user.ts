@@ -7,5 +7,7 @@ export interface User {
   address: string;
   phoneNumber: string;
   profilePicture: string;
-  role: "ADMIN" | "DRIVER" | "PASSENGER"
+  role: "ADMIN" | "DRIVER" | "PASSENGER";
+  blocked: boolean;
+  blockReason: string;
 }

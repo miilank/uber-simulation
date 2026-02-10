@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { effect, Injectable } from '@angular/core';
 import { CurrentRideStateService } from '../../features/registered/services/current-ride-state.service';
 import { ConfigService } from './config.service';
-import { UserService } from './user.service';
+import { CurrentUserService } from './current-user.service';
 
 @Injectable({
   providedIn: 'root',

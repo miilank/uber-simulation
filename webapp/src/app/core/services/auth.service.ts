@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UserService } from './user.service'
+import { CurrentUserService } from './current-user.service'
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { ConfigService } from './config.service';
@@ -34,7 +34,7 @@ export interface ResetPasswordResponse {
 export class AuthService {
 
   constructor(
-    private userService: UserService,
+    private userService: CurrentUserService,
     private http: HttpClient,
     private config: ConfigService
   ) {

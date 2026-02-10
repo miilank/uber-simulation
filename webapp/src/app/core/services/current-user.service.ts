@@ -17,7 +17,7 @@ export interface DriverDTO {
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class CurrentUserService {
     private currentUserSubject = new BehaviorSubject<User | Driver | null>(null);
     currentUser$ = this.currentUserSubject.asObservable();
     

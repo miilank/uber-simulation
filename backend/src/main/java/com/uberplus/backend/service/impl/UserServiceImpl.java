@@ -3,6 +3,7 @@ package com.uberplus.backend.service.impl;
 import com.uberplus.backend.dto.common.MessageDTO;
 import com.uberplus.backend.dto.user.ChangePasswordDTO;
 import com.uberplus.backend.dto.user.UserProfileDTO;
+import com.uberplus.backend.dto.user.UserSearchResultDTO;
 import com.uberplus.backend.dto.user.UserUpdateRequestDTO;
 import com.uberplus.backend.model.User;
 import com.uberplus.backend.model.enums.UserRole;
@@ -12,6 +13,9 @@ import com.uberplus.backend.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.awt.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -112,5 +117,33 @@ public class UserServiceImpl implements UserService {
         }
 
         return avatar;
+    }
+
+    @Override
+    public List<User> searchUsers(String searchString, Integer pageSize, Integer pageNumber) {
+        pageNumber = pageNumber == null ? 0 : pageNumber;
+
+        // No search
+        if (searchString == null || searchString.isBlank()) {
+            if (pageSize == null) {
+                return userRepository.findAll(Sort.by("firstName").ascending());
+            } else {
+                Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("firstName").ascending());
+                return userRepository.findAll(pageable).getContent();
+            }
+        }
+        // Search
+        else if (pageSize == null) {
+            return userRepository
+                    .findByFirstNameIgnoreCaseContainingOrLastNameIgnoreCaseContainingOrEmailIgnoreCaseContaining(
+                            searchString, searchString, searchString, Pageable.unpaged()
+                    ).getContent();
+        } else {
+            Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("firstName").ascending());
+            return userRepository
+                    .findByFirstNameIgnoreCaseContainingOrLastNameIgnoreCaseContainingOrEmailIgnoreCaseContaining(
+                            searchString, searchString, searchString, pageable
+                    ).getContent();
+        }
     }
 }

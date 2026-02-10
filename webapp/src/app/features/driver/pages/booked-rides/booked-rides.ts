@@ -3,7 +3,7 @@ import { RideDTO, RideStatus } from '../../../shared/models/ride';
 import { DriverRidesService } from '../../services/driver-rides.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserService } from '../../../../core/services/user.service';
+import { CurrentUserService } from '../../../../core/services/current-user.service';
 
 type BookedRide = {
   id: number;
@@ -23,7 +23,7 @@ type BookedRide = {
 })
 export class BookedRidesComponent {
   ridesService = inject(DriverRidesService);
-  userService = inject(UserService);
+  userService = inject(CurrentUserService);
   readonly rides = this.ridesService.rides;
   readonly currentRide = this.ridesService.currentRide;
 

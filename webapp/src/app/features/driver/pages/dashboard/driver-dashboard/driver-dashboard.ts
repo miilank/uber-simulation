@@ -13,7 +13,7 @@ import { MapComponent } from '../../../../shared/map/map';
 
 import { DriverRidesService } from '../../../services/driver-rides.service';
 import { RideDTO, RideStatus } from '../../../../shared/models/ride';
-import { UserService } from '../../../../../core/services/user.service';
+import { CurrentUserService } from '../../../../../core/services/current-user.service';
 import { Driver } from '../../../../shared/models/driver';
 import { CurrentRideStateService } from '../../../../registered/services/current-ride-state.service';
 
@@ -49,7 +49,7 @@ export class DriverDashboard implements OnInit, OnDestroy {
   protected ridePhase = signal<'TO_PICKUP' | 'IN_PROGRESS' | 'IDLE'>('IDLE');
 
   ridesService = inject(DriverRidesService);
-  userService = inject(UserService);
+  userService = inject(CurrentUserService);
   rideState = inject(CurrentRideStateService);
   rideApi = inject(RideApiService);
   nominatim = inject(NominatimService);

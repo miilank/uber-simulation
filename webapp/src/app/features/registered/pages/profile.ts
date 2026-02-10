@@ -5,7 +5,7 @@ import { ProfileInfoCard } from "../../shared/components/profile-info-card";
 import { ChangePasswordModal } from "../../shared/components/profile-change-pswd-modal";
 import { User } from '../../../core/models/user';
 import { Subscription, tap } from 'rxjs';
-import { UserService } from '../../../core/services/user.service';
+import { CurrentUserService } from '../../../core/services/current-user.service';
 import { error, log } from 'console';
 import { SuccessAlert } from "../../shared/components/success-alert";
 
@@ -54,7 +54,9 @@ export class RegisteredProfileComponent {
     address: '',
     phoneNumber: '',
     role: 'PASSENGER',
-    profilePicture: 'defaultprofile.png'
+    profilePicture: 'defaultprofile.png',
+    blocked: false,
+    blockReason: ''
   };
 
   private sub?: Subscription;
@@ -63,7 +65,7 @@ export class RegisteredProfileComponent {
   successTitle: string = "Success";
   successMessage: string = "Profile successfully updated!";
 
-  constructor(private userService: UserService, private cdr: ChangeDetectorRef) {}
+  constructor(private userService: CurrentUserService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.sub = this.userService.currentUser$.subscribe(current => {

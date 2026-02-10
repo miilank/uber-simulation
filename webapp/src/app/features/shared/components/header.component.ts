@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, Input, signal } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import {Router, RouterLink} from '@angular/router';
 import { Subscription } from 'rxjs';
-import { UserService } from '../../../core/services/user.service';
+import { CurrentUserService } from '../../../core/services/current-user.service';
 import { User } from '../../../core/models/user';
 
 @Component({
@@ -66,7 +66,9 @@ export class HeaderComponent {
     address: '',
     phoneNumber: '',
     profilePicture: 'defaultprofile.png',
-    role: 'PASSENGER'
+    role: 'PASSENGER',
+    blocked: false,
+    blockReason: ''
   }
 
   displayedProfilePicture = signal<string>('/defaultprofile.png');
@@ -90,7 +92,7 @@ export class HeaderComponent {
     this.userService.fetchMe().subscribe();
   }
 
-  constructor(private router: Router, private userService: UserService, private cdr: ChangeDetectorRef) {}
+  constructor(private router: Router, private userService: CurrentUserService, private cdr: ChangeDetectorRef) {}
 
   onLogoClick(): void {
     switch(this.user.role) {

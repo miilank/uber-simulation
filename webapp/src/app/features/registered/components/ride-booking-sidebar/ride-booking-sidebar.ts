@@ -3,7 +3,7 @@ import { LocationSearchInput } from "../../../shared/components/location-search-
 import { NominatimResult } from '../../../shared/services/nominatim.service';
 import { RideBookingStateService } from '../../../../core/services/ride-booking-state.service';
 import { NgOptimizedImage, Location, CommonModule } from '@angular/common';
-import { UserService } from '../../../../core/services/user.service';
+import { CurrentUserService } from '../../../../core/services/current-user.service';
 import { User } from '../../../../core/models/user';
 import { FormsModule } from '@angular/forms';
 import { VehicleType } from '../../../shared/models/vehicle';
@@ -22,7 +22,7 @@ import { FavoriteRouteDTO, FavouriteRoutesService } from '../../services/favouri
 export class RideBookingSidebar {
   bookingState = inject(RideBookingStateService);
   rideOrderService = inject(RideOrderService);
-  userService = inject(UserService);
+  userService = inject(CurrentUserService);
   favRoutesService = inject(FavouriteRoutesService);
 
   location = inject(Location);
@@ -67,7 +67,9 @@ export class RideBookingSidebar {
     address: '',
     phoneNumber: '',
     role: 'PASSENGER',
-    profilePicture: 'defaultprofile.png'
+    profilePicture: 'defaultprofile.png',
+    blocked: false,
+    blockReason: ''
   });
 
   // ---- Favorite routes ----

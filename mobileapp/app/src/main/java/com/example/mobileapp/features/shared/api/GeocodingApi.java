@@ -19,7 +19,13 @@ public interface GeocodingApi {
             @Query("viewbox") String viewbox,
             @Query("limit") int limit
     );
-
+    @GET("reverse")
+    Call<GeocodeResult> reverseGeocodeInternal(
+            @Query("lat") double latitude,
+            @Query("lon") double longitude,
+            @Query("format") String format,
+            @Query("addressdetails") int details
+    );
     default Call<List<GeocodeResult>> searchAddress(
             String query,
             int limit
@@ -32,6 +38,17 @@ public interface GeocodingApi {
                 "address",
                 "19.708797,45.316329,19.958903,45.199067",
                 limit
+        );
+    }
+    default Call<GeocodeResult> reverseGeocode(
+            double latitude,
+            double longitude
+    ) {
+        return reverseGeocodeInternal(
+                latitude,
+                longitude,
+                "jsonv2",
+                1
         );
     }
 }

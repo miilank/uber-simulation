@@ -17,6 +17,11 @@ public class GeocodeResult {
         String hamlet;
         String state;
     }
+
+    public String getFormattedResult() {
+        return formattedResult;
+    }
+
     public String display_name = "";
     public double lat;
     public double lon;

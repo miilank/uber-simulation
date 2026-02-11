@@ -43,7 +43,11 @@ public class RideServiceImpl implements RideService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.")
         );
 
-        List<Driver> potentialDrivers = driverRepository.findByActiveTrue();
+        if (creator.isBlocked()) {
+            throw new ResponseStatusException(HttpStatus.LOCKED, creator.getBlockReason());
+        }
+
+        List<Driver> potentialDrivers = driverRepository.findByActiveTrueAndBlockedFalse();
 
         if (potentialDrivers.isEmpty()) throw new ResponseStatusException(HttpStatus.OK, "No drivers currently active.");
 

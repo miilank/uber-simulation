@@ -2,10 +2,11 @@ package com.example.mobileapp.features.shared.api;
 
 import com.example.mobileapp.features.shared.api.dto.CreateRideRequestDto;
 import com.example.mobileapp.features.shared.api.dto.DriverRideDto;
-import com.example.mobileapp.features.shared.api.dto.LocationDto;
 import com.example.mobileapp.features.shared.api.dto.HistoryReportDto;
+import com.example.mobileapp.features.shared.api.dto.LocationDto;
 import com.example.mobileapp.features.shared.api.dto.PassengerRideDto;
 import com.example.mobileapp.features.shared.api.dto.PriceEstimateResponse;
+import com.example.mobileapp.features.shared.api.dto.RideCancellationDto;
 import com.example.mobileapp.features.shared.api.dto.RideDetailDto;
 import com.example.mobileapp.features.shared.api.dto.RideDto;
 import com.example.mobileapp.features.shared.api.dto.RideEstimateRequest;
@@ -108,4 +109,11 @@ public interface RidesApi {
             @Path("rideId") int rideId,
             @Body LocationDto body
             );
+
+    @POST("api/rides/{rideId}/cancel")
+    Call<RideDto> cancelRide(
+            @Header("Authorization") String authHeader,
+            @Path("rideId") int rideId,
+            @Body RideCancellationDto body
+    );
 }

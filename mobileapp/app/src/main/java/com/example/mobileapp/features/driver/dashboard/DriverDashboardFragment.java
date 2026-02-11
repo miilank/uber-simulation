@@ -23,6 +23,7 @@ import com.example.mobileapp.features.shared.api.dto.DriverRideDto;
 import com.example.mobileapp.features.shared.api.dto.GeocodeResult;
 import com.example.mobileapp.features.shared.api.dto.LocationDto;
 import com.example.mobileapp.features.shared.api.dto.PassengerDto;
+import com.example.mobileapp.features.shared.api.dto.RideCancellationDto;
 import com.example.mobileapp.features.shared.api.dto.RideDto;
 import com.example.mobileapp.features.shared.api.dto.RidePanicDto;
 import com.example.mobileapp.features.shared.map.MapFragment;
@@ -710,6 +711,7 @@ public class DriverDashboardFragment extends Fragment {
                 else if ("ACCEPTED".equals(r.status)) st = DriverDashboardAdapter.RideStatus.ASSIGNED;
 
                 mapped.add(new DriverDashboardAdapter.BookedRide(
+                        r.id,
                         date, time,
                         from, to,
                         passengerCount,
@@ -718,10 +720,80 @@ public class DriverDashboardFragment extends Fragment {
                 ));
             }
         }
-
+        bookedAdapter.setOnCancelClickListener(rideId -> {
+            cancelRide(rideId);
+        });
         bookedAdapter.setItems(mapped);
     }
+    private void cancelRide(int rideId) {
+        String token = prefs.getString("jwt", null);
+        if (token == null || token.isEmpty()) {
+            android.widget.Toast.makeText(requireContext(),
+                    "Authentication required",
+                    android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int userId = prefs.getInt("userId", -1);
+        if (userId == -1) {
+            android.widget.Toast.makeText(requireContext(),
+                    "User not found",
+                    android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final android.widget.EditText input = new android.widget.EditText(requireContext());
+        input.setHint("Enter cancellation reason");
+        input.setMinLines(3);
+        input.setMaxLines(5);
+        input.setGravity(android.view.Gravity.TOP | android.view.Gravity.START);
+        input.setPadding(50, 40, 50, 40);
 
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Cancel Ride")
+                .setMessage("Please provide a reason for cancelling this ride:")
+                .setView(input)
+                .setPositiveButton("Cancel Ride", (dialog, which) -> {
+                    String reason = input.getText().toString().trim();
+
+                    if (reason.isEmpty()) {
+                        android.widget.Toast.makeText(requireContext(),
+                                "Please provide a cancellation reason",
+                                android.widget.Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    RideCancellationDto dto = new RideCancellationDto(userId, reason);
+        ridesApi.cancelRide("Bearer " + token, rideId, dto).enqueue(new Callback<RideDto>() {
+            @Override
+            public void onResponse(@NonNull Call<RideDto> call,
+                                   @NonNull Response<RideDto> response) {
+                if (!isAdded()) return;
+
+                if (response.isSuccessful()) {
+                    android.widget.Toast.makeText(requireContext(),
+                            "Ride cancelled successfully",
+                            android.widget.Toast.LENGTH_LONG).show();
+
+                    if (ridesService != null) {
+                        ridesService.fetchRides();
+                    }
+                } else {
+                    android.widget.Toast.makeText(requireContext(),
+                            "Failed to cancel ride",
+                            android.widget.Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<RideDto> call,
+                                  @NonNull Throwable t) {
+                if (!isAdded()) return;
+
+                android.widget.Toast.makeText(requireContext(),
+                        "Network error. Please try again.",
+                        android.widget.Toast.LENGTH_LONG).show();
+            }
+        });
+    }).show();
+    }
     private String safe(String s) {
         return s == null ? "" : s;
     }

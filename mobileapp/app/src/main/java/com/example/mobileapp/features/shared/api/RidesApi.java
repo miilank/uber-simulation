@@ -120,5 +120,14 @@ public interface RidesApi {
     Call<List<RideDto>> getPassengerBookedRides(
             @Header("Authorization") String authHeader
     );
+    @GET("api/rides/history/passenger")
+    Call<RideHistoryResponseDto> getPassengerRideHistory(
+            @Header("Authorization") String authHeader,
+            @Query("userId") int passengerId,
+            @Query("startDate") String startDate,
+            @Query("endDate") String endDate,
+            @Query("page") Integer page,
+            @Query("size") Integer size
+    );
 
 }

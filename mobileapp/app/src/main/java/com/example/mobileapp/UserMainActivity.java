@@ -13,19 +13,18 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
-import com.example.mobileapp.features.driver.ridehistory.RideHistoryFragment;
+import com.example.mobileapp.core.auth.AuthActivity;
 import com.example.mobileapp.features.passenger.bookedRides.PassengerBookedRidesFragment;
 import com.example.mobileapp.features.passenger.currentride.CurrentRideFragment;
 import com.example.mobileapp.features.passenger.dashboard.UserDashboardFragment;
+import com.example.mobileapp.features.passenger.favoriteRoutes.FavoriteRoutesFragment;
 import com.example.mobileapp.features.passenger.rideBooking.RideBookingFragment;
+import com.example.mobileapp.features.passenger.rideHistory.PassengerRideHistoryFragment;
 import com.example.mobileapp.features.shared.chat.SupportChatFragment;
 import com.example.mobileapp.features.shared.pages.historyReport.UserHistoryReportFragment;
 import com.example.mobileapp.features.shared.pages.profile.ProfileFragment;
-import com.example.mobileapp.features.passenger.favoriteRoutes.FavoriteRoutesFragment;
 import com.example.mobileapp.features.shared.repositories.UserRepository;
 import com.google.android.material.navigation.NavigationView;
-
-import com.example.mobileapp.core.auth.AuthActivity;
 
 import java.time.LocalDateTime;
 
@@ -123,7 +122,7 @@ public class UserMainActivity extends AppCompatActivity
         } else if (id == R.id.nav_ride_history) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, new RideHistoryFragment())
+                    .replace(R.id.fragment_container, new PassengerRideHistoryFragment())
                     .addToBackStack(null)
                     .commit();
 

@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="24dp"
+    tools:ignore="HardcodedText" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ride History Report"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#111111"
+            android:paddingBottom="12dp" />
+
+        <com.example.mobileapp.features.shared.input.UserSearchInputView
+            android:id="@+id/user_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardUseCompatPadding="true"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/from"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="14sp" />
+
+                <!-- From input -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input_outline"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp">
+
+                    <ImageView
+                        android:id="@+id/btn_from_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_calendar" />
+
+                    <EditText
+                        android:id="@+id/et_from"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/date_hint"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:digits="0123456789/"
+                        android:padding="0dp"
+                        android:textColor="@color/dark_grey"
+                        android:textColorHint="@color/neutral"
+                        android:textSize="15sp"
+                        tools:ignore="DuplicateSpeakableTextCheck,TouchTargetSizeCheck" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/to"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="14sp" />
+
+                <!-- To input -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input_outline"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp">
+
+                    <ImageView
+                        android:id="@+id/btn_to_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_calendar" />
+
+                    <EditText
+                        android:id="@+id/et_to"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/date_hint"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:digits="0123456789/"
+                        android:padding="0dp"
+                        android:textColor="@color/dark_grey"
+                        android:textColorHint="@color/neutral"
+                        android:textSize="15sp"
+                        tools:ignore="DuplicateSpeakableTextCheck,TouchTargetSizeCheck" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_single_user"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_accent"
+                        android:backgroundTint="@null"
+                        android:elevation="0dp"
+                        android:stateListAnimator="@null"
+                        android:text="Show for selected"
+                        android:textAllCaps="false"
+                        android:textColor="@color/dark_grey"
+                        tools:ignore="TextContrastCheck,TouchTargetSizeCheck" />
+
+                    <View
+                        android:layout_width="12dp"
+                        android:layout_height="0dp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_all"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_transparent"
+                        android:backgroundTint="@null"
+                        android:elevation="0dp"
+                        android:stateListAnimator="@null"
+                        android:text="Show for all"
+                        android:textAllCaps="false"
+                        android:textColor="@color/dark_grey"
+                        tools:ignore="TextContrastCheck,TouchTargetSizeCheck" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <LinearLayout
+            android:id="@+id/report_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_marginBottom="16dp">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:useCompatPadding="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Rides"
+                            android:textSize="13sp"
+                            android:textColor="#777777" />
+
+                        <TextView
+                            android:id="@+id/total_rides"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:paddingTop="6dp"
+                            android:textColor="#111111" />
+
+                        <TextView
+                            android:id="@+id/avg_rides"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="avg/day: 0.00"
+                            android:textSize="12sp"
+                            android:textColor="#888888"
+                            android:paddingTop="6dp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:useCompatPadding="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Revenue"
+                            android:textSize="13sp"
+                            android:textColor="#777777" />
+
+                        <TextView
+                            android:id="@+id/total_revenue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="€0.00"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:paddingTop="6dp"
+                            android:textColor="#111111" />
+
+                        <TextView
+                            android:id="@+id/avg_revenue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="avg/day: 0.00"
+                            android:textSize="12sp"
+                            android:textColor="#888888"
+                            android:paddingTop="6dp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:useCompatPadding="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Distance"
+                            android:textSize="13sp"
+                            android:textColor="#777777" />
+
+                        <TextView
+                            android:id="@+id/total_distance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0.00km"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:paddingTop="6dp"
+                            android:textColor="#111111" />
+
+                        <TextView
+                            android:id="@+id/avg_distance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="avg/day: 0.00"
+                            android:textSize="12sp"
+                            android:textColor="#888888"
+                            android:paddingTop="6dp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+            <!-- Daily -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Daily Statistics"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:weightSum="3"
+                    android:layout_marginBottom="16dp">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
+                        app:useCompatPadding="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Daily Rides"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#555555"
+                                android:layout_marginBottom="8dp" />
+
+                            <com.github.mikephil.charting.charts.BarChart
+                                android:id="@+id/daily_rides_chart"
+                                android:layout_width="match_parent"
+                                android:layout_height="256dp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
+                        app:useCompatPadding="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Daily Revenue"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#555555"
+                                android:layout_marginBottom="8dp" />
+
+                            <com.github.mikephil.charting.charts.LineChart
+                                android:id="@+id/daily_revenue_chart"
+                                android:layout_width="match_parent"
+                                android:layout_height="256dp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
+                        app:useCompatPadding="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Daily Distance"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#555555"
+                                android:layout_marginBottom="8dp" />
+
+                            <com.github.mikephil.charting.charts.LineChart
+                                android:id="@+id/daily_kms_chart"
+                                android:layout_width="match_parent"
+                                android:layout_height="256dp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Cumulative -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cumulative Statistics"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:weightSum="3"
+                    android:layout_marginBottom="16dp">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
+                        app:useCompatPadding="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Cumulative Rides"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#555555"
+                                android:layout_marginBottom="8dp" />
+
+                            <com.github.mikephil.charting.charts.LineChart
+                                android:id="@+id/cumulative_rides_chart"
+                                android:layout_width="match_parent"
+                                android:layout_height="256dp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
+                        app:useCompatPadding="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Cumulative Revenue"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#555555"
+                                android:layout_marginBottom="8dp" />
+
+                            <com.github.mikephil.charting.charts.LineChart
+                                android:id="@+id/cumulative_revenue_chart"
+                                android:layout_width="match_parent"
+                                android:layout_height="256dp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
+                        app:useCompatPadding="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Cumulative Distance"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#555555"
+                                android:layout_marginBottom="8dp" />
+
+                            <com.github.mikephil.charting.charts.LineChart
+                                android:id="@+id/cumulative_kms_chart"
+                                android:layout_width="match_parent"
+                                android:layout_height="256dp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+            </LinearLayout>
+    </LinearLayout>
+    </LinearLayout>
+</ScrollView>

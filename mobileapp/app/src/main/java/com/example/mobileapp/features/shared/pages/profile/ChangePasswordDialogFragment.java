@@ -1,4 +1,4 @@
-package com.example.mobileapp.features.shared.profile;
+package com.example.mobileapp.features.shared.pages.profile;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

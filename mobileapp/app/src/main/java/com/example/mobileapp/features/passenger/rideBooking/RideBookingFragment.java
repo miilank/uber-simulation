@@ -28,7 +28,6 @@ import com.example.mobileapp.R;
 import com.example.mobileapp.core.network.ApiClient;
 import com.example.mobileapp.features.passenger.dashboard.UserDashboardFragment;
 import com.example.mobileapp.features.shared.api.FavoriteRouteApi;
-import com.example.mobileapp.features.shared.api.GeocodingApi;
 import com.example.mobileapp.features.shared.api.RidesApi;
 import com.example.mobileapp.features.shared.api.RoutingApi;
 import com.example.mobileapp.features.shared.api.dto.CreateRideRequestDto;
@@ -37,9 +36,8 @@ import com.example.mobileapp.features.shared.api.dto.FavoriteRouteDto;
 import com.example.mobileapp.features.shared.api.dto.LocationDto;
 import com.example.mobileapp.features.shared.api.dto.OsrmRouteResponse;
 import com.example.mobileapp.features.shared.api.dto.RideDto;
-import com.example.mobileapp.features.shared.input.LocationSearchInputFragment;
+import com.example.mobileapp.features.shared.input.LocationSearchInputView;
 import com.example.mobileapp.features.shared.map.MapFragment;
-import com.example.mobileapp.features.shared.models.User;
 import com.example.mobileapp.features.shared.models.enums.VehicleType;
 import com.example.mobileapp.features.shared.repositories.UserRepository;
 import com.google.android.material.checkbox.MaterialCheckBox;
@@ -234,7 +232,7 @@ public class RideBookingFragment extends Fragment {
             passengerAdapter.notifyItemInserted(passengers.size()-1);
         });
 
-        LocationSearchInputFragment pickup = view.findViewById(R.id.pickup);
+        LocationSearchInputView pickup = view.findViewById(R.id.pickup);
         pickup.setOnLocationSelectedListener((geocodeResult) -> {
             LocationDto selected = new LocationDto();
             selected.setAddress(geocodeResult.formattedResult);
@@ -245,7 +243,7 @@ public class RideBookingFragment extends Fragment {
             renderRoute();
         });
 
-        LocationSearchInputFragment destination = view.findViewById(R.id.destination);
+        LocationSearchInputView destination = view.findViewById(R.id.destination);
         destination.setOnLocationSelectedListener((geocodeResult) -> {
             LocationDto selected = new LocationDto();
             selected.setAddress(geocodeResult.formattedResult);
@@ -437,11 +435,11 @@ public class RideBookingFragment extends Fragment {
                 actvFavoriteRoute.setOnItemClickListener((parent, view, position, id) -> {
                     FavoriteRouteDto chosen = adapter.getItem(position);
                     startLocation = chosen.getStartLocation();
-                    LocationSearchInputFragment pickup = fragmentView.findViewById(R.id.pickup);
+                    LocationSearchInputView pickup = fragmentView.findViewById(R.id.pickup);
                     pickup.setAddress(startLocation.getAddress());
 
                     endLocation = chosen.getEndLocation();
-                    LocationSearchInputFragment destination = fragmentView.findViewById(R.id.destination);
+                    LocationSearchInputView destination = fragmentView.findViewById(R.id.destination);
                     destination.setAddress(endLocation.getAddress());
 
                     waypoints.clear();

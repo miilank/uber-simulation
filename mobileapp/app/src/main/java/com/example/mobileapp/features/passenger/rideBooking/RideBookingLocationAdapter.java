@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mobileapp.R;
 import com.example.mobileapp.features.shared.api.dto.LocationDto;
-import com.example.mobileapp.features.shared.input.LocationSearchInputFragment;
+import com.example.mobileapp.features.shared.input.LocationSearchInputView;
 
 import java.util.List;
 
@@ -75,7 +75,7 @@ public class RideBookingLocationAdapter extends RecyclerView.Adapter<RideBooking
     }
 
     public static final class LocationVH extends RecyclerView.ViewHolder {
-        final LocationSearchInputFragment addressInput;
+        final LocationSearchInputView addressInput;
         final AppCompatImageButton deleteButton;
 
         public LocationVH(@NonNull View itemView) {

@@ -26,6 +26,8 @@ import { DriverProfileChanges } from './features/admin/pages/driver-profile-chan
 import { AuthGuard } from './core/services/auth.guard';
 import {AdminDriverMonitor} from './features/admin/pages/driver-monitor/admin-driver-monitor/admin-driver-monitor';
 import { PricingManagement } from './features/admin/pages/pricing-management/pricing-management';
+import { AdminHistoryReport } from './features/admin/pages/history-report/history-report';
+import { UserHistoryReport } from './features/shared/pages/history-report/history-report';
 import { SupportChatComponent } from './features/shared/components/support-chat/support-chat';
 import { AdminSupportChatComponent} from './features/admin/pages/admin-support-chat/admin-support-chat';
 
@@ -45,6 +47,7 @@ export const routes: Routes = [
       { path: 'current-ride', component: CurrentRideComponent },
       { path: 'booking', outlet: 'aside', component: RideBookingSidebar },
       { path: '', outlet: 'aside', component: RegisteredSidebar },
+      { path: 'reports', component: UserHistoryReport},
       { path: 'booked-rides', component: PassengerBookedRidesComponent },
       { path: 'favorite-routes', component: FavouriteRoutes },
       { path: 'support', component: SupportChatComponent }
@@ -59,6 +62,7 @@ export const routes: Routes = [
       { path: 'ride-history', component: DriverRideHistory },
       { path: 'dashboard', component: DriverDashboard },
       { path: 'booked-rides', component: BookedRidesComponent },
+      { path: 'reports', component: UserHistoryReport},
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       { path: 'support', component: SupportChatComponent }
     ] },
@@ -71,6 +75,7 @@ export const routes: Routes = [
     { path: 'dashboard', component: RegisteredDashboard },
     { path: 'panic-notifications', component: PanicResponseComponent },
     { path: 'driver-profile-changes', component: DriverProfileChanges},
+    { path: 'reports', component: AdminHistoryReport},
     { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
     { path: 'support', component: AdminSupportChatComponent }
   ] }

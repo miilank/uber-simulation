@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
     Optional<User> findByActivationToken(String token);
     Optional<User> findByPasswordResetToken(String token);
-    
+
     Page<User> findByFirstNameIgnoreCaseContainingOrLastNameIgnoreCaseContainingOrEmailIgnoreCaseContaining(
             String firstName, String lastName, String email, Pageable pageable);
 

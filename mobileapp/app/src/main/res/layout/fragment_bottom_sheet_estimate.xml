@@ -6,14 +6,14 @@
     android:padding="20dp">
 
     <!-- Pickup autocomplete container -->
-    <com.example.mobileapp.features.shared.input.LocationSearchInputFragment
+    <com.example.mobileapp.features.shared.input.LocationSearchInputView
         android:id="@+id/pickup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp" />
 
     <!-- Destination autocomplete container -->
-    <com.example.mobileapp.features.shared.input.LocationSearchInputFragment
+    <com.example.mobileapp.features.shared.input.LocationSearchInputView
         android:id="@+id/destination"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -10,8 +10,6 @@ import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mobileapp.R;
-import com.example.mobileapp.features.shared.api.dto.LocationDto;
-import com.example.mobileapp.features.shared.input.LocationSearchInputFragment;
 
 import java.util.List;
 

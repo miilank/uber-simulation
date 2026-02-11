@@ -1,7 +1,6 @@
 package com.example.mobileapp.features.shared.input;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
@@ -9,11 +8,9 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,7 +30,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class LocationSearchInputFragment extends FrameLayout {
+public class LocationSearchInputView extends FrameLayout {
     private EditText searchEditText;
     private RecyclerView autocompleteList;
 
@@ -54,17 +51,17 @@ public class LocationSearchInputFragment extends FrameLayout {
         this.listener = listener;
     }
 
-    public LocationSearchInputFragment(Context context) {
+    public LocationSearchInputView(Context context) {
         super(context);
         init(context);
     }
 
-    public LocationSearchInputFragment(Context context, AttributeSet attrs) {
+    public LocationSearchInputView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public LocationSearchInputFragment(Context context, AttributeSet attrs, int defStyleAttr) {
+    public LocationSearchInputView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }

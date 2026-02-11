@@ -26,6 +26,10 @@
             android:title="@string/panic_notifications"
             android:icon="@drawable/img_reports_white"/>
         <item
+            android:id="@+id/nav_reports"
+            android:title="@string/reports"
+            android:icon="@drawable/img_reports_white"/>
+        <item
             android:id="@+id/nav_profile"
             android:title="@string/profile"
             android:icon="@drawable/img_user_white"/>

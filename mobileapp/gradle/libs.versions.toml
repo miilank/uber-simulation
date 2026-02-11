@@ -9,6 +9,7 @@ appcompat = "1.6.1"
 material = "1.10.0"
 activity = "1.12.1"
 constraintlayout = "2.1.4"
+mpandroidchart = "v3.1.0"
 recyclerview = "1.4.0"
 glide = "5.0.0-rc01"
 compiler = "5.0.0-rc01"
@@ -25,6 +26,7 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "compiler" }

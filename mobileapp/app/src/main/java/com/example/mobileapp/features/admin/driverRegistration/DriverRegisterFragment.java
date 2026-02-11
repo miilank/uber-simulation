@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -26,19 +25,14 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.mobileapp.R;
-import com.example.mobileapp.core.api.AuthApi;
-import com.example.mobileapp.core.api.dto.RegisterRequest;
-import com.example.mobileapp.core.auth.LoginFragment;
 import com.example.mobileapp.core.network.ApiClient;
 import com.example.mobileapp.features.shared.api.DriversApi;
 import com.example.mobileapp.features.shared.api.dto.DriverCreationDto;
 import com.example.mobileapp.features.shared.api.dto.VehicleDto;
 import com.example.mobileapp.features.shared.models.enums.VehicleType;
-import com.example.mobileapp.features.shared.profile.ProfileFragment;
 import com.google.android.material.checkbox.MaterialCheckBox;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;

@@ -12,7 +12,7 @@ import com.example.mobileapp.core.network.ApiClient;
 import com.example.mobileapp.features.shared.api.RidesApi;
 import com.example.mobileapp.features.shared.api.dto.PriceEstimateResponse;
 import com.example.mobileapp.features.shared.api.dto.RideEstimateRequest;
-import com.example.mobileapp.features.shared.input.LocationSearchInputFragment;
+import com.example.mobileapp.features.shared.input.LocationSearchInputView;
 import com.example.mobileapp.features.shared.models.enums.VehicleType;
 import com.example.mobileapp.features.shared.utils.Haversine;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -22,7 +22,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EstimateBottomSheetFragment extends BottomSheetDialogFragment {
-    private LocationSearchInputFragment pickupSearch, destSearch;
+    private LocationSearchInputView pickupSearch, destSearch;
     private Button getEstimateButton;
     double[] pickupLatLon,destLatLon;
     String pickupAddress,destinationAddress;

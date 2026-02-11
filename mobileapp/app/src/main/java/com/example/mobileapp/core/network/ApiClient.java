@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -42,6 +43,14 @@ public final class ApiClient {
                             (JsonSerializer<LocalDateTime>) (src, typeOfSrc, context) ->
                                     new com.google.gson.JsonPrimitive(src.format(
                                             DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
+                    .registerTypeAdapter(LocalDate.class,
+                            (JsonDeserializer<LocalDate>) (json, typeOfT, context) ->
+                                    LocalDate.parse(json.getAsString(),
+                                            DateTimeFormatter.ISO_LOCAL_DATE))
+                    .registerTypeAdapter(LocalDate.class,
+                            (JsonSerializer<LocalDate>) (src, typeOfSrc, context) ->
+                                    new com.google.gson.JsonPrimitive(src.format(
+                                            DateTimeFormatter.ISO_LOCAL_DATE)))
                     .create();
 
             OkHttpClient client = new OkHttpClient.Builder()

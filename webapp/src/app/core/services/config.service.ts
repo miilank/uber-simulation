@@ -32,6 +32,14 @@ export class ConfigService {
     return `${this.baseUrl}/users?search=${searchString}&pageSize=${pageSize}&pageNumber=${pageNumber}`;
   }
 
+  blockUserUrl(userId:number) {
+    return `${this.baseUrl}/users/block?uuid=${userId}`
+  }
+
+  unblockUserUrl(userId:number) {
+    return `${this.baseUrl}/users/unblock?uuid=${userId}`
+  }
+
   startRideUrl(rideId: number): string {
       return this.ridesUrl + '/' + rideId.toString() + '/start';
   }

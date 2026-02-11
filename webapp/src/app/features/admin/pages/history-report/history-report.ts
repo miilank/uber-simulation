@@ -153,10 +153,6 @@ export class AdminHistoryReport {
       });
   }
 
-  selectUser(user: User) {
-    this.selectedUser.set(user);
-  }
-
   private createCharts() {
     if (!this.reportData()) return;
 

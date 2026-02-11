@@ -251,6 +251,12 @@ export class RideBookingSidebar {
         this.isSuccessOpen.set(true);
       }),
       error: (err => {
+        if (err.status == 423) {
+          this.errorTitle = "You have been blocked."
+        } else {
+          this.errorTitle = "Error"
+        }
+
         this.errorMessage = err.error?.message || 'Booking failed. Please try again.';
         this.isErrorOpen.set(true);
       })

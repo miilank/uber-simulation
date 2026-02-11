@@ -1,0 +1,53 @@
+<div class="p-6 min-h-screen">
+  <div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Block users</h1>
+    
+    <app-user-search
+      [(selectedUser)]="selectedUser"
+      class="mb-8"></app-user-search>
+
+   <div class="flex flex-row mb-8 bg-white rounded-lg shadow-lg p-6 items-center">
+      <div class="text-lg font-semibold text-gray-700">Block reason:</div>
+
+    <textarea
+        class="bg-white text-sm font-medium p-2 text-gray-500 border border-gray-300 rounded-lg mr-4 ml-4 w-64 resize-y"
+        [(ngModel)]="blockReason"
+        rows="3">
+    </textarea>
+      <div class="ml-auto">
+        <button
+          class="mr-4 px-4 py-2 border bg-red-200 border-red-500 text-red-500 rounded-lg
+                hover:brightness-95 transition-colors
+                disabled:bg-gray-200 disabled:border-gray-300 disabled:text-gray-400
+                disabled:disabled:hover:brightness-100"
+          (click)="blockUser()"
+          [disabled]="!selectedUser() || selectedUser()?.role === 'ADMIN'">
+          Block
+        </button>
+
+        <button
+          class="mr-4 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg
+                hover:brightness-95 transition-colors
+                disabled:bg-gray-200 disabled:text-gray-400
+                disabled:disabled:hover:brightness-100"
+          (click)="unblockUser()"
+          [disabled]="!selectedUser() || !selectedUser()?.blocked">
+          Unblock
+        </button>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<error-alert
+[isOpen]="isErrorOpen()"
+[message]="errorMessage"
+[title]="errorTitle"
+(close)="closeErrorAlert()"> </error-alert>
+
+<success-alert
+[isOpen]="isSuccessOpen()"
+[message]="successMessage"
+[title]="successTitle"
+(close)="closeSuccessAlert()"> </success-alert>

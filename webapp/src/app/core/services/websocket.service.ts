@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
 import { ChatMessage } from '../../features/shared/models/chat';
+import { AuthService } from './auth.service';
 
 interface SockJSClass {
   new (url: string): WebSocket;
@@ -24,6 +25,8 @@ export class WebSocketService {
 
   public messages$: Observable<ChatMessage | null> = this.messageSubject.asObservable();
 
+  constructor(private authService: AuthService) {}
+
   async connect(userId: number): Promise<void> {
     if (this.connected) {
       console.log('WebSocket already connected');
@@ -34,12 +37,16 @@ export class WebSocketService {
       await this.ensureSockJSLoaded();
 
       const socket = new window.SockJS('http://localhost:8080/ws') as WebSocket;
+      const jwtToken = this.authService.getToken();
 
       this.stompClient = new Client({
         webSocketFactory: () => socket,
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000,
+        connectHeaders: {
+          Authorization: `Bearer ${jwtToken}`
+        },
         debug: (str: string) => {
           console.log('STOMP:', str);
         }
@@ -50,8 +57,9 @@ export class WebSocketService {
         this.connected = true;
 
         if (this.stompClient) {
+          // Subscribe na /topic/messages/{userId}
           this.subscription = this.stompClient.subscribe(
-            `/user/${userId}/queue/messages`,
+            `/topic/messages/${userId}`,
             (message: IMessage) => {
               try {
                 const chatMessage: ChatMessage = JSON.parse(message.body);

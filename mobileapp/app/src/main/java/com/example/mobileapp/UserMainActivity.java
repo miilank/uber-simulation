@@ -17,6 +17,8 @@ import com.example.mobileapp.features.driver.ridehistory.RideHistoryFragment;
 import com.example.mobileapp.features.passenger.currentride.CurrentRideFragment;
 import com.example.mobileapp.features.passenger.dashboard.UserDashboardFragment;
 import com.example.mobileapp.features.passenger.rideBooking.RideBookingFragment;
+import com.example.mobileapp.features.shared.chat.SupportChatFragment;
+import com.example.mobileapp.features.shared.profile.ProfileFragment;
 import com.example.mobileapp.features.shared.pages.historyReport.UserHistoryReportFragment;
 import com.example.mobileapp.features.shared.pages.profile.ProfileFragment;
 import com.example.mobileapp.features.passenger.favoriteRoutes.FavoriteRoutesFragment;
@@ -157,7 +159,11 @@ public class UserMainActivity extends AppCompatActivity
                     .commit();
 
         } else if (id == R.id.nav_support) {
-            // TODO: open SupportFragment
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new SupportChatFragment())
+                    .addToBackStack(null)
+                    .commit();
 
         } else if (id == R.id.nav_profile) {
             getSupportFragmentManager()

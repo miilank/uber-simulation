@@ -31,7 +31,9 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public ChatMessageDTO sendMessage(ChatMessageCreateDTO request, User sender) {
-        System.out.println("Sending message from user: " + sender.getId() + " to: " + request.getRecipientId());
+        System.out.println("SENDING MESSAGE");
+        System.out.println("Sender ID: " + sender.getId());
+        System.out.println("Recipient ID: " + request.getRecipientId());
 
         User recipient = userRepository.findById(request.getRecipientId())
                 .orElseThrow(() -> new RuntimeException("Recipient not found"));
@@ -53,14 +55,17 @@ public class ChatServiceImpl implements ChatService {
         System.out.println("Message saved with ID: " + saved.getId());
 
         try {
-            messagingTemplate.convertAndSendToUser(
-                    recipient.getId().toString(),
-                    "/queue/messages",
-                    dto
-            );
-            System.out.println("WebSocket message sent to user: " + recipient.getId());
+            String destination = "/topic/messages/" + recipient.getId();
+
+            System.out.println("Sending to destination: " + destination);
+            System.out.println("DTO: " + dto);
+
+            messagingTemplate.convertAndSend(destination, dto);
+
+            System.out.println("Message sent successfully via WebSocket");
         } catch (Exception e) {
             System.err.println("Failed to send WebSocket message: " + e.getMessage());
+            e.printStackTrace();
         }
 
         return dto;

@@ -13,12 +13,14 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
+import com.example.mobileapp.features.admin.chat.AdminSupportChatFragment;
 import com.example.mobileapp.features.admin.driverMonitoring.AdminDriverMonitorFragment;
 import com.example.mobileapp.features.admin.driverRegistration.DriverRegisterFragment;
 import com.example.mobileapp.features.admin.panicNotifications.AdminPanicsFragment;
 import com.example.mobileapp.features.admin.pricingManagement.PricingManagementFragment;
 import com.example.mobileapp.features.admin.profileChanges.ProfileChangesFragment;
 import com.example.mobileapp.features.passenger.dashboard.UserDashboardFragment;
+import com.example.mobileapp.features.shared.chat.SupportChatFragment;
 import com.example.mobileapp.features.shared.map.MapFragment;
 import com.example.mobileapp.features.shared.profile.ProfileFragment;
 import com.example.mobileapp.features.shared.repositories.UserRepository;
@@ -160,6 +162,13 @@ public class AdminMainActivity extends AppCompatActivity
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_container, new ProfileFragment())
+                    .addToBackStack(null)
+                    .commit();
+
+        } else if (id == R.id.nav_support) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new AdminSupportChatFragment())
                     .addToBackStack(null)
                     .commit();
 

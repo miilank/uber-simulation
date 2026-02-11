@@ -30,6 +30,10 @@
             android:title="@string/profile"
             android:icon="@drawable/img_user_white"/>
         <item
+            android:id="@+id/nav_support"
+            android:title="@string/support"
+            android:icon="@drawable/img_support_white"/>
+        <item
             android:id="@+id/nav_sign_out"
             android:title="@string/sign_out"
             android:icon="@drawable/img_signout_white"/>

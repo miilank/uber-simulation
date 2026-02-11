@@ -1,5 +1,6 @@
 package com.uberplus.backend.dto.ride;
 
+import com.uberplus.backend.dto.driver.DriverDTO;
 import com.uberplus.backend.dto.passenger.PassengerDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class RideDetailDTO {
     private LocalDateTime estimatedEndTime;
     private List<LocationDTO> waypoints;
     private List<PassengerDTO> passengers;
+    private DriverDTO driver;
 
     private Double totalPrice;
 

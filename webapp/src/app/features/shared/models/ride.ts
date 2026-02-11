@@ -49,6 +49,11 @@ export interface RideDetailDTO {
     lastName: string;
     email: string;
   }>;
+  driver: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
   totalPrice: number;
   cancelledBy: string | null;
   cancellationReason: string | null;

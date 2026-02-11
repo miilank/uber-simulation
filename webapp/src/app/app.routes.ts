@@ -30,6 +30,7 @@ import { AdminHistoryReport } from './features/admin/pages/history-report/histor
 import { UserHistoryReport } from './features/shared/pages/history-report/history-report';
 import { SupportChatComponent } from './features/shared/components/support-chat/support-chat';
 import { AdminSupportChatComponent} from './features/admin/pages/admin-support-chat/admin-support-chat';
+import { PassengerRideHistory } from './features/registered/pages/ride-history/passenger-ride-history';
 import { BlockUsersComponent } from './features/admin/pages/block-users/block-users';
 
 export const routes: Routes = [
@@ -44,6 +45,7 @@ export const routes: Routes = [
       { path: 'profile', component: RegisteredProfileComponent },
       { path: 'dashboard', component: RegisteredDashboard },
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+      { path: 'ride-history', component: PassengerRideHistory },
       { path: 'booking', component: RideBooking },
       { path: 'current-ride', component: CurrentRideComponent },
       { path: 'booking', outlet: 'aside', component: RideBookingSidebar },

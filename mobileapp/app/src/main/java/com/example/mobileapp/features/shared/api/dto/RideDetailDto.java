@@ -16,6 +16,8 @@ public class RideDetailDto {
 
     public List<PassengerDto> passengers;
 
+    public DriverDto driver;
+
     public Double totalPrice;
 
     public String cancelledBy;

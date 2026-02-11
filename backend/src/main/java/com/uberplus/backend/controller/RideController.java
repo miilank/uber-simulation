@@ -85,6 +85,14 @@ public class RideController {
     ) {
         return ResponseEntity.ok(rideHistoryService.getDriverHistory(driverId, filter));
     }
+    @GetMapping("/history/passenger")
+    @PreAuthorize("hasRole('PASSENGER')")
+    public ResponseEntity<RideHistoryResponseDTO> getPassengerRideHistory(
+            @RequestParam Integer userId,
+            @Valid RideHistoryFilterDTO filter
+    ) {
+        return ResponseEntity.ok(rideHistoryService.getPassengerHistory(userId, filter));
+    }
 
     // POST /api/rides/{rideId}/cancel
     @PostMapping("/{rideId}/cancel")

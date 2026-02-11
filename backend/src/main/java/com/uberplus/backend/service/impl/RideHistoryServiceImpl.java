@@ -1,5 +1,6 @@
 package com.uberplus.backend.service.impl;
 
+import com.uberplus.backend.dto.driver.DriverDTO;
 import com.uberplus.backend.dto.passenger.PassengerDTO;
 import com.uberplus.backend.dto.report.RideHistoryFilterDTO;
 import com.uberplus.backend.dto.report.RideHistoryResponseDTO;
@@ -80,7 +81,46 @@ public class RideHistoryServiceImpl implements RideHistoryService {
 
         return new RideHistoryResponseDTO(items, pageRes.getTotalElements(), pageRes.getNumber(), pageRes.getSize());
     }
+    @Override
+    public RideHistoryResponseDTO getPassengerHistory(Integer userId, RideHistoryFilterDTO filter) {
+        int page = (filter.getPage() == null || filter.getPage() < 0) ? 0 : filter.getPage();
+        int size = (filter.getSize() == null || filter.getSize() <= 0) ? 20 : filter.getSize();
 
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        LocalDateTime from;
+        LocalDateTime to;
+
+        LocalDate start = filter.getStartDate();
+        LocalDate end = filter.getEndDate();
+        if (start != null) from = start.atStartOfDay();
+        else {
+            from = null;
+        }
+        if (end != null) to = end.plusDays(1).atStartOfDay();
+        else {
+            to = null;
+        }
+
+        List<RideStatus> statuses = List.of(
+                RideStatus.COMPLETED,
+                RideStatus.CANCELLED,
+                RideStatus.STOPPED
+        );
+
+        Specification<Ride> spec = (root, query, cb) -> {
+            Predicate p = cb.equal(root.get("creator").get("id"), userId);
+            p = cb.and(p, root.get("status").in(statuses));
+            if (from != null) p = cb.and(p, cb.greaterThanOrEqualTo(root.get("createdAt"), from));
+            if (to != null) p = cb.and(p, cb.lessThan(root.get("createdAt"), to));
+            return p;
+        };
+
+        var pageRes = rideRepository.findAll(spec, pageable);
+        var items = pageRes.getContent().stream().map(this::toDto).toList();
+
+        return new RideHistoryResponseDTO(items, pageRes.getTotalElements(), pageRes.getNumber(), pageRes.getSize());
+    }
     private RideHistoryItemDTO toDto(Ride r) {
         LocalDateTime start = (r.getActualStartTime() != null) ? r.getActualStartTime() : r.getEstimatedStartTime();
         LocalDateTime end = (r.getActualEndTime() != null) ? r.getActualEndTime() : r.getEstimatedEndTime();
@@ -121,7 +161,7 @@ public class RideHistoryServiceImpl implements RideHistoryService {
         List<PassengerDTO> passengers = ride.getPassengers().stream()
                 .map(PassengerDTO::new)
                 .toList();
-
+        DriverDTO driver = new DriverDTO(ride.getDriver(),ride.getDriver().getProfilePicture());
         List<RideInconsistency> inconsistencies = rideInconsistencyRepository
                 .findByRideId(rideId);
 
@@ -146,6 +186,7 @@ public class RideHistoryServiceImpl implements RideHistoryService {
                 ride.getEstimatedEndTime(),
                 waypoints,
                 passengers,
+                driver,
                 ride.getTotalPrice(),
                 ride.getCancelledBy(),
                 ride.getCancellationReason(),

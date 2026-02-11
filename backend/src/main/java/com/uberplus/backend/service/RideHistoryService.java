@@ -10,6 +10,6 @@ import java.time.LocalDate;
 public interface RideHistoryService {
     RideHistoryResponseDTO getDriverHistory(Integer driverId, RideHistoryFilterDTO filter);
     RideDetailDTO getRideDetails(Integer rideId);
-
+    RideHistoryResponseDTO getPassengerHistory(Integer userId, RideHistoryFilterDTO filter);
     HistoryReportDTO getRideHistoryReport(String name, LocalDate from, LocalDate to, Integer uuid);
 }

@@ -16,4 +16,12 @@ export class UserService {
     searchUsers(searchString: string, pageSize: number, pageNumber: number) : Observable<User[]> {
         return this.http.get<User[]>(this.config.searchUsersUrl(searchString, pageSize, pageNumber));
     }
+
+    blockUser(userId: number, blockReason: string) : Observable<void> {
+        return this.http.put<void>(this.config.blockUserUrl(userId), blockReason);
+    }
+
+    unblockUser(userId: number) : Observable<void> {
+        return this.http.put<void>(this.config.unblockUserUrl(userId), {});
+    }
 }

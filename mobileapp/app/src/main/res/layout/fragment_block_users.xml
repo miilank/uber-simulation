@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="24dp"
+    tools:ignore="HardcodedText" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Block Users"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#111111"
+            android:paddingBottom="12dp" />
+
+        <com.example.mobileapp.features.shared.input.UserSearchInputView
+            android:id="@+id/user_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardUseCompatPadding="true"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Reason"
+                    app:boxBackgroundMode="outline"
+                    android:padding="8dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_reason"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_block"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_btn_red"
+                        android:backgroundTint="@null"
+                        android:elevation="0dp"
+                        android:stateListAnimator="@null"
+                        android:text="Block"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        tools:ignore="TextContrastCheck,TouchTargetSizeCheck" />
+
+                    <View
+                        android:layout_width="12dp"
+                        android:layout_height="0dp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_unblock"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_transparent"
+                        android:backgroundTint="@null"
+                        android:elevation="0dp"
+                        android:stateListAnimator="@null"
+                        android:text="Unblock"
+                        android:textAllCaps="false"
+                        android:textColor="@color/dark_grey"
+                        tools:ignore="TextContrastCheck,TouchTargetSizeCheck" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+</ScrollView>

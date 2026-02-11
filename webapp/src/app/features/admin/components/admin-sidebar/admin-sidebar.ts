@@ -23,6 +23,7 @@ export class AdminSidebar {
       { label: 'Register a driver', route: '/admin/register-driver', icon: 'car' },
       { label: 'Review profile changes', route: '/admin/driver-profile-changes', icon: 'pencil' },
       { label: 'Reports', route: '/admin/reports', icon: 'reports' },
+      { label: 'Block users', route: '/admin/block-users', icon: 'blocked' },
       { label: 'Profile', route: '/admin/profile', icon: 'user' },
       { label: 'PANIC notifications', route: '/admin/panic-notifications', icon: 'panic' },
       { label: 'Support', route: '/admin/support', icon: 'support' },

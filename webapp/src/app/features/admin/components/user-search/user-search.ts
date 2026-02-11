@@ -1,4 +1,4 @@
-import { Component, inject, output, signal, Signal } from '@angular/core';
+import { Component, effect, inject, input, model, output, signal, Signal } from '@angular/core';
 import { UserService } from '../../../shared/services/users.service';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { User } from '../../../../core/models/user';
@@ -12,12 +12,27 @@ import { catchError, debounceTime, distinctUntilChanged, filter, map, of, startW
 })
 export class UserSearch {
   userService: UserService = inject(UserService);
-
-  onSelected = output<User>();
-  selectedUser = signal<User | null>(null);
+  selectedUser = model<User | null>(null);
 
   searchControl = new FormControl('');
   searchResults = signal<User[]>([]);
+
+    constructor() {
+      effect(() => {
+        const u = this.selectedUser();
+        if (!u) return;
+
+        this.searchResults.update(list => {
+          const idx = list.findIndex(x => x.id === u.id);
+          if (idx === -1) return [...list, u];
+          const copy = list.slice();
+          copy[idx] = u;
+          return copy;
+        });
+
+        this.selectedUser.set(u);
+      });
+  }
 
   ngOnInit(): void {
     this.searchControl.valueChanges
@@ -49,7 +64,6 @@ export class UserSearch {
   }
 
   selectUser(user: User) {
-    this.onSelected.emit(user);
     this.selectedUser.set(user);
   }
 }

@@ -13,6 +13,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
+import com.example.mobileapp.features.admin.blockUsers.BlockUsersFragment;
 import com.example.mobileapp.features.admin.chat.AdminSupportChatFragment;
 import com.example.mobileapp.features.admin.driverMonitoring.AdminDriverMonitorFragment;
 import com.example.mobileapp.features.admin.driverRegistration.DriverRegisterFragment;
@@ -166,7 +167,14 @@ public class AdminMainActivity extends AppCompatActivity
                     .addToBackStack(null)
                     .commit();
 
-        } else if (id == R.id.nav_profile) {
+        } else if (id==R.id.nav_block_users) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new BlockUsersFragment())
+                    .addToBackStack(null)
+                    .commit();
+
+        }  else if (id == R.id.nav_profile) {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_container, new ProfileFragment())

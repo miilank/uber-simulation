@@ -1,5 +1,6 @@
 package com.uberplus.backend.controller;
 
+import com.sendgrid.Request;
 import com.uberplus.backend.dto.common.MessageDTO;
 import com.uberplus.backend.dto.user.ChangePasswordDTO;
 import com.uberplus.backend.dto.user.UserProfileDTO;
@@ -48,6 +49,27 @@ public class UserController {
         }).toList();
 
         return ResponseEntity.ok(dtos);
+    }
+
+    // PUT /api/users/block?uuid={id}
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/block")
+    public ResponseEntity<Void> blockUser(
+            @RequestParam(value = "uuid") Integer uuid,
+            @RequestBody String blockReason
+    ) {
+        userService.blockUser(uuid, blockReason);
+        return ResponseEntity.ok().build();
+    }
+
+    // PUT /api/users/unblock?uuid={id}
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/unblock")
+    public ResponseEntity<Void> unblockUser(
+            @RequestParam(value = "uuid") Integer uuid
+    ) {
+        userService.unblockUser(uuid);
+        return ResponseEntity.ok().build();
     }
 
     // GET /api/users/profile

@@ -146,4 +146,34 @@ public class UserServiceImpl implements UserService {
                     ).getContent();
         }
     }
+
+    @Override
+    public void blockUser(Integer uuid, String blockReason) {
+        User user = userRepository.findById(uuid).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No account with this email exists")
+        );
+
+        if(user.getRole() == UserRole.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot block admin.");
+        }
+
+        user.setBlocked(true);
+        user.setBlockReason(blockReason);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void unblockUser(Integer uuid) {
+        User user = userRepository.findById(uuid).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No account with this email exists.")
+        );
+
+        if(!user.isBlocked()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User is not blocked.");
+        }
+
+        user.setBlocked(false);
+        user.setBlockReason(null);
+        userRepository.save(user);
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.mobileapp.features.shared.input;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -23,7 +24,7 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
     }
 
     private final List<User> items;
-    private Integer selectedUserId = null;
+    private User selectedUser = null;
     private final OnItemClick onItemClick;
 
     public UserSearchAdapter(List<User> items, OnItemClick listener) {
@@ -31,12 +32,12 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
         this.onItemClick = listener;
     }
 
-    public void setSelectedUserId(Integer id) {
-        this.selectedUserId = id;
+    public void setSelectedUser(User user) {
+        this.selectedUser = user;
         notifyDataSetChanged();
     }
 
-    public Integer getSelectedUserId() { return selectedUserId; }
+    public User getSelectedUser() { return selectedUser; }
 
     @Override
     public UserSearchVH onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -45,6 +46,7 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
         return new UserSearchVH(v);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(UserSearchVH holder, int position) {
         final User u = items.get(position);
@@ -73,7 +75,9 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
             holder.card.setCardBackgroundColor(0xffffffff);
         }
 
-        if (u.getId() != null && u.getId().equals(selectedUserId)) {
+        Integer selectedId = selectedUser==null ? null : selectedUser.getId();
+
+        if (u.getId() != null && u.getId().equals(selectedId)) {
             holder.card.setCardBackgroundColor(0xffe6f0ff); // blue-ish
             holder.nameText.setTypeface(null, Typeface.BOLD);
         } else {

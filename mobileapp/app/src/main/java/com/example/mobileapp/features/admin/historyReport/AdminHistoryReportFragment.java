@@ -159,11 +159,12 @@ public class AdminHistoryReportFragment extends Fragment {
             return;
         }
 
-        Integer id = userSearch.getSelectedId();
-        if (id==null) {
-           showMessage("Please select a user.", false);
-           return;
+        if (userSearch.getSelectedUser()==null) {
+            showMessage("Please select a user.", false);
+            return;
         }
+
+        Integer id = userSearch.getSelectedUser().getId();
 
         String startStr = etFrom.getText() == null ? "" : etFrom.getText().toString().trim();
         String endStr = etTo.getText() == null ? "" : etTo.getText().toString().trim();

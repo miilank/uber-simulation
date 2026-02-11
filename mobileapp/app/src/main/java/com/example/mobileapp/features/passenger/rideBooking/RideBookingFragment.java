@@ -3,7 +3,12 @@ package com.example.mobileapp.features.passenger.rideBooking;
 import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +47,8 @@ import com.example.mobileapp.features.shared.models.enums.VehicleType;
 import com.example.mobileapp.features.shared.repositories.UserRepository;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.snackbar.Snackbar;
+
+import org.json.JSONObject;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -177,6 +184,8 @@ public class RideBookingFragment extends Fragment {
         btnStep2Back = view.findViewById(R.id.btn_step2_back);
 
         UserRepository.getInstance().getCurrentUser().observe(getViewLifecycleOwner(), user -> {
+            if (user==null) return;
+
             userEmail.setText(user.getEmail());
             if (user.getProfilePicture() != null && !user.getProfilePicture().isEmpty()) {
                 Glide.with(this)
@@ -326,6 +335,12 @@ public class RideBookingFragment extends Fragment {
                         ApiClient.get().create(RidesApi.class).requestRide(request).enqueue(new Callback<RideDto>() {
                             @Override
                             public void onResponse(@NonNull Call<RideDto> call, @NonNull Response<RideDto> response) {
+                                if (response.code() == 423) {
+                                    String message = extractErrorMessage(response);
+                                    showBlockedMessage(message);
+                                    return;
+                                }
+
                                 if(response.body() == null || !response.isSuccessful()) {
                                     showMessage("Failed to book. Please try again later.", false);
                                     return;
@@ -653,6 +668,37 @@ public class RideBookingFragment extends Fragment {
                 getResources().getColor(R.color.completed_ride) :
                 getResources().getColor(com.google.android.material.R.color.design_default_color_error));
         snackbar.setTextColor(Color.WHITE);
+        snackbar.show();
+    }
+
+    private String extractErrorMessage(Response<?> response) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                JSONObject errorJson = new JSONObject(errorBody);
+                return errorJson.optString("message", "Your account has been blocked. Please contact support if you believe this was a mistake.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Your account has been blocked. Please contact support if you believe this was a mistake.";
+    }
+
+    private void showBlockedMessage(String message) {
+        String title = "You have been blocked.";
+        String combined = title + "\n" + message;
+        SpannableString spannable = new SpannableString(combined);
+
+        spannable.setSpan(new StyleSpan(Typeface.BOLD), 0, title.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable.setSpan(new RelativeSizeSpan(1.05f), 0, title.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        Snackbar snackbar = Snackbar.make(requireView(), spannable, Snackbar.LENGTH_SHORT);
+        snackbar.setBackgroundTint(getResources().getColor(com.google.android.material.R.color.design_default_color_error));
+        snackbar.setTextColor(Color.WHITE);
+
+        TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setMaxLines(5);
+
         snackbar.show();
     }
 }

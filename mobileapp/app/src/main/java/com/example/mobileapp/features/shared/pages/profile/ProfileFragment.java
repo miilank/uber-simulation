@@ -29,6 +29,7 @@ import com.example.mobileapp.R;
 import com.example.mobileapp.features.shared.api.dto.DriverDto;
 import com.example.mobileapp.features.shared.models.User;
 import com.example.mobileapp.features.shared.models.enums.UserRole;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.ByteArrayOutputStream;
@@ -51,6 +52,8 @@ public class ProfileFragment extends Fragment {
     private ImageView ivProfile;
     private ProgressBar barTimeWorked;
     private CardView cvDriverActivity, cvVehicleInfo;
+    private MaterialCardView cvBlocked;
+    private TextView tvReason;
     private Uri profileUri;
     ProfileViewModel viewModel;
     private final ActivityResultLauncher<String[]> imagePickerLauncher =
@@ -126,6 +129,7 @@ public class ProfileFragment extends Fragment {
         tvPetSupport      = root.findViewById(R.id.tv_pet_support);
         tvTimeWorkedValue = root.findViewById(R.id.tv_time_worked_value);
         tvErrorMessage    = root.findViewById(R.id.tv_error_message);
+        tvReason          = root.findViewById(R.id.tv_block_reason);
 
         // EditTexts
         etName    = root.findViewById(R.id.et_first_name);
@@ -145,6 +149,7 @@ public class ProfileFragment extends Fragment {
         // Cards
         cvDriverActivity = root.findViewById(R.id.card_driver_activity);
         cvVehicleInfo    = root.findViewById(R.id.card_vehicle_information);
+        cvBlocked = root.findViewById(R.id.blocked_card);
     }
 
     private void setupObservers() {
@@ -178,6 +183,11 @@ public class ProfileFragment extends Fragment {
     }
 
     private void populateUserData(User user) {
+        if(user.isBlocked()) {
+            cvBlocked.setVisibility(View.VISIBLE);
+            tvReason.setText(user.getBlockReason());
+        }
+
         tvFullName.setText(user.getFirstName() + " " + user.getLastName());
         tvEmail.setText(user.getEmail());
 

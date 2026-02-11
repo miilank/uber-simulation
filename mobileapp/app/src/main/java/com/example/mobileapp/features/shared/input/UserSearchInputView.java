@@ -35,7 +35,7 @@ public class UserSearchInputView extends FrameLayout {
     private UserSearchAdapter adapter;
     private final Handler debounceHandler = new Handler(Looper.getMainLooper());
     private Runnable pendingSearch;
-    private Integer selectedId;
+    private User selectedUser;
 
 
     public UserSearchInputView(Context context) {
@@ -60,8 +60,8 @@ public class UserSearchInputView extends FrameLayout {
 
         resultsContainer.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new UserSearchAdapter(results, result -> {
-            selectedId = result.getId();
-            adapter.setSelectedUserId(selectedId);
+            selectedUser = result;
+            adapter.setSelectedUser(result);
         });
         resultsContainer.setAdapter(adapter);
 
@@ -113,10 +113,14 @@ public class UserSearchInputView extends FrameLayout {
         });
     }
 
-    public Integer getSelectedId(){
-        return selectedId;
+    public User getSelectedUser(){
+        return selectedUser;
     }
 
+    public void setSelectedUser(User user) {
+        selectedUser = user;
+        adapter.setSelectedUser(user);
+    }
     private void showMessage(String message, boolean isSuccess) {
         Snackbar snackbar = Snackbar.make(this, message, Snackbar.LENGTH_SHORT);
         snackbar.setBackgroundTint(isSuccess ?

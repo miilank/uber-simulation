@@ -140,4 +140,5 @@
     <string name="last_updated">Last updated:</string>
     <string name="example_10_km_ride">Example: 10 km ride</string>
     <string name="per_kilometer">Per Kilometer:</string>
+    <string name="block_users">Block users</string>
 </resources>

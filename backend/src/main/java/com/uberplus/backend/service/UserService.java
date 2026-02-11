@@ -20,4 +20,7 @@ public interface UserService {
     Resource getAvatar(Integer id);
 
     List<User> searchUsers(String searchString, Integer pageSize, Integer pageNumber);
+
+    void blockUser(Integer uuid, String blockReason);
+    void unblockUser(Integer uuid);
 }

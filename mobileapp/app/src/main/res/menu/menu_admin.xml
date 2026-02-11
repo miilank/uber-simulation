@@ -30,6 +30,10 @@
             android:title="@string/reports"
             android:icon="@drawable/img_reports_white"/>
         <item
+            android:id="@+id/nav_block_users"
+            android:title="@string/block_users"
+            android:icon="@drawable/img_blocked_white"/>
+        <item
             android:id="@+id/nav_profile"
             android:title="@string/profile"
             android:icon="@drawable/img_user_white"/>

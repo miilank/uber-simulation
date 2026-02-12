@@ -30,7 +30,7 @@ import { NotificationBellComponent } from '../../shared/components/notification-
 
         <!-- Right Section with Notification Bell -->
         <div class="flex items-center gap-4">
-          <!-- ✅ NOTIFICATION BELL - SAMO ZA PASSENGERE -->
+          <!-- NOTIFICATION BELL - SAMO ZA PASSENGERE -->
           <app-notification-bell></app-notification-bell>
 
           <!-- User Profile Button -->

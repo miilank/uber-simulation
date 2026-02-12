@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.mobileapp.features.shared.api.dto.ChatMessageDto;
+import com.example.mobileapp.features.shared.api.dto.NotificationDto;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -27,6 +28,7 @@ public class WebSocketManager {
     private StompClient stompClient;
     private final CompositeDisposable compositeDisposable;
     private MessageListener messageListener;
+    private NotificationListener notificationListener;
     private final Gson gson;
     private Integer userId;
     private final SharedPreferences authPrefs;
@@ -36,6 +38,10 @@ public class WebSocketManager {
         void onConnected();
         void onDisconnected();
         void onError(String error);
+    }
+
+    public interface NotificationListener {
+        void onNotificationReceived(NotificationDto notification);
     }
 
     public WebSocketManager(Context context) {
@@ -59,7 +65,6 @@ public class WebSocketManager {
         stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, WS_URL);
         stompClient.withClientHeartbeat(4000).withServerHeartbeat(4000);
 
-        // Lifecycle
         Disposable lifecycleDisposable = stompClient.lifecycle()
                 .subscribe(lifecycleEvent -> {
                     switch (lifecycleEvent.getType()) {
@@ -85,7 +90,6 @@ public class WebSocketManager {
                 });
         compositeDisposable.add(lifecycleDisposable);
 
-        // Subscribe to messages
         Disposable messageDisposable = stompClient.topic("/topic/messages/" + userId)
                 .subscribe(topicMessage -> {
                     Log.d(TAG, "Received message: " + topicMessage.getPayload());
@@ -100,11 +104,28 @@ public class WebSocketManager {
                     }
                 });
         compositeDisposable.add(messageDisposable);
+
+        Disposable notificationDisposable = stompClient.topic("/topic/notifications/" + userId)
+                .subscribe(topicMessage -> {
+                    Log.d(TAG, "Received notification: " + topicMessage.getPayload());
+                    NotificationDto notification = gson.fromJson(topicMessage.getPayload(), NotificationDto.class);
+                    if (notificationListener != null) {
+                        notificationListener.onNotificationReceived(notification);
+                    }
+                }, throwable -> {
+                    Log.e(TAG, "Error on subscribe notifications", throwable);
+                });
+        compositeDisposable.add(notificationDisposable);
+
         List<StompHeader> headers = new ArrayList<>();
         if (token != null) {
             headers.add(new StompHeader("Authorization", "Bearer " + token));
         }
         stompClient.connect(headers);
+    }
+
+    public void setNotificationListener(NotificationListener listener) {
+        this.notificationListener = listener;
     }
 
     public void disconnect() {

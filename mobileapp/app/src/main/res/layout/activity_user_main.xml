@@ -23,7 +23,7 @@
             android:elevation="2dp">
 
             <!-- custom header with hamburger, logo, profile button -->
-            <include layout="@layout/toolbar_header" />
+            <include layout="@layout/passenger_toolbar_header" />
         </androidx.appcompat.widget.Toolbar>
 
         <!-- Fragment container: here we show RideHistory, Profile, etc. -->

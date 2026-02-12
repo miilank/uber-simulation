@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Notifications"
+        android:textSize="18sp"
+        android:textColor="@color/dark_grey"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:padding="16dp"
+        android:background="@color/white"
+        android:elevation="2dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_notifications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="400dp"
+        android:scrollbars="vertical" />
+
+    <TextView
+        android:id="@+id/tv_empty_notifications"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:text="No notifications"
+        android:textSize="14sp"
+        android:textColor="@color/dark_grey"
+        android:fontFamily="@font/poppins_regular"
+        android:gravity="center"
+        android:visibility="gone" />
+</LinearLayout>

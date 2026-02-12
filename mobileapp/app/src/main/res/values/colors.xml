@@ -37,4 +37,6 @@
     <color name="gray_900">#212121</color>
 
     <color name="yellow_600">#FDD835</color>
+
+    <color name="notification_unread_bg">#F0F8FF</color>
 </resources>

@@ -67,6 +67,8 @@ public class CurrentRideFragment extends Fragment {
     private SharedPreferences prefs;
     private Integer watchingEtaRideId = null;
 
+    private boolean arrivedAtDestination = false;
+
 
     public CurrentRideFragment() {}
 
@@ -257,10 +259,12 @@ public class CurrentRideFragment extends Fragment {
         }
 
         currentRideId = r.id;
+        arrivedAtDestination = false;
         startEtaPolling(r.id);
+
         if (btnOpenRating != null) {
-            btnOpenRating.setEnabled(true);
-            btnOpenRating.setAlpha(1f);
+            btnOpenRating.setEnabled(false);
+            btnOpenRating.setAlpha(0.6f);
         }
     }
 
@@ -277,6 +281,7 @@ public class CurrentRideFragment extends Fragment {
         if (noCurrentRideRoot != null) noCurrentRideRoot.setVisibility(View.VISIBLE);
         if (currentRideContentRoot != null) currentRideContentRoot.setVisibility(View.GONE);
         currentRideId = null;
+        arrivedAtDestination = false;
         if (btnOpenRating != null) {
             btnOpenRating.setEnabled(false);
             btnOpenRating.setAlpha(0.6f);
@@ -447,8 +452,21 @@ public class CurrentRideFragment extends Fragment {
                         var eta = resp.body();
                         String label = "ETA: " + formatEta(eta.etaToNextPointSeconds);
 
-                        if ("TO_PICKUP".equals(eta.phase)) label = "ETA to pickup: " + formatEta(eta.etaToNextPointSeconds);
-                        else if ("IN_PROGRESS".equals(eta.phase)) label = "ETA to destination: " + formatEta(eta.etaToNextPointSeconds);
+                        if ("TO_PICKUP".equals(eta.phase)) {
+                            label = "ETA to pickup: " + formatEta(eta.etaToNextPointSeconds);
+                        } else if ("IN_PROGRESS".equals(eta.phase)) {
+                            label = "ETA to destination: " + formatEta(eta.etaToNextPointSeconds);
+
+                            // omoguci rating kada je blizu destinacije
+                            if (eta.etaToNextPointSeconds != null && eta.etaToNextPointSeconds <= 30 && !arrivedAtDestination) {
+                                arrivedAtDestination = true;
+                                if (btnOpenRating != null) {
+                                    btnOpenRating.setEnabled(true);
+                                    btnOpenRating.setAlpha(1f);
+                                    Toast.makeText(requireContext(), "You can now rate this ride!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
 
                         tvEta.setText(label);
 

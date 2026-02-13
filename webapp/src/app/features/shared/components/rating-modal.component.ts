@@ -13,13 +13,23 @@ export interface RatingData {
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-5500"
+    <div class="fixed inset-0 bg-black/30 flex items-center justify-center z-5500"
          *ngIf="isOpen"
          (click)="onBackdropClick($event)">
       <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4"
            (click)="$event.stopPropagation()">
 
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Rate Your Ride</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center justify-between">
+          Rate Your Ride
+          <button
+            type="button"
+            (click)="onCancel()"
+            class="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </h2>
 
         <!-- Driver Rating -->
         <div class="mb-6">
@@ -73,13 +83,13 @@ export interface RatingData {
         <div class="flex gap-3">
           <button
             (click)="onCancel()"
-            class="flex-1 h-11 px-6 rounded-full bg-gray-200 text-gray-800 text-sm font-semibold hover:bg-gray-300 transition-colors">
+            class="flex-1 h-11 px-6 rounded-full border border-gray-400 text-gray-800 text-sm font-semibold hover:bg-gray-50 active:scale-[0.99] transition-colors cursor-pointer">
             Cancel
           </button>
           <button
             (click)="onSubmit()"
             [disabled]="!isValid()"
-            class="flex-1 h-11 px-6 rounded-full bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+            class="flex-1 h-11 px-6 rounded-full bg-neutral-900 text-white text-sm font-semibold hover:bg-neutral-800 active:scale-[0.99] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer">
             Submit Rating
           </button>
         </div>

@@ -10,6 +10,7 @@ import com.uberplus.backend.model.RideInconsistency;
 import com.uberplus.backend.model.User;
 import com.uberplus.backend.model.enums.RideStatus;
 import com.uberplus.backend.model.enums.UserRole;
+import com.uberplus.backend.repository.RatingRepository;
 import com.uberplus.backend.repository.RideInconsistencyRepository;
 import com.uberplus.backend.repository.RideRepository;
 import com.uberplus.backend.repository.UserRepository;
@@ -37,6 +38,7 @@ public class RideHistoryServiceImpl implements RideHistoryService {
     private final RideRepository rideRepository;
     private final RideInconsistencyRepository rideInconsistencyRepository;
     private final UserRepository userRepository;
+    private final RatingRepository ratingRepository;
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd.MM.");
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
@@ -136,6 +138,11 @@ public class RideHistoryServiceImpl implements RideHistoryService {
 
         String price = (r.getTotalPrice() != null) ? String.format("€%.2f", r.getTotalPrice()) : "€0.00";
 
+        boolean alreadyRated = ratingRepository.existsByRideIdAndPassengerId(
+                r.getId(),
+                r.getCreator().getId()
+        );
+
         return new RideHistoryItemDTO(
                 r.getId(),
                 date,
@@ -145,7 +152,9 @@ public class RideHistoryServiceImpl implements RideHistoryService {
                 r.getStatus() != null ? r.getStatus().name() : "PENDING",
                 r.getCancelledBy(),
                 r.isPanicActivated(),
-                price
+                price,
+                r.getActualEndTime(),
+                alreadyRated
         );
     }
 

@@ -43,9 +43,9 @@ public class JwtServiceImpl implements JwtService {
     }
 
     public Integer extractUserId(String token) {
-        return extractClaim(token, claims -> Integer.valueOf(claims.get("userId", String.class)));
+        return extractClaim(token, claims -> claims.get("userId", Integer.class));
     }
-
+    
     public boolean isTokenValid(String token) {
         try {
             parseSignedClaims(token);

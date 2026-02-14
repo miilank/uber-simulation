@@ -10,4 +10,6 @@ public class RideHistoryDto {
     public String cancelledBy;
     public Boolean panic;
     public String price;
+    public String actualEndTime;
+    public Boolean alreadyRated;
 }

@@ -18,6 +18,7 @@ import com.example.mobileapp.R;
 import com.example.mobileapp.core.network.ApiClient;
 import com.example.mobileapp.features.shared.api.RidesApi;
 import com.example.mobileapp.features.shared.api.dto.RideHistoryDto;
+import com.example.mobileapp.features.passenger.currentride.RatingDialogFragment;
 import com.example.mobileapp.features.shared.api.dto.RideHistoryResponseDto;
 import com.example.mobileapp.features.shared.models.Ride;
 import com.example.mobileapp.features.shared.models.enums.RideStatus;
@@ -145,10 +146,19 @@ public class PassengerRideHistoryFragment extends Fragment {
         RecyclerView rv = v.findViewById(R.id.rv_rides);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new PassengerRideHistoryAdapter(rides, ride ->
+        adapter = new PassengerRideHistoryAdapter(rides, new PassengerRideHistoryAdapter.OnRideClickListener() {
+            @Override
+            public void onRideClick(Ride ride) {
                 PassengerRideHistoryDetailsDialogFragment.newInstance(ride)
-                        .show(getChildFragmentManager(), "ride_details")
-        );
+                        .show(getChildFragmentManager(), "ride_details");
+            }
+
+            @Override
+            public void onRateClick(Ride ride) {
+                openRatingDialog(ride);
+            }
+        });
+
         rv.setAdapter(adapter);
 
         // ---------------------------- API INIT + INITIAL LOAD ----------------------------
@@ -232,8 +242,50 @@ public class PassengerRideHistoryFragment extends Fragment {
                 st,
                 panic,
                 dto.price,
-                dto.cancelledBy
+                dto.cancelledBy,
+                dto.actualEndTime,
+                dto.alreadyRated
         );
+    }
+
+    private void openRatingDialog(@NonNull Ride ride) {
+        if (ride.getId() == null) {
+            Toast.makeText(requireContext(), "Invalid ride ID", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!Boolean.TRUE.equals(ride.getCanRate())) {
+            String reason = ride.getRatingDisabledReason();
+            if (reason != null && !reason.isEmpty()) {
+                Toast.makeText(requireContext(), reason, Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
+        RatingDialogFragment dialog = RatingDialogFragment.newInstance(ride.getId());
+        dialog.setListener(() -> {
+            if (!isAdded()) return;
+
+            Toast.makeText(requireContext(), "Rating submitted successfully!", Toast.LENGTH_SHORT).show();
+
+            // Update the ride in the list to mark as rated
+            updateRideAsRated(ride.getId());
+        });
+        dialog.show(getChildFragmentManager(), "rating_dialog");
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void updateRideAsRated(int rideId) {
+        for (int i = 0; i < rides.size(); i++) {
+            Ride r = rides.get(i);
+            if (r.getId() != null && r.getId() == rideId) {
+                r.markAsRated("You have already rated this ride");
+                if (adapter != null) {
+                    adapter.notifyItemChanged(i);
+                }
+                break;
+            }
+        }
     }
 
     /**

@@ -17,7 +17,7 @@ import java.util.List;
 public class DriverDashboardAdapter extends RecyclerView.Adapter<DriverDashboardAdapter.BookedRideVH> {
 
     public enum RideStatus { SCHEDULED, ASSIGNED, STARTED }
-    public enum Requirement { SEDAN, SUV, BABY, PETS, VAN }
+    public enum Requirement { SEDAN, LUXURY, BABY, PETS, VAN }
     public interface OnCancelClickListener {
         void onCancelClick(int rideId);
     }
@@ -119,7 +119,7 @@ public class DriverDashboardAdapter extends RecyclerView.Adapter<DriverDashboard
     private static String reqIcon(Requirement r) {
         switch (r) {
             case BABY: return "🍼";
-            case SUV: return "🧭";
+            case LUXURY: return "🧭";
             case PETS: return "🐾";
             case VAN: return "🚐";
             default: return "🚘";
@@ -129,7 +129,7 @@ public class DriverDashboardAdapter extends RecyclerView.Adapter<DriverDashboard
     private static int reqBg(Requirement r) {
         switch (r) {
             case BABY: return R.drawable.bg_req_baby;
-            case SUV: return R.drawable.bg_req_suv;
+            case LUXURY: return R.drawable.bg_req_suv;
             case PETS: return R.drawable.bg_req_pets;
             case VAN: return R.drawable.bg_req_van;
             default: return R.drawable.bg_req_sedan;

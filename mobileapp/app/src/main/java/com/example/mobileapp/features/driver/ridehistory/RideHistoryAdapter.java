@@ -108,6 +108,8 @@ public class RideHistoryAdapter extends RecyclerView.Adapter<RideHistoryAdapter.
         h.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onRideClick(r);
         });
+
+        h.btnRate.setVisibility(View.GONE);
     }
 
 
@@ -119,6 +121,7 @@ public class RideHistoryAdapter extends RecyclerView.Adapter<RideHistoryAdapter.
     public static class RideViewHolder extends RecyclerView.ViewHolder {
         final TextView tvDate, tvTime, tvPrice, tvOrigin, tvDestination;
         final TextView chipStatus, chipPanic;
+        final TextView btnRate;
 
         public RideViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -127,6 +130,7 @@ public class RideHistoryAdapter extends RecyclerView.Adapter<RideHistoryAdapter.
             tvPrice = itemView.findViewById(R.id.tv_price);
             tvOrigin = itemView.findViewById(R.id.tv_origin);
             tvDestination = itemView.findViewById(R.id.tv_destination);
+            btnRate = itemView.findViewById(R.id.btn_rate);
 
             chipStatus = itemView.findViewById(R.id.chip_status);
             chipPanic = itemView.findViewById(R.id.chip_panic);

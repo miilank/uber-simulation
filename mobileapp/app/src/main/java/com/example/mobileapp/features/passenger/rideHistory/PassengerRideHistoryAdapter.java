@@ -21,6 +21,7 @@ public class PassengerRideHistoryAdapter extends RecyclerView.Adapter<PassengerR
 
     public interface OnRideClickListener {
         void onRideClick(Ride ride);
+        void onRateClick(Ride ride);
     }
 
     private final List<Ride> rides;
@@ -104,6 +105,31 @@ public class PassengerRideHistoryAdapter extends RecyclerView.Adapter<PassengerR
             h.chipPanic.setTextColor(panicText);
         }
 
+        Boolean canRate = r.getCanRate();
+        if (Boolean.TRUE.equals(canRate)) {
+            h.btnRate.setEnabled(true);
+            h.btnRate.setAlpha(1f);
+            h.btnRate.setOnClickListener(v -> {
+                if (listener != null) listener.onRateClick(r);
+            });
+        } else {
+            h.btnRate.setEnabled(false);
+            h.btnRate.setAlpha(0.5f);
+            h.btnRate.setOnClickListener(null);
+
+            String reason = r.getRatingDisabledReason();
+            if (reason != null && !reason.isEmpty()) {
+                h.btnRate.setOnLongClickListener(v -> {
+                    android.widget.Toast.makeText(
+                            h.itemView.getContext(),
+                            reason,
+                            android.widget.Toast.LENGTH_SHORT
+                    ).show();
+                    return true;
+                });
+            }
+        }
+
         // CLICK
         h.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onRideClick(r);
@@ -119,6 +145,7 @@ public class PassengerRideHistoryAdapter extends RecyclerView.Adapter<PassengerR
     public static class RideViewHolder extends RecyclerView.ViewHolder {
         final TextView tvDate, tvTime, tvPrice, tvOrigin, tvDestination;
         final TextView chipStatus, chipPanic;
+        final TextView btnRate;
 
         public RideViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -127,6 +154,7 @@ public class PassengerRideHistoryAdapter extends RecyclerView.Adapter<PassengerR
             tvPrice = itemView.findViewById(R.id.tv_price);
             tvOrigin = itemView.findViewById(R.id.tv_origin);
             tvDestination = itemView.findViewById(R.id.tv_destination);
+            btnRate = itemView.findViewById(R.id.btn_rate);
 
             chipStatus = itemView.findViewById(R.id.chip_status);
             chipPanic = itemView.findViewById(R.id.chip_panic);

@@ -49,13 +49,13 @@ public class RideSimulationService {
     private final long pauseAtStopMs = 3_000L;
     private final long backendTickMs = 1000L;
     private final long uiTickMs = 200L;         // smooth
-    private final long stepEveryMs = 300L;      // pomjeri se na sljedecu path tacku svakih X ms
+    private final long stepEveryMs = 1000L;      // pomjeri se na sljedecu path tacku svakih X ms
 
     private long lastStepMs = 0L;
     private long pausedUntilMs = 0L;
 
     // ~100m resample
-    private final double stepMeters = 100.0;
+    private final double stepMeters = 50.0;
 
     // stopPoints: lista stop tačaka: pickup, stop1, stop2, ..., destination
     public void startByRoute(

@@ -62,14 +62,22 @@ export class RegisteredSidebar {
     ];
   }
 
-  isActive(route: string | UrlTree) : boolean {
-    const currentUrl = this.router.url;
-
+  isActive(route: string | UrlTree): boolean {
     if (route instanceof UrlTree) {
-      return this.router.serializeUrl(route) === currentUrl;
+      return this.router.isActive(route, {
+        paths: 'exact',
+        queryParams: 'ignored',
+        fragment: 'ignored',
+        matrixParams: 'ignored'
+      });
     }
 
-    return route === currentUrl;
+    return this.router.isActive(route, {
+      paths: 'exact',
+      queryParams: 'ignored',
+      fragment: 'ignored',
+      matrixParams: 'ignored'
+    });
   }
 
   iconSrc(icon: string, route: string | UrlTree) : string {

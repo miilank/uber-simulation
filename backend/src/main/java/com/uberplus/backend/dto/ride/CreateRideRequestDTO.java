@@ -20,10 +20,9 @@ public class CreateRideRequestDTO {
 
     @NotNull(message = "End location is required")
     @Valid
-
     private LocationDTO endLocation;
-    @Valid
 
+    @Valid
     private List<LocationDTO> waypoints;
 
     private VehicleType vehicleType;

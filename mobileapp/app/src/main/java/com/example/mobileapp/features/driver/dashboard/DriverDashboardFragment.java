@@ -604,6 +604,7 @@ public class DriverDashboardFragment extends Fragment {
                                     @Override
                                     public void onResponse(Call<GeocodeResult> call, Response<GeocodeResult> response) {
                                         if (response.isSuccessful() && response.body() != null) {
+                                            response.body().formatAddress();
                                             locationDto.setAddress(response.body().getFormattedResult());
                                         } else {
                                             locationDto.setAddress("Unknown address");

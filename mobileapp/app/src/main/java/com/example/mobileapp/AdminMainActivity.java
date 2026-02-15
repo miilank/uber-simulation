@@ -13,6 +13,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
+import com.example.mobileapp.core.auth.AuthActivity;
 import com.example.mobileapp.features.admin.blockUsers.BlockUsersFragment;
 import com.example.mobileapp.features.admin.chat.AdminSupportChatFragment;
 import com.example.mobileapp.features.admin.driverMonitoring.AdminDriverMonitorFragment;
@@ -21,14 +22,12 @@ import com.example.mobileapp.features.admin.historyReport.AdminHistoryReportFrag
 import com.example.mobileapp.features.admin.panicNotifications.AdminPanicsFragment;
 import com.example.mobileapp.features.admin.pricingManagement.PricingManagementFragment;
 import com.example.mobileapp.features.admin.profileChanges.ProfileChangesFragment;
+import com.example.mobileapp.features.admin.rideHistory.AdminRideHistoryFragment;
 import com.example.mobileapp.features.passenger.dashboard.UserDashboardFragment;
-import com.example.mobileapp.features.shared.chat.SupportChatFragment;
 import com.example.mobileapp.features.shared.map.MapFragment;
 import com.example.mobileapp.features.shared.pages.profile.ProfileFragment;
 import com.example.mobileapp.features.shared.repositories.UserRepository;
 import com.google.android.material.navigation.NavigationView;
-
-import com.example.mobileapp.core.auth.AuthActivity;
 
 import java.time.LocalDateTime;
 
@@ -145,7 +144,12 @@ public class AdminMainActivity extends AppCompatActivity
                     .replace(R.id.fragment_container, new DriverRegisterFragment())
                     .addToBackStack(null)
                     .commit();
-
+        } else if (id == R.id.nav_ride_history) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new AdminRideHistoryFragment())
+                        .addToBackStack(null)
+                        .commit();
         } else if (id == R.id.nav_review_profile_changes) {
             getSupportFragmentManager()
                     .beginTransaction()

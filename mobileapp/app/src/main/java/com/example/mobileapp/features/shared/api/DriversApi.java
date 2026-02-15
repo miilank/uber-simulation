@@ -5,12 +5,12 @@ import com.example.mobileapp.features.shared.api.dto.DriverDto;
 import com.example.mobileapp.features.shared.api.dto.DriverUpdateDto;
 import com.example.mobileapp.features.shared.api.dto.UserUpdateRequestDto;
 
-import java.net.URI;
 import java.util.List;
 
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -40,4 +40,11 @@ public interface DriversApi {
     @POST("/api/drivers")
     Call<Void> createDriver(@Part("user") DriverCreationDto request,
                             @Part MultipartBody.Part profileImage);
+    @POST("api/drivers/{driverId}/status")
+    Call<Void> updateStatus(@Header("Authorization") String auth,
+                                  @Path("driverId") Integer driverId);
+
+    @GET("api/drivers/{driverId}/status")
+    Call<Boolean> getStatus(@Header("Authorization") String auth,
+                            @Path("driverId") Integer driverId);
 }

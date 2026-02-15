@@ -18,18 +18,25 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mobileapp.R;
+import com.example.mobileapp.core.network.ApiClient;
+import com.example.mobileapp.features.shared.api.DriversApi;
 import com.example.mobileapp.features.shared.api.GeocodingApi;
 import com.example.mobileapp.features.shared.api.dto.DriverRideDto;
 import com.example.mobileapp.features.shared.api.dto.GeocodeResult;
 import com.example.mobileapp.features.shared.api.dto.LocationDto;
 import com.example.mobileapp.features.shared.api.dto.PassengerDto;
 import com.example.mobileapp.features.shared.api.dto.RideCancellationDto;
+import com.example.mobileapp.features.shared.api.dto.RideDetailDto;
 import com.example.mobileapp.features.shared.api.dto.RideDto;
+import com.example.mobileapp.features.shared.api.dto.RideHistoryDto;
+import com.example.mobileapp.features.shared.api.dto.RideHistoryResponseDto;
 import com.example.mobileapp.features.shared.api.dto.RidePanicDto;
 import com.example.mobileapp.features.shared.map.MapFragment;
 import com.example.mobileapp.features.shared.services.RideSimulationService;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -55,6 +62,13 @@ public class DriverDashboardFragment extends Fragment {
 
     private TextView tvWaypointsLabel;
     private View cardWaypoints;
+    private TextView tvWorkActive;
+    private TextView tvWorkLimit;
+    private TextView btnChangeStatus;
+    private View statusDot;
+    private TextView statusText;
+
+    private DriversApi driversApi;
 
     private TextView tvCurrentStatus;
     private TextView tvCurrentRoute;
@@ -77,10 +91,14 @@ public class DriverDashboardFragment extends Fragment {
     private Runnable arrivalRunnable;
     private Integer watchingRideId = null;
 
+    private final int workMinutes = 220;
+    private final int workLimitMinutes = 480;
+
     private TextView tvCurrentRideEta;
     private final android.os.Handler etaH = new android.os.Handler(android.os.Looper.getMainLooper());
     private Runnable etaRunnable;
     private Integer watchingEtaRideId = null;
+    private boolean isOnline = true;
 
 
     @Nullable
@@ -97,6 +115,11 @@ public class DriverDashboardFragment extends Fragment {
 
         tvWaypointsLabel = v.findViewById(R.id.tvWaypointsLabel);
         cardWaypoints = v.findViewById(R.id.cardWaypoints);
+        tvWorkActive = v.findViewById(R.id.tvWorkActive);
+        tvWorkLimit = v.findViewById(R.id.tvWorkLimit);
+        btnChangeStatus = v.findViewById(R.id.btn_status);
+        statusDot = v.findViewById(R.id.statusDot);
+        statusText = v.findViewById(R.id.statusText);
 
         rvWayPoints = v.findViewById(R.id.rvWaypoints);
         rvPassengers = v.findViewById(R.id.rvPassengers);
@@ -108,17 +131,19 @@ public class DriverDashboardFragment extends Fragment {
         btnStartRide = v.findViewById(R.id.btnStartRide);
         btnPanic = v.findViewById(R.id.btnPanic);
         btnStopRide = v.findViewById(R.id.btnStop);
-
+        btnChangeStatus.setOnClickListener(view -> toggleDriverStatus());
         tvCurrentRideEta = v.findViewById(R.id.tvCurrentRideEta);
 
         prefs = requireContext().getSharedPreferences("auth", android.content.Context.MODE_PRIVATE);
         ridesApi = com.example.mobileapp.core.network.ApiClient.get().create(com.example.mobileapp.features.shared.api.RidesApi.class);
+        driversApi = ApiClient.get().create(DriversApi.class);
         sim = new com.example.mobileapp.features.shared.services.RideSimulationService();
 
         setupWaypoints();
         setupPassengers();
         setupBookedRides();
         setupMapChild();
+        loadStatus();
 
         ridesService = new DriverRidesService(requireContext());
 
@@ -131,6 +156,124 @@ public class DriverDashboardFragment extends Fragment {
         if (scroll != null) scroll.setFillViewport(true);
 
         return v;
+    }
+
+    private void setupWorkingHours() {
+        updateWorkingHours(0);
+        fetchAndCalculateWorkingHours();
+    }
+
+    private void fetchAndCalculateWorkingHours() {
+        String token = bearer();
+        if (token == null) return;
+
+        int driverId = prefs.getInt("userId", -1);
+        if (driverId == -1) return;
+
+        Calendar cal = Calendar.getInstance();
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(cal.getTime());
+
+        ridesApi.getRideHistory(token, driverId, today, today, 0, 100)
+                .enqueue(new Callback<RideHistoryResponseDto>() {
+                    @Override
+                    public void onResponse(@NonNull Call<RideHistoryResponseDto> call,
+                                           @NonNull Response<RideHistoryResponseDto> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            calculateTotalWorkMinutes(response.body().rides);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<RideHistoryResponseDto> call,
+                                          @NonNull Throwable t) {
+                    }
+                });
+    }
+
+    private void calculateTotalWorkMinutes(List<RideHistoryDto> rides) {
+        List<Integer> completedRideIds = new ArrayList<>();
+        for (RideHistoryDto ride : rides) {
+            if ("COMPLETED".equals(ride.status) || "IN_PROGRESS".equals(ride.status) ) {
+                completedRideIds.add(ride.id);
+            }
+        }
+        if (completedRideIds.isEmpty()) {
+            return;
+        }
+        final int[] totalMinutes = {0};
+        final int[] completedFetches = {0};
+        final int totalToFetch = completedRideIds.size();
+        for (Integer rideId : completedRideIds) {
+            ridesApi.getRideDetails(bearer(), rideId)
+                    .enqueue(new Callback<RideDetailDto>() {
+                        @Override
+                        public void onResponse(@NonNull Call<RideDetailDto> call,
+                                               @NonNull Response<RideDetailDto> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                int duration = calculateRideDuration(response.body());
+                                totalMinutes[0] += duration;
+                            }
+
+                            completedFetches[0]++;
+
+                            if (completedFetches[0] == totalToFetch) {
+                                updateWorkingHours(totalMinutes[0]);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call <RideDetailDto> call,
+                                              @NonNull Throwable t) {
+                            completedFetches[0]++;
+
+                            if (completedFetches[0] == totalToFetch) {
+                                updateWorkingHours(totalMinutes[0]);
+                            }
+                        }
+                    });
+        }
+    }
+
+    private int calculateRideDuration(RideDetailDto rideDetail) {
+        if (rideDetail.actualStartTime == null || rideDetail.actualEndTime == null) {
+            return 0;
+        }
+
+        try {
+            SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+
+            String startTimeStr = rideDetail.actualStartTime;
+            String endTimeStr = rideDetail.actualEndTime;
+
+            if (startTimeStr.contains(".")) {
+                startTimeStr = startTimeStr.substring(0, startTimeStr.indexOf('.'));
+            }
+            if (endTimeStr.contains(".")) {
+                endTimeStr = endTimeStr.substring(0, endTimeStr.indexOf('.'));
+            }
+
+            java.util.Date start = iso8601Format.parse(startTimeStr);
+            java.util.Date end = iso8601Format.parse(endTimeStr);
+
+            if (start != null && end != null) {
+                long durationMillis = end.getTime() - start.getTime();
+                return (int) (durationMillis / 60000);
+            }
+        } catch (Exception ignored) {
+        }
+
+        return 0;
+    }
+
+    private void updateWorkingHours(int workMinutes) {
+        tvWorkActive.setText(formatMinutes(workMinutes));
+        tvWorkLimit.setText(String.format(Locale.getDefault(), "%s / %s",
+                formatMinutes(workMinutes),
+                formatMinutes(workLimitMinutes)));
+
+        int percent = (int) Math.round(workMinutes * 100.0 / workLimitMinutes);
+        percent = Math.max(0, Math.min(100, percent));
+        pbWork.setProgress(percent);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -161,6 +304,74 @@ public class DriverDashboardFragment extends Fragment {
                     .beginTransaction()
                     .replace(R.id.mapContainer, new MapFragment())
                     .commit();
+        }
+    }
+
+    private void loadStatus(){
+        String token = bearer();
+        if (token == null) return;
+
+        int driverId = prefs.getInt("userId", -1);
+        if (driverId == -1) return;
+        driversApi.getStatus(token, driverId).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(@NonNull Call<Boolean> call, @NonNull Response<Boolean> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    isOnline = response.body();
+                    updateStatusUI(isOnline);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Boolean> call, @NonNull Throwable t) {
+                Toast.makeText(requireContext(), "Failed to get status", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void toggleDriverStatus() {
+        String token = bearer();
+        if (token == null) return;
+
+        int driverId = prefs.getInt("userId", -1);
+        if (driverId == -1) return;
+
+        btnChangeStatus.setEnabled(false);
+        btnChangeStatus.setAlpha(0.6f);
+
+        driversApi.updateStatus(token, driverId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                btnChangeStatus.setEnabled(true);
+                btnChangeStatus.setAlpha(1f);
+
+                if (response.isSuccessful()) {
+                    isOnline = !isOnline;
+                    updateStatusUI(isOnline);
+                    Toast.makeText(requireContext(), "Status updated", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(requireContext(), "Failed to update status", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                btnChangeStatus.setEnabled(true);
+                btnChangeStatus.setAlpha(1f);
+                Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void updateStatusUI(boolean isOnline) {
+        if (isOnline) {
+            statusDot.setBackgroundResource(R.drawable.bg_dot_green);
+            statusText.setText("Active");
+            btnChangeStatus.setText("Go offline");
+            btnChangeStatus.setBackgroundResource(R.drawable.bg_btn_dark);
+        } else {
+            statusDot.setBackgroundResource(R.drawable.bg_dot_red);
+            statusText.setText("Offline");
+            btnChangeStatus.setText("Go online");
+            btnChangeStatus.setBackgroundResource(R.drawable.bg_dot_green);
         }
     }
 
@@ -585,6 +796,7 @@ public class DriverDashboardFragment extends Fragment {
                                     @Override
                                     public void onResponse(Call<GeocodeResult> call, Response<GeocodeResult> response) {
                                         if (response.isSuccessful() && response.body() != null) {
+                                            response.body().formatAddress();
                                             locationDto.setAddress(response.body().getFormattedResult());
                                         } else {
                                             locationDto.setAddress("Unknown address");
@@ -728,7 +940,7 @@ public class DriverDashboardFragment extends Fragment {
         input.setGravity(android.view.Gravity.TOP | android.view.Gravity.START);
         input.setPadding(50, 40, 50, 40);
 
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        new AlertDialog.Builder(requireContext())
                 .setTitle("Cancel Ride")
                 .setMessage("Please provide a reason for cancelling this ride:")
                 .setView(input)
@@ -1135,5 +1347,11 @@ public class DriverDashboardFragment extends Fragment {
         stopEtaPolling();
         stopArrivalWatch();
         super.onDestroyView();
+    }
+    @Nullable
+    private String bearer() {
+        String token = prefs.getString("jwt", null);
+        if (token == null || token.trim().isEmpty()) return null;
+        return "Bearer " + token;
     }
 }

@@ -5,6 +5,7 @@ import { User } from "../../../core/models/user";
 import { Observable } from "rxjs";
 import { VehicleType } from "../models/vehicle";
 import { Driver } from "../models/driver";
+import {map} from 'rxjs/operators';
 
 export interface DriverCreationDTO {
     email: string,
@@ -75,4 +76,19 @@ export class DriverService {
     rejectUpdate(id: number) : Observable<void> {
         return this.http.put<void>(`${this.config.driverUrl}/${id}/reject-update`, {});
     }
+
+  setStatus(driverId: number | null): Observable<void> {
+    return this.http.post<void>(
+      `${this.config.driverUrl}/${driverId}/status`,
+      {}
+    );
+  }
+
+  getStatus(driverId: number): Observable<boolean> {
+    return this.http.get<boolean>(
+      `${this.config.driverUrl}/${driverId}/status`
+    );
+  }
+
+
 }

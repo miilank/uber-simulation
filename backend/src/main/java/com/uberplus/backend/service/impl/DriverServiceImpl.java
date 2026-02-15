@@ -8,9 +8,11 @@ import com.uberplus.backend.dto.user.UserUpdateRequestDTO;
 import com.uberplus.backend.model.*;
 import com.uberplus.backend.model.enums.ProfileUpdateStatus;
 import com.uberplus.backend.model.enums.UserRole;
+import com.uberplus.backend.model.enums.VehicleStatus;
 import com.uberplus.backend.repository.DriverRepository;
 import com.uberplus.backend.repository.ProfileChangeRequestRepository;
 import com.uberplus.backend.repository.UserRepository;
+import com.uberplus.backend.repository.VehicleRepository;
 import com.uberplus.backend.service.AvatarService;
 import com.uberplus.backend.service.DriverService;
 import com.uberplus.backend.service.EmailService;
@@ -32,6 +34,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DriverServiceImpl implements DriverService {
     private final DriverRepository driverRepository;
+    private final VehicleRepository vehicleRepository;
     private final UserRepository userRepository;
     private final ProfileChangeRequestRepository changeRequestRepository;
     private final EmailService emailService;
@@ -261,7 +264,31 @@ public class DriverServiceImpl implements DriverService {
 
         return avatar;
     }
-
+    @Override
+    public void changeStatus(Integer driverId){
+        Driver driver = driverRepository.findById(driverId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No account with this email exists.")
+        );
+        if (driver.isActive()){
+            driver.setActive(false);
+            driver.setAvailable(false);
+            driver.getVehicle().setStatus(VehicleStatus.OCCUPIED);
+        }
+        else{
+            driver.setActive(true);
+            driver.setAvailable(true);
+            driver.getVehicle().setStatus(VehicleStatus.AVAILABLE);
+        }
+        driverRepository.save(driver);
+        vehicleRepository.save(driver.getVehicle());
+    }
+    @Override
+    public boolean getStatus(Integer driverId){
+        Driver driver = driverRepository.findById(driverId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No account with this email exists.")
+        );
+        return driver.isActive();
+    }
     @Override
     public List<Driver> getAllDrivers() {
         return driverRepository.findAll();

@@ -48,12 +48,14 @@
                         android:gravity="center_vertical">
 
                         <View
+                            android:id="@+id/statusDot"
                             android:layout_width="10dp"
                             android:layout_height="10dp"
                             android:background="@drawable/bg_dot_green"
                             android:layout_marginEnd="10dp"/>
 
                         <TextView
+                            android:id="@+id/statusText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/active"
@@ -64,6 +66,7 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/btn_status"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_gravity="bottom|end"

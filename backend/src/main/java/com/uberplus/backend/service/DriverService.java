@@ -28,4 +28,6 @@ public interface DriverService {
     Resource getNewAvatar(Integer driverId);
     List<Driver> getAllDrivers();
     Driver getDriverByEmail(String email);
+    void changeStatus(Integer driverId);
+    boolean getStatus(Integer driverId);
 }

@@ -167,6 +167,10 @@ public class RideHistoryDetailsDialogFragment extends DialogFragment {
             chip.setText("Cancelled");
             chip.setBackgroundResource(R.drawable.bg_cancelled);
             chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.cancel_ride));
+        } else if (st == RideStatus.STOPPED) {
+            chip.setText("Stopped");
+            chip.setBackgroundResource(R.drawable.bg_panic);
+            chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.panic_ride));
         } else if (st == RideStatus.ASSIGNED) {
             chip.setText("Assigned");
             chip.setBackgroundResource(R.drawable.bg_neutral);

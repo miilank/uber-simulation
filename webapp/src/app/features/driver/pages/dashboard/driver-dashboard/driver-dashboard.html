@@ -8,13 +8,23 @@
       <div class="text-lg font-semibold text-gray-900 mb-3">Current status:</div>
 
       <div class="flex items-center gap-3">
-        <span class="inline-flex w-3 h-3 rounded-full bg-green-500"></span>
-        <span class="text-base font-medium text-gray-900">Active</span>
+    <span
+      class="inline-flex w-3 h-3 rounded-full"
+      [class.bg-green-500]="status()"
+      [class.bg-gray-400]="!status()">
+    </span>
+        <span class="text-base font-medium text-gray-900">
+      {{ status() ? 'Active' : 'Offline' }}
+    </span>
       </div>
 
-      <div class="absolute right-6 bottom-6 h-10 px-5 rounded-full bg-neutral-900 text-white text-sm flex items-center">
-        Go offline
-      </div>
+      <button
+        (click)="toggleOnlineStatus()"
+        [class.bg-neutral-900]="status()"
+        [class.bg-green-600]="!status()"
+        class="absolute right-6 bottom-6 h-10 px-5 rounded-full text-white text-sm flex items-center hover:opacity-90 transition-opacity">
+        {{ status() ? 'Go offline' : 'Go online' }}
+      </button>
     </div>
 
     <!-- Working hours -->
@@ -186,7 +196,7 @@
 
   <!-- Booked rides -->
   <app-booked-rides></app-booked-rides>
-  <success-alert 
+  <success-alert
   [isOpen]="showStopSuccess"
   [title]="'Ride Stopped Successfully'"
   [message]="'Ride has been stopped early and moved to history.'"

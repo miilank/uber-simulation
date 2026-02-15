@@ -1,4 +1,4 @@
-package com.example.mobileapp.features.driver.ridehistory;
+package com.example.mobileapp.features.admin.rideHistory;
 
 import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
@@ -17,7 +17,7 @@ import com.example.mobileapp.features.shared.models.enums.RideStatus;
 
 import java.util.List;
 
-public class RideHistoryAdapter extends RecyclerView.Adapter<RideHistoryAdapter.RideViewHolder> {
+public class AdminRideHistoryAdapter extends RecyclerView.Adapter<AdminRideHistoryAdapter.RideViewHolder> {
 
     public interface OnRideClickListener {
         void onRideClick(Ride ride);
@@ -26,7 +26,7 @@ public class RideHistoryAdapter extends RecyclerView.Adapter<RideHistoryAdapter.
     private final List<Ride> rides;
     private final OnRideClickListener listener;
 
-    public RideHistoryAdapter(@NonNull List<Ride> rides, OnRideClickListener listener) {
+    public AdminRideHistoryAdapter(@NonNull List<Ride> rides, OnRideClickListener listener) {
         this.rides = rides;
         this.listener = listener;
     }
@@ -80,15 +80,14 @@ public class RideHistoryAdapter extends RecyclerView.Adapter<RideHistoryAdapter.
             h.chipStatus.setText("Completed");
             h.chipStatus.setBackgroundTintList(ColorStateList.valueOf(completedBg));
             h.chipStatus.setTextColor(completedText);
-
-        } else if (st == RideStatus.CANCELLED) {
-            h.chipStatus.setText("Cancelled");
-            h.chipStatus.setBackgroundTintList(ColorStateList.valueOf(cancelledBg));
-            h.chipStatus.setTextColor(cancelledText);
         } else if (st == RideStatus.STOPPED) {
             h.chipStatus.setText("Stopped");
             h.chipStatus.setBackgroundTintList(ColorStateList.valueOf(panicBg));
             h.chipStatus.setTextColor(panicText);
+        } else if (st == RideStatus.CANCELLED) {
+            h.chipStatus.setText("Cancelled");
+            h.chipStatus.setBackgroundTintList(ColorStateList.valueOf(cancelledBg));
+            h.chipStatus.setTextColor(cancelledText);
 
         } else if (st == RideStatus.ASSIGNED) {
             h.chipStatus.setText("Assigned");
@@ -112,8 +111,6 @@ public class RideHistoryAdapter extends RecyclerView.Adapter<RideHistoryAdapter.
         h.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onRideClick(r);
         });
-
-        h.btnRate.setVisibility(View.GONE);
     }
 
 
@@ -125,7 +122,6 @@ public class RideHistoryAdapter extends RecyclerView.Adapter<RideHistoryAdapter.
     public static class RideViewHolder extends RecyclerView.ViewHolder {
         final TextView tvDate, tvTime, tvPrice, tvOrigin, tvDestination;
         final TextView chipStatus, chipPanic;
-        final TextView btnRate;
 
         public RideViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -134,7 +130,6 @@ public class RideHistoryAdapter extends RecyclerView.Adapter<RideHistoryAdapter.
             tvPrice = itemView.findViewById(R.id.tv_price);
             tvOrigin = itemView.findViewById(R.id.tv_origin);
             tvDestination = itemView.findViewById(R.id.tv_destination);
-            btnRate = itemView.findViewById(R.id.btn_rate);
 
             chipStatus = itemView.findViewById(R.id.chip_status);
             chipPanic = itemView.findViewById(R.id.chip_panic);

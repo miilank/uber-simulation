@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <!-- CONTENT -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="0dp"
+        tools:ignore="UselessParent">
+        <com.example.mobileapp.features.shared.input.UserSearchInputView
+            android:id="@+id/user_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"/>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_filters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_calendar" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:text="@string/filters"
+                    android:textColor="@color/dark_grey" />
+
+                <ImageView
+                    android:id="@+id/iv_filters_arrow"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_right" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- PANEL ABOVE RECYCLE VIEW - WHEN FILTERS OPENED(VISIBILITY GONE) -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_filters_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <!-- FROM -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/from"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="14sp" />
+
+                <!-- From input -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input_outline"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp">
+
+                    <ImageView
+                        android:id="@+id/btn_from_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_calendar" />
+
+                    <EditText
+                        android:id="@+id/et_from"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/date_hint"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:digits="0123456789/"
+                        android:padding="0dp"
+                        android:textColor="@color/dark_grey"
+                        android:textColorHint="@color/neutral"
+                        android:textSize="15sp"
+                        tools:ignore="DuplicateSpeakableTextCheck,TouchTargetSizeCheck" />
+                </LinearLayout>
+
+                <!-- TO -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/to"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="14sp" />
+
+                <!-- To input -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input_outline"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp">
+
+                    <ImageView
+                        android:id="@+id/btn_to_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_calendar" />
+
+                    <EditText
+                        android:id="@+id/et_to"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/date_hint"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:digits="0123456789/"
+                        android:padding="0dp"
+                        android:textColor="@color/dark_grey"
+                        android:textColorHint="@color/neutral"
+                        android:textSize="15sp"
+                        tools:ignore="DuplicateSpeakableTextCheck,TouchTargetSizeCheck" />
+                </LinearLayout>
+
+                <!-- Buttons row: Apply / Reset -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_apply"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/filters_green"
+                        android:backgroundTint="@null"
+                        android:elevation="0dp"
+                        android:stateListAnimator="@null"
+                        android:text="@string/apply"
+                        android:textAllCaps="false"
+                        android:textColor="@color/dark_grey"
+                        tools:ignore="TextContrastCheck,TouchTargetSizeCheck" />
+
+                    <View
+                        android:layout_width="12dp"
+                        android:layout_height="0dp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_reset"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/filters_red"
+                        android:backgroundTint="@null"
+                        android:elevation="0dp"
+                        android:stateListAnimator="@null"
+                        android:text="@string/reset"
+                        android:textAllCaps="false"
+                        android:textColor="@color/dark_grey"
+                        tools:ignore="TextContrastCheck,TouchTargetSizeCheck" />
+                </LinearLayout>
+
+                <!-- Quick buttons: Last 7 / Last 30 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_last_7"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        tools:ignore="TouchTargetSizeCheck"
+                        android:background="@drawable/bg_neutral"
+                        android:text="@string/last_7_days"
+                        android:textAllCaps="false"
+                        android:backgroundTint="@null"
+                        android:textColor="@color/dark_grey"
+                        android:elevation="0dp"
+                        android:stateListAnimator="@null"/>
+
+                    <View
+                        android:layout_width="12dp"
+                        android:layout_height="0dp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_last_30"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_neutral"
+                        android:backgroundTint="@null"
+                        android:elevation="0dp"
+                        android:stateListAnimator="@null"
+                        android:text="@string/last_30_days"
+                        android:textAllCaps="false"
+                        android:textColor="@color/dark_grey"
+                        tools:ignore="TouchTargetSizeCheck" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_rides"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</LinearLayout>

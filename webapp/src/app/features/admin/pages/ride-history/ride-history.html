@@ -1,0 +1,147 @@
+<section class="w-full bg-white rounded-[28px] shadow-xl p-10 relative pointer-events-auto">
+  <h2 class="text-2xl font-poppins mb-6">Ride history:</h2>
+    <div class="mb-8">
+      <app-user-search [(selectedUser)]="selectedUser"></app-user-search>
+    </div>
+  <!-- Filters card -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6">
+    <div class="flex items-end gap-4 flex-wrap">
+      <!-- From -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs text-gray-500">From:</label>
+        <div class="flex items-center gap-2 border border-gray-200 rounded-xl px-3 h-11 w-45">
+          <input
+            type="date"
+            class="w-full outline-none text-sm text-gray-700 bg-transparent"
+            [(ngModel)]="fromDate"
+          />
+        </div>
+      </div>
+
+      <!-- To -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs text-gray-500">To:</label>
+        <div class="flex items-center gap-2 border border-gray-200 rounded-xl px-3 h-11 w-45">
+          <input
+            type="date"
+            class="w-full outline-none text-sm text-gray-700 bg-transparent"
+            [(ngModel)]="toDate"
+          />
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <button
+        type="button"
+        class="h-11 px-6 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-800 active:scale-[0.99] cursor-pointer transition-colors duration-250"
+        (click)="apply()">
+        Apply
+      </button>
+
+      <button
+        type="button"
+        class="h-11 px-6 rounded-xl border border-gray-300 text-sm hover:bg-gray-50 active:scale-[0.99] cursor-pointer transition-colors duration-250"
+        (click)="reset()">
+        Reset
+      </button>
+
+      <!-- Quick filters -->
+      <div class="ml-auto flex gap-3">
+        <button
+          type="button"
+          class="h-9 px-4 rounded-lg bg-gray-100 text-xs hover:bg-gray-200 active:scale-[0.99] cursor-pointer transition-colors duration-250"
+          (click)="lastDays(7)">
+          Last 7 days
+        </button>
+
+        <button
+          type="button"
+          class="h-9 px-4 rounded-lg bg-gray-100 text-xs hover:bg-gray-200 active:scale-[0.99] cursor-pointer transition-colors duration-250"
+          (click)="lastDays(30)">
+          Last 30 days
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table header -->
+  <div class="grid grid-cols-[80px_1fr_450px_1fr_1fr_1fr_1fr] text-xs text-gray-500 px-2 pb-2">
+    <div>Date</div>
+    <div>Time</div>
+    <div>Route</div>
+    <div>Status</div>
+    <div>Panic</div>
+    <div>Price</div>
+    <div></div>
+  </div>
+
+  <!-- Rows -->
+  <div class="divide-y divide-gray-100">
+    @for (r of rides; track r.id) {
+      <div class="grid grid-cols-[80px_1fr_450px_1fr_1fr_1fr_1fr] items-center py-5 px-2">
+        <!-- date -->
+        <div class="text-sm text-gray-800">{{ r.date }}</div>
+
+        <!-- time -->
+        <div class="text-sm text-gray-800">{{ r.time }}</div>
+
+        <!-- route -->
+        <div class="text-sm text-gray-900 flex items-center gap-2 min-w-0">
+          <span class="truncate">{{ r.from }}</span>
+          <span class="text-gray-400">→</span>
+          <span class="truncate">{{ r.to }}</span>
+        </div>
+
+        <!-- status -->
+        <div>
+          @if (r.status === 'COMPLETED') {
+            <span class="inline-flex items-center px-4 h-7 rounded-full bg-green-100 text-green-700 text-xs">
+              Completed
+            </span>
+            } @else if (r.status === 'STOPPED') {
+              <span class="inline-flex items-center px-4 h-7 rounded-full bg-yellow-100 text-yellow-700 text-xs">
+              Stopped Early
+              </span>
+          } @else if (r.status === 'CANCELLED') {
+            <div class="text-xs text-red-600 leading-4 pl-4">
+              <div>Cancelled</div>
+              <div class="text-[10px] text-gray-500">by: {{ r.cancelledBy }}</div>
+            </div>
+          }
+        </div>
+
+        <!-- panic -->
+        <div>
+          @if (r.panic) {
+            <span class="inline-flex w-22.5 justify-center items-center px-3 h-7 rounded-full bg-orange-100 text-orange-700 text-xs">
+              Panic
+            </span>
+          } @else {
+            <span class="inline-flex w-22.5 justify-center items-center px-3 h-7 rounded-full bg-gray-100 text-gray-600 text-xs">
+              No panic
+            </span>
+          }
+        </div>
+
+        <!-- price -->
+        <div class="text-sm text-gray-800">{{ r.price }}</div>
+
+        <!-- details -->
+        <div class="flex justify-end">
+          <button
+            type="button"
+            class="h-9 px-6 rounded-full border border-gray-400 text-sm hover:bg-gray-50 active:scale-[0.99] cursor-pointer"
+            (click)="openDetails(r)">
+            Details
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<app-ride-details-drawer
+  [open]="isDetailsOpen"
+  [ride]="selectedRide"
+  (close)="closeDetails()">
+</app-ride-details-drawer>

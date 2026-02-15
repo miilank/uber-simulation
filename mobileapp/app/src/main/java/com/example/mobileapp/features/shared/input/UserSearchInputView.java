@@ -36,6 +36,8 @@ public class UserSearchInputView extends FrameLayout {
     private final Handler debounceHandler = new Handler(Looper.getMainLooper());
     private Runnable pendingSearch;
     private User selectedUser;
+    private Runnable onUserClickCallback;
+
 
 
     public UserSearchInputView(Context context) {
@@ -62,6 +64,9 @@ public class UserSearchInputView extends FrameLayout {
         adapter = new UserSearchAdapter(results, result -> {
             selectedUser = result;
             adapter.setSelectedUser(result);
+            if (onUserClickCallback != null) {
+                onUserClickCallback.run();
+            }
         });
         resultsContainer.setAdapter(adapter);
 
@@ -128,5 +133,8 @@ public class UserSearchInputView extends FrameLayout {
                 getResources().getColor(com.google.android.material.R.color.design_default_color_error));
         snackbar.setTextColor(Color.WHITE);
         snackbar.show();
+    }
+    public void setOnUserClickCallback(Runnable callback) {
+        this.onUserClickCallback = callback;
     }
 }

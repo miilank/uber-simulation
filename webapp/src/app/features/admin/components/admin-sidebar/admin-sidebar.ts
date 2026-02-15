@@ -19,6 +19,7 @@ export class AdminSidebar {
     this.items = [
       { label: 'Dashboard', route: '/admin/dashboard', icon: 'dashboard' },
       { label: 'Ride tracking', route: '/admin/ride-tracking', icon: 'ridetracking' },
+      { label: 'Ride history', route: '/admin/ride-history', icon: 'history' },
       { label: 'Pricing', route: '/admin/ride-pricing', icon: 'pricing' },
       { label: 'Register a driver', route: '/admin/register-driver', icon: 'car' },
       { label: 'Review profile changes', route: '/admin/driver-profile-changes', icon: 'pencil' },

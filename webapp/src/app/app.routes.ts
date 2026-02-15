@@ -24,7 +24,7 @@ import { BookedRidesComponent } from './features/driver/pages/booked-rides/booke
 import { PassengerBookedRidesComponent } from './features/registered/pages/booked-rides/booked-rides';
 import { DriverProfileChanges } from './features/admin/pages/driver-profile-changes/driver-profile-changes';
 import { AuthGuard } from './core/services/auth.guard';
-import {AdminDriverMonitor} from './features/admin/pages/driver-monitor/admin-driver-monitor/admin-driver-monitor';
+import { AdminDriverMonitor } from './features/admin/pages/driver-monitor/admin-driver-monitor/admin-driver-monitor';
 import { PricingManagement } from './features/admin/pages/pricing-management/pricing-management';
 import { AdminHistoryReport } from './features/admin/pages/history-report/history-report';
 import { UserHistoryReport } from './features/shared/pages/history-report/history-report';
@@ -32,6 +32,7 @@ import { SupportChatComponent } from './features/shared/components/support-chat/
 import { AdminSupportChatComponent} from './features/admin/pages/admin-support-chat/admin-support-chat';
 import { PassengerRideHistory } from './features/registered/pages/ride-history/passenger-ride-history';
 import { BlockUsersComponent } from './features/admin/pages/block-users/block-users';
+import { AdminRideHistory } from './features/admin/pages/ride-history/ride-history';
 
 export const routes: Routes = [
   { path: '', component: UnregisteredHomeComponent },
@@ -81,6 +82,7 @@ export const routes: Routes = [
     { path: 'reports', component: AdminHistoryReport},
     { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
     { path: 'support', component: AdminSupportChatComponent },
-    { path: 'block-users', component: BlockUsersComponent }
+    { path: 'block-users', component: BlockUsersComponent },
+    { path: 'ride-history', component: AdminRideHistory }
   ] }
 ];

@@ -1,4 +1,4 @@
-package com.example.mobileapp.features.passenger.rideHistory;
+package com.example.mobileapp.features.admin.rideHistory;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -31,15 +31,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class PassengerRideHistoryDetailsDialogFragment extends DialogFragment {
-    private PassengerRideHistoryService detailsService;
+public class AdminRideHistoryDetailsDialogFragment extends DialogFragment {
+    private AdminRideHistoryService detailsService;
     private InconsistencyAdapter incAdapter;
     private RecyclerView rvIncs;
     private static final String ARG_RIDE = "arg_ride"; // key which identificates ride in bundle
 
     // standard pattern for fragments: data goes in arguments, so fragment can be made by Android alone
-    public static PassengerRideHistoryDetailsDialogFragment newInstance(@NonNull Ride ride) {
-        PassengerRideHistoryDetailsDialogFragment f = new PassengerRideHistoryDetailsDialogFragment();
+    public static AdminRideHistoryDetailsDialogFragment newInstance(@NonNull Ride ride) {
+        AdminRideHistoryDetailsDialogFragment f = new AdminRideHistoryDetailsDialogFragment();
         Bundle b = new Bundle();
         b.putParcelable(ARG_RIDE, ride);
         f.setArguments(b);
@@ -62,7 +62,7 @@ public class PassengerRideHistoryDetailsDialogFragment extends DialogFragment {
 
         Ride ride = requireArguments().getParcelable(ARG_RIDE);
 
-        detailsService = new PassengerRideHistoryService(requireContext());
+        detailsService = new AdminRideHistoryService(requireContext());
         rvIncs = v.findViewById(R.id.rv_inconsistencies);
         rvIncs.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvIncs.setNestedScrollingEnabled(false);
@@ -134,7 +134,7 @@ public class PassengerRideHistoryDetailsDialogFragment extends DialogFragment {
         }
 
         if (ride != null && ride.getId() != null) {
-            detailsService.fetchRideDetails(ride.getId(), new PassengerRideHistoryService.DetailsCallback() {
+            detailsService.fetchRideDetails(ride.getId(), new AdminRideHistoryService.DetailsCallback() {
                 @Override
                 public void onSuccess(@NonNull RideDetailDto dto) {
                     if (!isAdded()) return;

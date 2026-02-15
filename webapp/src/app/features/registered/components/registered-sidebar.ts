@@ -3,7 +3,7 @@ import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { Router, RouterLink, UrlTree } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
-type Item = { label: string; route: string | UrlTree; icon: string };
+type Item = { label: string; route: string | UrlTree; icon: string, name: string };
 
 @Component({
   selector: 'app-registered-sidebar',
@@ -14,6 +14,7 @@ type Item = { label: string; route: string | UrlTree; icon: string };
     @for (it of items; track it.route) {
         <a
         [routerLink]="it.route"
+        [name]="it.name"
         class="flex items-center gap-4 h-12 px-10 rounded-full cursor-pointer select-none transition-all duration-250"
         [ngClass]="isActive(it.route)
         ? 'bg-app-accent text-app-dark hover:brightness-95'
@@ -50,15 +51,15 @@ export class RegisteredSidebar {
     );
 
     this.items = [
-      { label: 'Dashboard', route: '/user/dashboard', icon: 'dashboard' },
-      { label: 'Book a ride', route: bookingUrl, icon: 'car' },
-      { label: 'Current ride', route: '/user/current-ride', icon: 'current_ride' },
-      { label: 'Ride history', route: '/user/ride-history', icon: 'history' },
-      { label: 'Booked rides', route: '/user/booked-rides', icon: 'bookedrides' },
-      { label: 'Favorite routes', route: '/user/favorite-routes', icon: 'routes'},
-      { label: 'Reports', route: '/user/reports', icon: 'reports' },
-      { label: 'Profile', route: '/user/profile', icon: 'user' },
-      { label: 'Support', route: '/user/support', icon: 'support' },
+      { label: 'Dashboard', route: '/user/dashboard', icon: 'dashboard', name: 'dashboard' },
+      { label: 'Book a ride', route: bookingUrl, icon: 'car', name: 'booking' },
+      { label: 'Current ride', route: '/user/current-ride', icon: 'current_ride', name: 'current-ride' },
+      { label: 'Ride history', route: '/user/ride-history', icon: 'history', name: 'ride-history' },
+      { label: 'Booked rides', route: '/user/booked-rides', icon: 'bookedrides',name: 'booked-rides' },
+      { label: 'Favorite routes', route: '/user/favorite-routes', icon: 'routes', name: 'favorite-routes' },
+      { label: 'Reports', route: '/user/reports', icon: 'reports', name: 'reports' },
+      { label: 'Profile', route: '/user/profile', icon: 'user', name: 'profile' },
+      { label: 'Support', route: '/user/support', icon: 'support', name: 'support' },
     ];
   }
 

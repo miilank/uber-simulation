@@ -2,11 +2,12 @@
     <div class="w-full max-w-md">
       @if (step() == 1) {
         <div class="flex flex-col items-center gap-4 p-6 md:p-7 bg-white">
-            <h1 class="text-[28px] font-bold text-[#111111] leading-tight tracking-tight self-stretch">
+            <h1 id="step1header" class="text-[28px] font-bold text-[#111111] leading-tight tracking-tight self-stretch">
                 Book a ride
             </h1>
         <div class="w-full">
           <location-search-input
+            id="pickup"
             hintMessage="Pickup spot"
             [inputClass]="'input-base'"
             [containerClass]="'w-full'"
@@ -18,6 +19,7 @@
           <div class="w-full flex items-center gap-2">
             <div class="w-full">
               <location-search-input
+                [id]="'waypoint' + $index"
                 hintMessage="Stop"
                 [inputClass]="'input-base'"
                 [containerClass]="'w-full'"
@@ -51,6 +53,7 @@
 
         <div class="w-full">
           <location-search-input
+            id="dropoff"
             hintMessage="Where are you going?"
             [inputClass]="'input-base'"
             [containerClass]="'w-full'"
@@ -79,6 +82,7 @@
           <label class="text-xs text-gray-600">Fill from saved route</label>
           <div class="relative">
             <select
+              id="favoriteRouteSelect"
               class="w-full input-base"
               [(ngModel)]="selectedRoute"
               (ngModelChange)="setFromRoute($event)"
@@ -132,7 +136,7 @@
 
       @if (step() == 2) {
         <div class="flex flex-col items-center gap-4 p-6 md:p-7 bg-white">
-            <h1 class="text-[28px] font-bold text-[#111111] leading-tight tracking-tight self-stretch">
+            <h1 id="step2header" class="text-[28px] font-bold text-[#111111] leading-tight tracking-tight self-stretch">
                 Who is going?
             </h1>
 
@@ -221,7 +225,7 @@
 
       @if (step() == 3) {
         <div class="flex flex-col items-center gap-4 p-6 md:p-7 bg-white">
-            <h1 class="text-[28px] font-bold text-[#111111] leading-tight tracking-tight self-stretch">
+            <h1 id="step3header"class="text-[28px] font-bold text-[#111111] leading-tight tracking-tight self-stretch">
                 Any preferences?
             </h1>
 
@@ -235,7 +239,7 @@
                     [ngClass]="{'bg-app-accent': pets, 'bg-white': !pets}">
                 <!-- Check mark -->
                  @if(pets){
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg id="petsCheckmark" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M20 6L9 17L4 12" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 }
@@ -255,7 +259,7 @@
                     [ngClass]="{'bg-app-accent': infants, 'bg-white': !infants}">
                 <!-- Check mark -->
                  @if (infants) {
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg id="infantCheckmark" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M20 6L9 17L4 12" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 }
@@ -271,6 +275,7 @@
             <label class="text-xs text-gray-600">Vehicle type</label>
             <div class="relative">
               <select
+                id="vehicleTypeSelect"
                 class="w-full input-base"
                 [(ngModel)]="vehicleType"
               >

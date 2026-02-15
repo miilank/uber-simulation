@@ -13,8 +13,8 @@ import { CommonModule } from '@angular/common';
           'opacity-100 translate-y-0 pointer-events-auto': isOpen,
           'opacity-0 -translate-y-2 pointer-events-none': !isOpen
         }">
-        <p class="text-lg font-semibold">{{title}}</p>
-        <p class="overflow-hidden wrap-break-word whitespace-normal">{{message}}</p>
+        <p id="errorTitle" class="text-lg font-semibold">{{title}}</p>
+        <p id="errorMessage" class="overflow-hidden wrap-break-word whitespace-normal">{{message}}</p>
       </div>
     </div>
   `,

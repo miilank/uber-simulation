@@ -17,8 +17,6 @@ export class DriverRegistration {
   email = '';
   address = '';
   phone = '';
-  password = '';
-  confirmPassword = '';
 
   vehicleTypes: string[] = [];
 
@@ -80,13 +78,13 @@ export class DriverRegistration {
           next: () => {
             this.isSubmitting = false;
             this.registrationSuccess = true;
-            this.cdr.detectChanges();
+            // this.cdr.detectChanges();
             console.log('Signup request sent successfully!');
           },
           error: (err) => {
             this.isSubmitting = false;
             this.registrationError = err.error?.message || 'Registration failed. Please try again.';
-            this.cdr.detectChanges();
+            // this.cdr.detectChanges();
             console.error('Signup failed', err);
           }}
         )

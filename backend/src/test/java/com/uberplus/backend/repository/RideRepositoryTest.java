@@ -4,22 +4,16 @@ import com.uberplus.backend.model.*;
 import com.uberplus.backend.model.enums.RideStatus;
 import com.uberplus.backend.model.enums.UserRole;
 import com.uberplus.backend.model.enums.VehicleType;
-import static org.assertj.core.api.Assertions.*;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
-import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -112,5 +106,133 @@ public class RideRepositoryTest {
         assertThat(saved.getStatus()).isEqualTo(RideStatus.PENDING);
         assertThat(saved.getCreatedAt()).isNotNull();
 
+    }
+
+    @Test
+    void findInProgressForPassenger_Success() {
+        // Pozitivan test - pronalazi IN_PROGRESS voznju za putnika
+        Passenger passenger = createAndSavePassenger();
+        Driver driver = createAndSaveDriver();
+
+        Ride ride = createRide(passenger, driver, RideStatus.IN_PROGRESS);
+        ride.setActualStartTime(LocalDateTime.now());
+        rideRepository.save(ride);
+
+        Optional<Ride> found = rideRepository.findInProgressForPassenger("passenger@example.com");
+
+        assertThat(found).hasValueSatisfying(result -> {
+            assertThat(result.getStatus()).isEqualTo(RideStatus.IN_PROGRESS);
+            assertThat(result.getId()).isEqualTo(ride.getId());
+        });
+    }
+
+    @Test
+    void findInProgressForPassenger_NotFound() {
+        // Negativan test - putnik nema IN_PROGRESS voznju
+        Passenger passenger = createAndSavePassenger();
+        Driver driver = createAndSaveDriver();
+
+        Ride completed = createRide(passenger, driver, RideStatus.COMPLETED);
+        rideRepository.save(completed);
+
+        Optional<Ride> found = rideRepository.findInProgressForPassenger("passenger@example.com");
+
+        assertThat(found).isEmpty();
+    }
+
+    @Test
+    void findInProgressForPassenger_NullActualStartTime() {
+        // Granicni slucaj - testira da li postoji voznja sa actualStartTime, ne ona sa null
+        Passenger passenger = createAndSavePassenger();
+        Driver driver = createAndSaveDriver();
+
+        // voznja sa actualStartTime
+        Ride withActualStart = createRide(passenger, driver, RideStatus.IN_PROGRESS);
+        withActualStart.setActualStartTime(LocalDateTime.now().minusHours(1));
+        rideRepository.save(withActualStart);
+
+        // voznja bez actualStartTime
+        Ride withoutActualStart = createRide(passenger, driver, RideStatus.IN_PROGRESS);
+        withoutActualStart.setActualStartTime(null);
+        rideRepository.save(withoutActualStart);
+
+        Optional<Ride> found = rideRepository.findInProgressForPassenger("passenger@example.com");
+
+        assertThat(found).hasValueSatisfying(result -> {
+            assertThat(result.getId()).isEqualTo(withActualStart.getId()); // Vraca onu sa actualStartTime
+        });
+    }
+
+    @Test
+    void findInProgressForPassenger_NullEmail() {
+        // Izuzetan slucaj - null email parametar
+        Optional<Ride> found = rideRepository.findInProgressForPassenger(null);
+
+        assertThat(found).isEmpty();
+    }
+
+    // HELPERS
+    private Passenger createAndSavePassenger() {
+        Passenger passenger = new Passenger();
+        passenger.setEmail("passenger@example.com");
+        passenger.setPassword("hashed-password");
+        passenger.setFirstName("Test");
+        passenger.setLastName("Passenger");
+        passenger.setAddress("Street");
+        passenger.setPhoneNumber("123456789");
+        passenger.setRole(UserRole.PASSENGER);
+        passenger.setBlocked(false);
+        passenger.setActivated(true);
+        passenger.setCreatedAt(LocalDateTime.now());
+        passenger.setUpdatedAt(LocalDateTime.now());
+        return passengerRepository.save(passenger);
+    }
+
+    private Driver createAndSaveDriver() {
+        Driver driver = new Driver();
+        driver.setEmail("driver@example.com");
+        driver.setPassword("hashed-password");
+        driver.setFirstName("Test");
+        driver.setLastName("Driver");
+        driver.setAddress("Street");
+        driver.setPhoneNumber("987654321");
+        driver.setRole(UserRole.DRIVER);
+        driver.setBlocked(false);
+        driver.setActive(true);
+        driver.setActivated(true);
+        driver.setCreatedAt(LocalDateTime.now());
+        driver.setUpdatedAt(LocalDateTime.now());
+        return driverRepository.save(driver);
+    }
+
+    private Ride createRide(Passenger passenger, Driver driver, RideStatus status) {
+        Location start = new Location();
+        start.setLatitude(45.0);
+        start.setLongitude(19.0);
+        start.setAddress("Start Address");
+        start.setCreatedAt(LocalDateTime.now());
+
+        Location end = new Location();
+        end.setLatitude(45.1);
+        end.setLongitude(19.1);
+        end.setAddress("End Address");
+        end.setCreatedAt(LocalDateTime.now());
+
+        Ride ride = new Ride();
+        ride.setCreator(passenger);
+        ride.setDriver(driver);
+        ride.setStartLocation(start);
+        ride.setEndLocation(end);
+        ride.setPassengers(Collections.singletonList(passenger));
+        ride.setVehicleType(VehicleType.STANDARD);
+        ride.setBabyFriendly(false);
+        ride.setPetsFriendly(false);
+        ride.setStatus(status);
+        ride.setBasePrice(200.0);
+        ride.setTotalPrice(250.0);
+        ride.setPanicActivated(false);
+        ride.setCreatedAt(LocalDateTime.now());
+
+        return ride;
     }
 }

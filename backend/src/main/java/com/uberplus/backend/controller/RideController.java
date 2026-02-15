@@ -110,7 +110,7 @@ public class RideController {
 
     // PUT /api/rides/{rideId}/complete
     @PutMapping("/{rideId}/complete")
-    @PreAuthorize("hasRole('DRIVER')")
+    @PreAuthorize("hasRole('DRIVER') && !hasRole('ADMIN')")
     public ResponseEntity<RideDTO> completeRide(
             Authentication auth,
             @PathVariable Integer rideId

@@ -18,6 +18,10 @@
             android:title="@string/register_a_driver"
             android:icon="@drawable/img_history_white"/>
         <item
+            android:id="@+id/nav_ride_history"
+            android:title="@string/rideHistory"
+            android:icon="@drawable/img_history_white"/>
+        <item
             android:id="@+id/nav_review_profile_changes"
             android:title="@string/review_profile_changes"
             android:icon="@drawable/img_bookedrides_white"/>

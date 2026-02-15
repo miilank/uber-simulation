@@ -24,12 +24,17 @@ import com.example.mobileapp.features.shared.api.dto.GeocodeResult;
 import com.example.mobileapp.features.shared.api.dto.LocationDto;
 import com.example.mobileapp.features.shared.api.dto.PassengerDto;
 import com.example.mobileapp.features.shared.api.dto.RideCancellationDto;
+import com.example.mobileapp.features.shared.api.dto.RideDetailDto;
 import com.example.mobileapp.features.shared.api.dto.RideDto;
+import com.example.mobileapp.features.shared.api.dto.RideHistoryDto;
+import com.example.mobileapp.features.shared.api.dto.RideHistoryResponseDto;
 import com.example.mobileapp.features.shared.api.dto.RidePanicDto;
 import com.example.mobileapp.features.shared.map.MapFragment;
 import com.example.mobileapp.features.shared.services.RideSimulationService;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -144,12 +149,119 @@ public class DriverDashboardFragment extends Fragment {
     }
 
     private void setupWorkingHours() {
+        updateWorkingHours(0);
+        fetchAndCalculateWorkingHours();
+    }
+
+    private void fetchAndCalculateWorkingHours() {
+        String token = bearer();
+        if (token == null) return;
+
+        int driverId = prefs.getInt("userId", -1);
+        if (driverId == -1) return;
+
+        Calendar cal = Calendar.getInstance();
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(cal.getTime());
+
+        ridesApi.getRideHistory(token, driverId, today, today, 0, 100)
+                .enqueue(new Callback<RideHistoryResponseDto>() {
+                    @Override
+                    public void onResponse(@NonNull Call<RideHistoryResponseDto> call,
+                                           @NonNull Response<RideHistoryResponseDto> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            calculateTotalWorkMinutes(response.body().rides);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<RideHistoryResponseDto> call,
+                                          @NonNull Throwable t) {
+                    }
+                });
+    }
+
+    private void calculateTotalWorkMinutes(List<RideHistoryDto> rides) {
+        List<Integer> completedRideIds = new ArrayList<>();
+        for (RideHistoryDto ride : rides) {
+            if ("COMPLETED".equals(ride.status) || "IN_PROGRESS".equals(ride.status) ) {
+                completedRideIds.add(ride.id);
+            }
+        }
+        if (completedRideIds.isEmpty()) {
+            return;
+        }
+        final int[] totalMinutes = {0};
+        final int[] completedFetches = {0};
+        final int totalToFetch = completedRideIds.size();
+        for (Integer rideId : completedRideIds) {
+            ridesApi.getRideDetails(bearer(), rideId)
+                    .enqueue(new Callback<RideDetailDto>() {
+                        @Override
+                        public void onResponse(@NonNull Call<RideDetailDto> call,
+                                               @NonNull Response<RideDetailDto> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                int duration = calculateRideDuration(response.body());
+                                totalMinutes[0] += duration;
+                            }
+
+                            completedFetches[0]++;
+
+                            if (completedFetches[0] == totalToFetch) {
+                                updateWorkingHours(totalMinutes[0]);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call <RideDetailDto> call,
+                                              @NonNull Throwable t) {
+                            completedFetches[0]++;
+
+                            if (completedFetches[0] == totalToFetch) {
+                                updateWorkingHours(totalMinutes[0]);
+                            }
+                        }
+                    });
+        }
+    }
+
+    private int calculateRideDuration(RideDetailDto rideDetail) {
+        if (rideDetail.actualStartTime == null || rideDetail.actualEndTime == null) {
+            return 0;
+        }
+
+        try {
+            SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+
+            String startTimeStr = rideDetail.actualStartTime;
+            String endTimeStr = rideDetail.actualEndTime;
+
+            if (startTimeStr.contains(".")) {
+                startTimeStr = startTimeStr.substring(0, startTimeStr.indexOf('.'));
+            }
+            if (endTimeStr.contains(".")) {
+                endTimeStr = endTimeStr.substring(0, endTimeStr.indexOf('.'));
+            }
+
+            java.util.Date start = iso8601Format.parse(startTimeStr);
+            java.util.Date end = iso8601Format.parse(endTimeStr);
+
+            if (start != null && end != null) {
+                long durationMillis = end.getTime() - start.getTime();
+                return (int) (durationMillis / 60000);
+            }
+        } catch (Exception ignored) {
+        }
+
+        return 0;
+    }
+
+    private void updateWorkingHours(int workMinutes) {
         tvWorkActive.setText(formatMinutes(workMinutes));
         tvWorkLimit.setText(String.format(Locale.getDefault(), "%s / %s",
                 formatMinutes(workMinutes),
                 formatMinutes(workLimitMinutes)));
 
-        int percent = (int) Math.round((workMinutes * 100.0) / workLimitMinutes);
+        int percent = (int) Math.round(workMinutes * 100.0 / workLimitMinutes);
         percent = Math.max(0, Math.min(100, percent));
         pbWork.setProgress(percent);
     }
@@ -1155,5 +1267,11 @@ public class DriverDashboardFragment extends Fragment {
         stopEtaPolling();
         stopArrivalWatch();
         super.onDestroyView();
+    }
+    @Nullable
+    private String bearer() {
+        String token = prefs.getString("jwt", null);
+        if (token == null || token.trim().isEmpty()) return null;
+        return "Bearer " + token;
     }
 }

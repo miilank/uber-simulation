@@ -12,16 +12,16 @@
 
     <div class="divide-y divide-gray-100">
       @for (r of bookedRides(); track r.id) {
-        <div class="grid grid-cols-[160px_1.55fr_90px_240px_140px_200px] items-center py-4 px-7">
+        <div name="rideContainer" class="grid grid-cols-[160px_1.55fr_90px_240px_140px_200px] items-center py-4 px-7">
           <div class="text-sm text-gray-800">
             <div>{{ r.date }}</div>
             <div class="text-xs text-gray-500">{{ r.time }}</div>
           </div>
 
           <div class="text-sm text-gray-900 flex items-center gap-2 min-w-0">
-            <span class="truncate">{{ r.from }}</span>
+            <span name="pickupAddress" class="truncate">{{ r.from }}</span>
             <span class="text-gray-400">→</span>
-            <span class="truncate">{{ r.to }}</span>
+            <span name="dropoffAddress" class="truncate">{{ r.to }}</span>
           </div>
 
           <div class="text-sm text-gray-800">{{ r.passengers }}</div>

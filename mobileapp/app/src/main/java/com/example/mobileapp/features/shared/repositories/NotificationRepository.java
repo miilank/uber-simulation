@@ -24,7 +24,7 @@ public class NotificationRepository {
     private final NotificationApi api;
 
     private final MutableLiveData<List<Notification>> notificationsLiveData = new MutableLiveData<>(new ArrayList<>());
-    private final MutableLiveData<Integer> unreadCountLiveData = new MutableLiveData<>(0);
+    private final MutableLiveData<Boolean> hasUnreadLiveData = new MutableLiveData<>(false);
 
     private NotificationRepository() {
         this.api = ApiClient.get().create(NotificationApi.class);
@@ -41,8 +41,8 @@ public class NotificationRepository {
         return notificationsLiveData;
     }
 
-    public LiveData<Integer> getUnreadCount() {
-        return unreadCountLiveData;
+    public LiveData<Boolean> getHasUnread() {
+        return hasUnreadLiveData;
     }
 
     public void loadNotifications() {
@@ -53,8 +53,8 @@ public class NotificationRepository {
                     List<Notification> notifications = response.body().stream()
                             .map(NotificationDto::toModel)
                             .collect(Collectors.toList());
-                    notificationsLiveData.postValue(notifications);
-                    updateUnreadCount();
+                    notificationsLiveData.setValue(notifications);
+                    updateUnreadStatus();
                 } else {
                     Log.e(TAG, "Failed to load notifications: " + response.code());
                 }
@@ -82,8 +82,8 @@ public class NotificationRepository {
                                     return n;
                                 })
                                 .collect(Collectors.toList());
-                        notificationsLiveData.postValue(updated);
-                        updateUnreadCount();
+                        notificationsLiveData.setValue(updated);
+                        updateUnreadStatus();
                     }
                 } else {
                     Log.e(TAG, "Failed to mark as read: " + response.code());
@@ -103,21 +103,21 @@ public class NotificationRepository {
             List<Notification> updated = new ArrayList<>();
             updated.add(notification);
             updated.addAll(current);
-            notificationsLiveData.postValue(updated);
-            updateUnreadCount();
+            notificationsLiveData.setValue(updated);
+            updateUnreadStatus();
         }
     }
 
-    private void updateUnreadCount() {
+    private void updateUnreadStatus() {
         List<Notification> current = notificationsLiveData.getValue();
         if (current != null) {
-            int count = (int) current.stream().filter(n -> !n.isRead()).count();
-            unreadCountLiveData.postValue(count);
+            boolean hasUnread = current.stream().anyMatch(n -> !n.isRead());
+            hasUnreadLiveData.setValue(hasUnread);
         }
     }
 
     public void clearAll() {
-        notificationsLiveData.postValue(new ArrayList<>());
-        unreadCountLiveData.postValue(0);
+        notificationsLiveData.setValue(new ArrayList<>());
+        hasUnreadLiveData.setValue(false);
     }
 }

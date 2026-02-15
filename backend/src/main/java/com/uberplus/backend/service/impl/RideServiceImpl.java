@@ -37,6 +37,14 @@ public class RideServiceImpl implements RideService {
     @Override
     @Transactional
     public RideDTO requestRide(String email, CreateRideRequestDTO request) {
+        if (request.getLinkedPassengerEmails() == null) {
+            request.setLinkedPassengerEmails(new ArrayList<>());
+        }
+
+        if(request.getWaypoints() == null) {
+            request.setWaypoints(new ArrayList<>());
+        }
+
         Passenger creator = (Passenger) userRepository.findByEmail(email).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.")
         );
@@ -65,7 +73,7 @@ public class RideServiceImpl implements RideService {
         potentialDrivers =  potentialDrivers.stream().filter(driver -> {
             List<Ride> rides = driver.getRides();
             for(Ride ride : rides) {
-                if ((ride.getEstimatedStartTime().isBefore(scheduledEnd) && // TODO: Proveri
+                if ((ride.getEstimatedStartTime().isBefore(scheduledEnd) &&
                         ride.getEstimatedEndTime().isAfter(request.getScheduledTime()))) {
                     return false;
                 }
@@ -146,15 +154,18 @@ public class RideServiceImpl implements RideService {
         // Estimate arrival time
         Ride lastRide = getLastRideBefore(request.getScheduledTime(), selectedDriver);
         Location loc;
+        LocalDateTime vehicleStartTime; // Time at which vehicle starts moving to pickup
         if (lastRide != null) {
             loc = lastRide.getEndLocation();
+            vehicleStartTime = lastRide.getEstimatedEndTime();
         } else {
             loc = selectedDriver.getVehicle().getCurrentLocation();
+            vehicleStartTime = LocalDateTime.now();
         }
 
         LocalDateTime estArrival;
         try {
-            estArrival = LocalDateTime.now()
+            estArrival = vehicleStartTime
                     .plusSeconds((long) osrmService.getDuration(loc, requestStart));
         } catch (IOException | InterruptedException e) {
             // If error, assume ride will be on time

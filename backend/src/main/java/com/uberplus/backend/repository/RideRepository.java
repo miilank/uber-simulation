@@ -32,6 +32,7 @@ public interface RideRepository extends JpaRepository<Ride, Integer>, JpaSpecifi
         where p.email = :email
           and r.status = com.uberplus.backend.model.enums.RideStatus.IN_PROGRESS
         order by r.actualStartTime desc nulls last, r.createdAt desc
+        limit 1
     """)
     Optional<Ride> findInProgressForPassenger(@Param("email") String email);
 }

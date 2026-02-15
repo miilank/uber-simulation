@@ -60,7 +60,6 @@ public class DriverDashboardFragment extends Fragment {
     private RecyclerView rvPassengers;
     private RecyclerView rvBookedRides;
 
-    private ProgressBar pbWork;
     private TextView tvWaypointsLabel;
     private View cardWaypoints;
     private TextView tvWorkActive;
@@ -114,7 +113,6 @@ public class DriverDashboardFragment extends Fragment {
         tvPassengersTitle = v.findViewById(R.id.passengersTitle);
         currentRideContent = v.findViewById(R.id.currentRideSection);
 
-        pbWork = v.findViewById(R.id.pbWork);
         tvWaypointsLabel = v.findViewById(R.id.tvWaypointsLabel);
         cardWaypoints = v.findViewById(R.id.cardWaypoints);
         tvWorkActive = v.findViewById(R.id.tvWorkActive);
@@ -141,7 +139,6 @@ public class DriverDashboardFragment extends Fragment {
         driversApi = ApiClient.get().create(DriversApi.class);
         sim = new com.example.mobileapp.features.shared.services.RideSimulationService();
 
-        setupWorkingHours();
         setupWaypoints();
         setupPassengers();
         setupBookedRides();
@@ -392,7 +389,9 @@ public class DriverDashboardFragment extends Fragment {
             passengerAdapter.setItems(new ArrayList<>());
             tvCurrentStatus.setVisibility(View.GONE);
             tvCurrentRoute.setVisibility(View.GONE);
-
+            if (tvWaypointsLabel != null) tvWaypointsLabel.setVisibility(View.GONE);
+            if (cardWaypoints != null) cardWaypoints.setVisibility(View.GONE);
+            if (tvCurrentRideEta != null) tvCurrentRideEta.setVisibility(View.GONE);
             lastMapVehicleId = null;
 
             if (getChildFragmentManager().findFragmentById(R.id.mapContainer) != null) {
@@ -894,7 +893,7 @@ public class DriverDashboardFragment extends Fragment {
                 if (r.vehicleType != null) {
                     if ("VAN".equals(r.vehicleType)) reqs.add(DriverDashboardAdapter.Requirement.VAN);
                     else if ("STANDARD".equals(r.vehicleType)) reqs.add(DriverDashboardAdapter.Requirement.SEDAN);
-                    else reqs.add(DriverDashboardAdapter.Requirement.SUV);
+                    else reqs.add(DriverDashboardAdapter.Requirement.LUXURY);
                 }
 
                 if (r.babyFriendly) reqs.add(DriverDashboardAdapter.Requirement.BABY);

@@ -140,6 +140,25 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 tools:ignore="TextContrastCheck" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/btn_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:minWidth="60dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:gravity="center"
+                android:text="Rate"
+                android:textSize="12sp"
+                android:textColor="#ffffff"
+                android:background="@drawable/bg_dark_grey" />
+
         </LinearLayout>
 
     </LinearLayout>

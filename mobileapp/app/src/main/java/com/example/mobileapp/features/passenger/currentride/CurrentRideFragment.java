@@ -67,6 +67,13 @@ public class CurrentRideFragment extends Fragment {
     private SharedPreferences prefs;
     private Integer watchingEtaRideId = null;
 
+    private boolean arrivedAtDestination = false;
+
+    private RecyclerView rvWaypoints;
+    private TextView tvWaypointsLabel;
+    private View cardWaypoints;
+    private WaypointAdapter waypointAdapter;
+
 
     public CurrentRideFragment() {}
 
@@ -90,6 +97,7 @@ public class CurrentRideFragment extends Fragment {
         setupPassengers();
         setupReport();
         setupMapChild();
+        setupWaypoints();
         setupPanicButton();
 
         rideService = new PassengerCurrentRideService(requireContext());
@@ -119,6 +127,10 @@ public class CurrentRideFragment extends Fragment {
         btnPanic = view.findViewById(R.id.btnPanic);
 
         tvEta = view.findViewById(R.id.tvEta);
+
+        rvWaypoints = view.findViewById(R.id.rvWaypoints);
+        tvWaypointsLabel = view.findViewById(R.id.tvWaypointsLabel);
+        cardWaypoints = view.findViewById(R.id.cardWaypoints);
     }
 
     private void setupPassengers() {
@@ -196,6 +208,26 @@ public class CurrentRideFragment extends Fragment {
         }
         setPassengers(items);
 
+        boolean hasWaypoints = r.waypoints != null && !r.waypoints.isEmpty();
+
+        if (tvWaypointsLabel != null) {
+            tvWaypointsLabel.setVisibility(hasWaypoints ? View.VISIBLE : View.GONE);
+        }
+        if (cardWaypoints != null) {
+            cardWaypoints.setVisibility(hasWaypoints ? View.VISIBLE : View.GONE);
+        }
+
+        if (!hasWaypoints) {
+            waypointAdapter.setItems(new ArrayList<>());
+        } else {
+            List<Waypoint> wp = new ArrayList<>();
+            for (LocationDto w : r.waypoints) {
+                if (w == null) continue;
+                wp.add(new Waypoint(safe(w.getAddress())));
+            }
+            waypointAdapter.setItems(wp);
+        }
+
         refreshActiveGuard(true);
 
         if (r.vehicleId != null) {
@@ -257,10 +289,12 @@ public class CurrentRideFragment extends Fragment {
         }
 
         currentRideId = r.id;
+        arrivedAtDestination = false;
         startEtaPolling(r.id);
+
         if (btnOpenRating != null) {
-            btnOpenRating.setEnabled(true);
-            btnOpenRating.setAlpha(1f);
+            btnOpenRating.setEnabled(false);
+            btnOpenRating.setAlpha(0.6f);
         }
     }
 
@@ -277,6 +311,7 @@ public class CurrentRideFragment extends Fragment {
         if (noCurrentRideRoot != null) noCurrentRideRoot.setVisibility(View.VISIBLE);
         if (currentRideContentRoot != null) currentRideContentRoot.setVisibility(View.GONE);
         currentRideId = null;
+        arrivedAtDestination = false;
         if (btnOpenRating != null) {
             btnOpenRating.setEnabled(false);
             btnOpenRating.setAlpha(0.6f);
@@ -447,8 +482,21 @@ public class CurrentRideFragment extends Fragment {
                         var eta = resp.body();
                         String label = "ETA: " + formatEta(eta.etaToNextPointSeconds);
 
-                        if ("TO_PICKUP".equals(eta.phase)) label = "ETA to pickup: " + formatEta(eta.etaToNextPointSeconds);
-                        else if ("IN_PROGRESS".equals(eta.phase)) label = "ETA to destination: " + formatEta(eta.etaToNextPointSeconds);
+                        if ("TO_PICKUP".equals(eta.phase)) {
+                            label = "ETA to pickup: " + formatEta(eta.etaToNextPointSeconds);
+                        } else if ("IN_PROGRESS".equals(eta.phase)) {
+                            label = "ETA to destination: " + formatEta(eta.etaToNextPointSeconds);
+
+                            // omoguci rating kada je blizu destinacije
+                            if (eta.etaToNextPointSeconds != null && eta.etaToNextPointSeconds <= 30 && !arrivedAtDestination) {
+                                arrivedAtDestination = true;
+                                if (btnOpenRating != null) {
+                                    btnOpenRating.setEnabled(true);
+                                    btnOpenRating.setAlpha(1f);
+                                    Toast.makeText(requireContext(), "You can now rate this ride!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
 
                         tvEta.setText(label);
 
@@ -570,4 +618,60 @@ public class CurrentRideFragment extends Fragment {
                 .show();
     }
 
+    private void setupWaypoints() {
+        rvWaypoints.setLayoutManager(new LinearLayoutManager(requireContext()));
+        waypointAdapter = new WaypointAdapter(new ArrayList<>());
+        rvWaypoints.setAdapter(waypointAdapter);
+    }
+
+    private static final class Waypoint {
+        final String address;
+
+        Waypoint(String address) {
+            this.address = address;
+        }
+    }
+
+    private static final class WaypointAdapter extends RecyclerView.Adapter<WaypointAdapter.WaypointVH> {
+
+        private final List<Waypoint> items;
+
+        WaypointAdapter(List<Waypoint> items) {
+            this.items = items;
+        }
+
+        void setItems(List<Waypoint> newItems) {
+            items.clear();
+            if (newItems != null) items.addAll(newItems);
+            notifyDataSetChanged();
+        }
+
+        @NonNull
+        @Override
+        public WaypointVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_waypoint, parent, false);
+            return new WaypointVH(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull WaypointVH h, int position) {
+            Waypoint w = items.get(position);
+            h.tvAddress.setText(w.address);
+        }
+
+        @Override
+        public int getItemCount() {
+            return items.size();
+        }
+
+        static final class WaypointVH extends RecyclerView.ViewHolder {
+            final TextView tvAddress;
+
+            WaypointVH(@NonNull View itemView) {
+                super(itemView);
+                tvAddress = itemView.findViewById(R.id.tvWaypointAddress);
+            }
+        }
+    }
 }

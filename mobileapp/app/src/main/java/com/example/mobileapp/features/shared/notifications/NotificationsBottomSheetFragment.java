@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mobileapp.R;
+import com.example.mobileapp.UserMainActivity;
 import com.example.mobileapp.features.passenger.currentride.CurrentRideFragment;
 import com.example.mobileapp.features.shared.models.Notification;
 import com.example.mobileapp.features.shared.repositories.NotificationRepository;
@@ -66,6 +67,9 @@ public class NotificationsBottomSheetFragment extends BottomSheetDialogFragment
         dismiss();
 
         if (notification.getRideId() != null) {
+            if (requireActivity() instanceof UserMainActivity) {
+                ((UserMainActivity) requireActivity()).setNavigationCheckedItem(R.id.nav_current_ride);
+            }
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_container, new CurrentRideFragment())

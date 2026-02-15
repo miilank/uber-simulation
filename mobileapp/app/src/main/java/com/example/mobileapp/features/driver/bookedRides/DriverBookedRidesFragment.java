@@ -91,7 +91,7 @@ public class DriverBookedRidesFragment extends Fragment {
                     } else if ("STANDARD".equals(r.vehicleType)) {
                         reqs.add(DriverDashboardAdapter.Requirement.SEDAN);
                     } else {
-                        reqs.add(DriverDashboardAdapter.Requirement.SUV);
+                        reqs.add(DriverDashboardAdapter.Requirement.LUXURY);
                     }
                 }
                 if (r.babyFriendly) reqs.add(DriverDashboardAdapter.Requirement.BABY);

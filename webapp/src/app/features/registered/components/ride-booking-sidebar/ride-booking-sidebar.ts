@@ -239,8 +239,8 @@ export class RideBookingSidebar {
       this.infants, this.pets,
       this.passengerEmails(),
       this.scheduledDate(),
-      (this.bookingState.routeInfo()?.totalDistance!/1000.0),
-      (this.bookingState.routeInfo()?.totalDuration!/60),
+      (this.bookingState.routeInfo()?.totalDistance ?? 0) / 1000.0,
+      (this.bookingState.routeInfo()?.totalDuration ?? 0) / 60,
     ).subscribe({
       next: (ride => {
         this.successMessage = `Ride successfully assigned to driver: ${ride.driverEmail}!
@@ -287,7 +287,17 @@ export class RideBookingSidebar {
 
     this.infants = route.babyFriendly;
     this.pets = route.petsFriendly;
-    this.vehicleType = route.vehicleType ?? 'any';
+
+    const raw = String(route.vehicleType || '');
+    if (raw.toLowerCase() === VehicleType.STANDARD.toLowerCase()) {
+      this.vehicleType = VehicleType.STANDARD;
+    } else if (raw.toLowerCase() === VehicleType.LUXURY.toLowerCase()) {
+      this.vehicleType = VehicleType.LUXURY;
+    } else if (raw.toLowerCase() === VehicleType.VAN.toLowerCase()) {
+      this.vehicleType = VehicleType.VAN;
+    } else {
+      this.vehicleType = 'any';
+    }    
 
     this.cdr.detectChanges();
   }

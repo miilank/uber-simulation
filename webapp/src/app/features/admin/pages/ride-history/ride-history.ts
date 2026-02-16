@@ -50,7 +50,7 @@ export class AdminRideHistory{
   constructor() {
     effect(() => {
       const user = this.selectedUser();
-      
+
       if (user?.id) {
         this.load();
       } else {
@@ -60,12 +60,12 @@ export class AdminRideHistory{
   }
   load() {
     const user = this.selectedUser();
-    
+
     if (!user?.id) {
       return;
     }
 
-    const userId = typeof user.id === 'number' ? user.id : parseInt(user.id as any, 10);
+    const userId = user.id;
     let params = new HttpParams();
 
     if (this.fromDate) params = params.set('startDate', this.fromDate);
@@ -80,7 +80,7 @@ export class AdminRideHistory{
             this.cdr.detectChanges();
           }
         });
-    
+
     }
     if (user?.role == "DRIVER"){
       params = params.set('driverId', userId);
@@ -92,7 +92,7 @@ export class AdminRideHistory{
           this.cdr.detectChanges();
         }
       });
-    
+
     }
   }
 

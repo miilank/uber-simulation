@@ -27,7 +27,9 @@ public class LoginPage {
         this.driver = driver;
         PageFactory.initElements(driver, this);
     }
-
+    public void navigateTo() {
+        driver.get("http://localhost:4200/signIn");
+    }
     public void enterEmail(String email) {
         emailInput.clear();
         emailInput.sendKeys(email);
@@ -40,8 +42,11 @@ public class LoginPage {
 
     public void login() {
         submitButton.click();
-        new WebDriverWait(driver, Duration.ofMillis(300)).
-                until(ExpectedConditions.urlContains("/user/"));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.or(
+                ExpectedConditions.urlContains("/admin/"),
+                ExpectedConditions.urlContains("/user/")
+        ));
     }
 
     public boolean isOnLoginPage() {

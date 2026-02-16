@@ -40,7 +40,7 @@ public class RideHistoryServiceImpl implements RideHistoryService {
     private final UserRepository userRepository;
     private final RatingRepository ratingRepository;
 
-    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd.MM.");
+    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
 
     @Override

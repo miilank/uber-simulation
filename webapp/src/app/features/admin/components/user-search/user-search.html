@@ -29,6 +29,7 @@
         @for (user of searchResults(); track user.id) {
           <div
             (click)="selectUser(user)"
+            name="search_result"
             class="p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors"
             [ngClass]="{
               'bg-red-100 border-red-500': user.blocked && selectedUser()?.id !== user.id,

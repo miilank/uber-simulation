@@ -272,8 +272,6 @@ export class UserRegistrationComponent {
 
   onSubmit() {
     this.isSubmitting = true;
-    console.log("Submitted");
-    
 
     let req: RegisterRequestDto = {
       email: this.email,
@@ -289,11 +287,11 @@ export class UserRegistrationComponent {
 
     const jsonBlob: Blob  = new Blob([JSON.stringify(req)], { type: 'application/json' });
     form.append('user', jsonBlob);
-        
+
     if (this.selectedPicture) {
       form.append('avatar', this.selectedPicture, this.selectedPicture.name);
     }
-    
+
     this.authService.register(form).subscribe({
         next: () => {
           this.isSubmitting = false;

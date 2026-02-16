@@ -7,4 +7,5 @@ public enum RideStatus {
     COMPLETED,
     CANCELLED,
     STOPPED,
+    ERROR,
 }

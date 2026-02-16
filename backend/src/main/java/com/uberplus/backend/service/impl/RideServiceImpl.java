@@ -557,18 +557,27 @@ public class RideServiceImpl implements RideService {
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ride not found."));
 
+        double totalDistance = 0;
         Location endLocation = new Location();
         endLocation.setLongitude(dto.getLongitude());
         endLocation.setLatitude(dto.getLatitude());
         endLocation.setAddress(dto.getAddress());
-
+        try {
+            totalDistance = endLocation.distanceTo(ride.getStartLocation());
+        } catch (Exception e) {
+            ride.setStatus(RideStatus.ERROR);
+            return new RideDTO(ride);
+        }
+        if (endLocation.getAddress() == null){
+            ride.setStatus(RideStatus.ERROR);
+            return new RideDTO(ride);
+        }
+        double actualPrice = pricingService.calculatePrice((int)(totalDistance/1000),ride.getVehicleType());
         ride.setStoppedAt(LocalDateTime.now());
         ride.setActualEndTime(LocalDateTime.now());
         ride.setEndLocation(endLocation);
         ride.setStoppedLocation(endLocation);
         ride.setStatus(RideStatus.STOPPED);
-        double totalDistance = endLocation.distanceTo(ride.getStartLocation());
-        double actualPrice = pricingService.calculatePrice((int)(totalDistance/1000),ride.getVehicleType());
         ride.setTotalPrice(actualPrice);
 
         Driver driver = ride.getDriver();

@@ -3,6 +3,7 @@ package com.uberplus.backend.controller;
 import com.uberplus.backend.dto.common.MessageDTO;
 import com.uberplus.backend.dto.pricing.PriceEstimateResponseDTO;
 import com.uberplus.backend.dto.ride.*;
+import com.uberplus.backend.model.enums.RideStatus;
 import com.uberplus.backend.service.PricingService;
 import com.uberplus.backend.service.RideService;
 import jakarta.validation.Valid;
@@ -130,6 +131,9 @@ public class RideController {
     @PostMapping("/{rideId}/stop-early")
     public ResponseEntity<RideDTO> stopEarly(@PathVariable Integer rideId, @RequestBody LocationDTO request) {
         RideDTO stopped = rideService.stopEarly(rideId,request);
+        if (stopped.getStatus().equals(RideStatus.ERROR)){
+            return ResponseEntity.badRequest().body(stopped);
+        }
         return ResponseEntity.ok(stopped);
     }
 

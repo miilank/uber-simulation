@@ -74,7 +74,12 @@ public class ChangePasswordDialogFragment extends DialogFragment {
 
         userApi.changePassword(body).enqueue(new Callback<Void>() {
             @Override
+
             public void onResponse(Call<Void> call, Response<Void> response) {
+                if(!response.isSuccessful()) {
+                    tvErrorMessage.setText("Password change failed. Please recheck your old password.");
+                    return;
+                }
                 dismiss();
             }
 

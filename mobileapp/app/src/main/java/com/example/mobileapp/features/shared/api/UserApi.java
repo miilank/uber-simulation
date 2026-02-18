@@ -30,7 +30,7 @@ public interface UserApi {
 
     // Using map to avoid making whole new class for 2 fields
     @PUT("api/users/change-password")
-    Call<Void> changePassword(Map<String, String> request);
+    Call<Void> changePassword(@Body Map<String, String> request);
 
     @GET("/api/users")
     Call<List<User>> searchUsers(@Query("search") String searchString,

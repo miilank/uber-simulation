@@ -11,6 +11,7 @@ import com.uberplus.backend.service.RideService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.uberplus.backend.dto.admin.DriverListItemDTO;
 import com.uberplus.backend.model.Driver;
@@ -63,18 +64,21 @@ public class AdminController {
 
     // GET /api/admin/rides/active
     @GetMapping("/rides/active")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<RideDTO>> getActiveRidesForAdmin() {
         return ResponseEntity.ok(List.of(new RideDTO()));
     }
 
     // GET /api/admin/rides/{rideId}
     @GetMapping("/rides/{rideId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RideDTO> getRideState(@PathVariable Integer rideId) {
         return ResponseEntity.ok(new RideDTO());
     }
 
     // GET /api/admin/drivers/all-with-status
     @GetMapping("/drivers/all-with-status")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<DriverListItemDTO>> getAllDriversWithStatus() {
         List<Driver> drivers = driverService.getAllDrivers();
 
@@ -87,6 +91,7 @@ public class AdminController {
 
     // GET /api/admin/drivers/{driverEmail}/rides
     @GetMapping("/drivers/{driverEmail}/rides")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<RideDTO>> getDriverRides(@PathVariable String driverEmail) {
         Driver driver = driverService.getDriverByEmail(driverEmail);
 

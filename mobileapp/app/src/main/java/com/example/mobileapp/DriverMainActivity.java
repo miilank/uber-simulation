@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,9 +20,13 @@ import com.example.mobileapp.features.driver.bookedRides.DriverBookedRidesFragme
 import com.example.mobileapp.features.driver.dashboard.DriverDashboardFragment;
 import com.example.mobileapp.features.driver.ridehistory.RideHistoryFragment;
 import com.example.mobileapp.features.shared.chat.SupportChatFragment;
+import com.example.mobileapp.features.shared.models.Notification;
+import com.example.mobileapp.features.shared.notifications.NotificationsBottomSheetFragment;
 import com.example.mobileapp.features.shared.pages.historyReport.UserHistoryReportFragment;
 import com.example.mobileapp.features.shared.pages.profile.ProfileFragment;
+import com.example.mobileapp.features.shared.repositories.NotificationRepository;
 import com.example.mobileapp.features.shared.repositories.UserRepository;
+import com.example.mobileapp.features.shared.services.WebSocketManager;
 import com.google.android.material.navigation.NavigationView;
 
 import java.time.LocalDateTime;
@@ -36,6 +42,10 @@ public class DriverMainActivity extends AppCompatActivity
 
     // Buttons from the custom header inside the Toolbar
     private ImageButton btnMenu;
+    // Notification system
+    private WebSocketManager webSocketManager;
+    private NotificationRepository notificationRepository;
+    private TextView tvNotificationBadge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +84,42 @@ public class DriverMainActivity extends AppCompatActivity
             }
         });
 
+        // Setup notification bell and badge
+        FrameLayout btnNotifications = toolbar.findViewById(R.id.btn_notifications);
+        tvNotificationBadge = toolbar.findViewById(R.id.tv_notification_badge);
+        btnNotifications.setOnClickListener(v -> showNotifications());
+
+        // Initialize notification repository
+        notificationRepository = NotificationRepository.getInstance();
+        notificationRepository.loadNotifications();
+
+        // Observe unread count and update badge
+        notificationRepository = NotificationRepository.getInstance();
+        notificationRepository.loadNotifications();
+
+        notificationRepository.getHasUnread().observe(this, hasUnread -> {
+            if (hasUnread != null && hasUnread) {
+                tvNotificationBadge.setVisibility(View.VISIBLE);
+            } else {
+                tvNotificationBadge.setVisibility(View.GONE);
+            }
+        });
+
+        // Setup Websocket
+        webSocketManager = new WebSocketManager(this);
+        UserRepository.getInstance().getCurrentUser().observe(this, user -> {
+            if (user != null && user.getId() != null) {
+                webSocketManager.connect(user.getId(), null);
+                webSocketManager.setNotificationListener(notificationDto -> {
+                    runOnUiThread(() -> {
+                        Notification notification = notificationDto.toModel();
+                        notification.setRead(false);
+                        notificationRepository.addNotification(notification);
+                    });
+                });
+            }
+        });
+
         // Listen for navigation item clicks from the drawer menu
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -101,6 +147,12 @@ public class DriverMainActivity extends AppCompatActivity
                 profileImage.setImageResource(R.drawable.img_defaultprofile);
             }
         });
+    }
+
+    // Show notifications bottom sheet
+    private void showNotifications() {
+        NotificationsBottomSheetFragment bottomSheet = new NotificationsBottomSheetFragment();
+        bottomSheet.show(getSupportFragmentManager(), "notifications");
     }
 
     @Override
@@ -153,6 +205,7 @@ public class DriverMainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_sign_out) {
             UserRepository.getInstance().clearUser();
+            NotificationRepository.getInstance().clearAll();
             Intent intent = new Intent(DriverMainActivity.this, AuthActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -162,5 +215,14 @@ public class DriverMainActivity extends AppCompatActivity
         // Always close the drawer after handling a click
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (webSocketManager != null) {
+            webSocketManager.disconnect();
+        }
     }
 }

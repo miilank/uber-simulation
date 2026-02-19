@@ -4,11 +4,12 @@ import {Router, RouterLink} from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CurrentUserService } from '../../../core/services/current-user.service';
 import { User } from '../../../core/models/user';
+import { NotificationBellComponent } from "./notification-bell.component";
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgOptimizedImage],
+  imports: [CommonModule, RouterLink, NgOptimizedImage, NotificationBellComponent],
   template: `
     <header class="w-full bg-app-dark">
       <div class="flex items-center justify-between h-23.5 px-6 md:px-8">
@@ -29,17 +30,21 @@ import { User } from '../../../core/models/user';
 
         <!-- User Profile Button -->
         @if (showUserProfile) {
-          <div class="flex items-center gap-2.5 bg-white rounded-full px-3 py-1.5 md:px-2 md:py-2 shadow-lg">
-            <div class="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center shrink-0 ml-2"></div>
-            <span class="text-black text-base md:text-[18px] font-normal mr-1">{{user.firstName}} {{user.lastName}}</span>
-            <img
-              [ngSrc]="displayedProfilePicture()"
-              width="40"
-              height="40"
-              alt="Profile"
-              class="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
-              (error)="onProfileImgError($event)"
-            />
+          <div class="flex items-center gap-4">
+            <app-notification-bell></app-notification-bell>
+
+            <div class="flex items-center gap-2.5 bg-white rounded-full px-3 py-1.5 md:px-2 md:py-2 shadow-lg">
+              <div class="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center shrink-0 ml-2"></div>
+              <span class="text-black text-base md:text-[18px] font-normal mr-1">{{user.firstName}} {{user.lastName}}</span>
+              <img
+                [ngSrc]="displayedProfilePicture()"
+                width="40"
+                height="40"
+                alt="Profile"
+                class="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
+                (error)="onProfileImgError($event)"
+              />
+            </div>
           </div>
         }
         @else {

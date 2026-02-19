@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs';
 import { NotificationService } from '../../../core/services/notification.service';
 import { WebSocketService } from '../../../core/services/websocket.service';
 import { AppNotification } from '../models/notification';
+import { CurrentUserService } from '../../../core/services/current-user.service';
+import { User } from '../../../core/models/user';
 
 @Component({
   selector: 'app-notification-bell',
@@ -88,10 +90,13 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
   private notificationService = inject(NotificationService);
   private websocketService = inject(WebSocketService);
   private router = inject(Router);
+  private userService = inject(CurrentUserService);
 
   showDropdown = false;
   notifications$ = this.notificationService.notifications$;
   unreadCount$ = this.notificationService.unreadCount$;
+
+  currentUser: User | null = null;
 
   private wsSubscription?: Subscription;
 
@@ -106,6 +111,10 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    this.userService.currentUser$.subscribe({
+      next: (user) => this.currentUser = user
+    })
   }
 
   ngOnDestroy(): void {
@@ -123,12 +132,23 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
 
     // Navigacija na osnovu tipa notifikacije
     if (notification.rideId) {
-      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-        this.router.navigate(['/user/current-ride'], {
-          queryParams: { t: Date.now() } // timestamp da forsira reload
-        });
-      });
+      if(this.currentUser != null && this.currentUser.role == "PASSENGER") {
+          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            this.router.navigate(['/user/current-ride'], {
+              queryParams: { t: Date.now() } // timestamp da forsira reload
+            });
+          });
+        }
+      else if (this.currentUser != null && this.currentUser.role == "DRIVER") {
+          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            this.router.navigate(['/driver/booked-rides'], {
+              queryParams: { t: Date.now() } // timestamp da forsira reload
+            });
+          });
+      }
     }
+
+
 
     this.showDropdown = false;
   }

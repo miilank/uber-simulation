@@ -3,6 +3,7 @@ package com.uberplus.backend.service.impl;
 import com.uberplus.backend.dto.notification.PanicNotificationDTO;
 import com.uberplus.backend.dto.ride.*;
 import com.uberplus.backend.model.*;
+import com.uberplus.backend.model.enums.NotificationType;
 import com.uberplus.backend.model.enums.RideStatus;
 import com.uberplus.backend.model.enums.VehicleStatus;
 import com.uberplus.backend.repository.*;
@@ -33,6 +34,7 @@ public class RideServiceImpl implements RideService {
     private final EmailService emailService;
     private PricingService pricingService;
     private NotificationService notificationService;
+    private NotificationSchedulerServiceImpl scheduledNotifService;
 
     @Override
     @Transactional
@@ -213,6 +215,35 @@ public class RideServiceImpl implements RideService {
         ride.setCreatedAt(LocalDateTime.now());
         rideRepository.save(ride);
         notificationService.notifyRideAccepted(ride);
+
+        String m = String.format("You have been assigned a ride to %s scheduled for %s.",
+                ride.getEndLocation().getAddress(), ride.getEstimatedStartTime().toString());
+
+        notificationService.sendNotificationToUser(ride.getDriver(), NotificationType.RIDE_ASSIGNED, m, ride);
+
+        NotificationType type = NotificationType.RIDE_REMINDER;
+
+        if(ride.getEstimatedStartTime().isAfter(LocalDateTime.now().plusMinutes(15))) {
+            m = String.format("Reminder: your ride to %s starts in 15 minutes.",
+                    ride.getEndLocation().getAddress());
+
+            scheduledNotifService.scheduleNotification(ride.getCreator(), ride, type, m, ride.getEstimatedStartTime().minusMinutes(15));
+        }
+
+        if(ride.getEstimatedStartTime().isAfter(LocalDateTime.now().plusMinutes(10))) {
+            m = String.format("Reminder: your ride to %s starts in 10 minutes.",
+                    ride.getEndLocation().getAddress());
+
+            scheduledNotifService.scheduleNotification(ride.getCreator(), ride, type, m, ride.getEstimatedStartTime().minusMinutes(10));
+        }
+
+        if(ride.getEstimatedStartTime().isAfter(LocalDateTime.now().plusMinutes(10))) {
+            m = String.format("Reminder: your ride to %s starts in 5 minutes.",
+                    ride.getEndLocation().getAddress());
+
+            scheduledNotifService.scheduleNotification(ride.getCreator(), ride, type, m, ride.getEstimatedStartTime().minusMinutes(5));
+        }
+
         return new RideDTO(ride);
     }
 

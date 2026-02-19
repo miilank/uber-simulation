@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @Transactional
 @DisplayName("Ride Controller - Stop Early Integration Tests")
-@ActiveProfiles("Test")
+@ActiveProfiles("test")
 public class RideControllerStopRideIntegrationTest {
 
     @Autowired
@@ -58,11 +58,6 @@ public class RideControllerStopRideIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        rideRepository.deleteAll();
-        passengerRepository.deleteAll();
-        driverRepository.deleteAll();
-        vehicleRepository.deleteAll();
-
         passenger = createPassenger();
         driver = createDriver();
         vehicle = createVehicle(driver);

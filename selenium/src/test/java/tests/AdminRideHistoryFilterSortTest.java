@@ -20,7 +20,7 @@ public class AdminRideHistoryFilterSortTest extends TestBase {
 
     private LoginPage loginPage;
     private AdminRideHistoryPage rideHistoryPage;
-    private static final String ADMIN_EMAIL = "a1@uberplus.com";
+    private static final String ADMIN_EMAIL = "admin@uberplus.com";
     private static final String ADMIN_PASSWORD = "password";
 
     @BeforeEach
